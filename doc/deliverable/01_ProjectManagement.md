@@ -82,6 +82,9 @@ Considerazioni su GANTT: La schedulazione delle attività è stata progettata pe
 T1 → T2 → T3 → T4 → T6 → T8 → T9 → T10 → T11
 
 ```
+
+![Critical path](/data/img/critical_path.png)
+
 Considerazioni sul critical path: Il Frontend (T6)  dura 10 settimane (finendo alla settimana 23).
 Il Backend (T5) dura 8 settimane (finendo alla 21), quindi ha 2 settimane di slack prima che inizi il testing (T8 alla settimana 24).
 Lo Storage (T7) dura 8 settimane ma inizia prima (alla settimana 10), finendo alla 17. Ha 6 settimane di slack prima che serva per il testing.

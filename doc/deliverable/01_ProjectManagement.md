@@ -1,6 +1,5 @@
 # Product Breakdown Structure (PBS)
 
-La PBS descrive l'insieme dei deliverable osservabili che compongono la piattaforma Participium. Ogni voce rappresenta un output verificabile, non un'attività.
 | ID | Deliverable | Type  | Notes |
 |:---|:------------|:--------------------------------------------------|:------|
 | S1 | Applicazione Web (UI + client)           |   Software                                               |  Piattaforma e logica web completa ( UI+client) per la segnalazione civica    |
@@ -32,7 +31,6 @@ Considerazioni sulla PBS: La PBS è stata guidata dall'architettura logica descr
 
 # Work Breakdown Structure (WBS)
 
-La WBS definisce i work package necessari a produrre i deliverable PBS. Ogni work package può essere assegnato a un team o sotto-team autonomo. La struttura riflette le fasi principali di un ciclo di sviluppo ibrido (sequenziale nelle fasi di analisi e parallelo nello sviluppo). I work package sono schedulabili e ogni WP produce output misurabili.
 ### WBS with traceability to PBS
 | ID  | Work package | Traced PBS outputs (IDs) |
 |:----|:-------------|:--------------------------|
@@ -75,9 +73,9 @@ La Finalizzazione dei documenti (WP 10) è posizionata alla fine esclusivamente 
 
 Considerazioni su GANTT: La schedulazione delle attività è stata progettata per rispettare il vincolo temporale di 9 mesi (circa 39 settimane), massimizzando la parallelizzazione laddove l'architettura lo consente. Al termine della progettazione architettonica (T3), il team si divide: la configurazione dello Storage (T7) procede in parallelo allo sviluppo dello scheletro API (T4). A sua volta, il completamento di T4 è il vero "abilitatore" del progetto: consegnando subito i contratti delle API al team, sblocchiamo lo sviluppo in contemporanea della logica Backend avanzata (T5) e del Frontend (T6). Nelle settimane 14-23, il Frontend (T6) risulta l'attività più lunga (10 settimane) a causa della complessità di integrazione della mappa interattiva e della UI. Questo lo pone inevitabilmente sul percorso critico. Il team Backend (T5), richiedendo solo 8 settimane, gode quindi di uno slack di 2 settimane prima dell'inizio della fase di test (T8). Anche l'infrastruttura di Storage (T7) ha un ampio slack di 6 settimane, non impattando minimamente sulla data di consegna.
 
-Diagramma di Gantt
+## Diagramma di Gantt
 
-![]()
+![Diagramma di Gantt](/data/img/gantt.png)
 
 ## Critical path
 ```

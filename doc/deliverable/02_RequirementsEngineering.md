@@ -24,7 +24,14 @@ STK-8	| OpenStreetMap	|Provider cartografico per la mappa e le coordinate GPS. O
 
 | ID    | Interface | Actor       | Physical interface | Logical interface |
 |:------|:----------|:------------|:-------------------|:------------------|
-| IF-XX |           |             |                    |                   |
+| IF-1 |    Web UI Pubblica      |       Cittadino non registrato (STK-1), Cittadino Registrato (STK-2)      |      Dispositivo utente (Smartphone, PC, Tablet) con connessione ad Internet              |          Applicazione web         |
+IF-2 |    Web UI Dashboard Interna     |    Operatore comunale (STK-3), Admin (STK-4)         |       PC con connessione ad Internet             |     Applicazione web (Area riservata)             |
+IF-3 |   Portale Amministratore       |    Admin       |    Smartphone/PC con connessione ad Internet               |         Dashboard web di amministrazione           |
+IF-4 |    API Autenticazione      |    Servizio di autenticazione (STK-6)         |       Connessione ad Internet             |      API             |
+IF-5 |    API Servizio Notifiche       |      Servizio notifiche (STK-7)       |      Connessione ad Internet              |       API            |
+IF-6 |     Interfaccia Mail Server       |      Mail server (STK-8)       |     Connessione ad Internet                |    API               |
+IF-7 |     API Map Provider server      |      OpenStreetMap (STK-9)       |      Connessione ad Internet              |      API             |
+
 
 ---
 

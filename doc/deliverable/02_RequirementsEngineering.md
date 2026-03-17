@@ -10,6 +10,11 @@ STK-5	| Servizio di autenticazione |	Servizio di terze parti per l'autenticazion
 STK-6	| Servizio notifiche |	Sistema per la gestione e l'invio di notifiche in-app. Obiettivo: Recapitare notifiche in-app agli utenti. Priorità: Media |	Sistema esterno	 | Velocità della consegna | 
 STK-7 |	Mail server | Server per invio di comunicazioni via email. Obiettivo: Inviare comunicazioni via email in modo sicuro e affidabile. Priorità: Media |	Sistema esterno	 | Sicurezza dei protocolli, garanzia di ricezione | 
 STK-8	| OpenStreetMap	|Provider cartografico per la mappa e le coordinate GPS. Obiettivo: Fornire la mappa interattiva e le coordinate GPS. Priorità: Alta| Sistema esterno	| Tempi di risposta delle API, precisione geografica |
+STK-9	| Comune di Torino |  Obiettivo: Migliorare la sicurezza urbana. Priorità: Alta | Committente | Costi di gestione |
+STK-10 | Ufficio Tecnico del Comune di Torino |  Ricevere segnalazioni (foto, posizione) per poter eseguire i lavori di riparazione sul territorio.Obiettivo: Migliorare la sicurezza urbana. Priorità: Alta | Risolutore | Segnalazioni imprecise o geolocalizzate errata |
+STK-11 | Analista | Raccogliere e documentare correttamente i requisiti  Obiettivo: Soddisfare le esigenze del Comune e dei cittadini. Priorità: Media | Project Team | Requisiti ambigui e mancanza di feedback |
+STK-12 | Sviluppatore | Seguire le specifiche per creare un software open-source scalabile. Obiettivo: Implementare la piattaforma Participium. Priorità: Alta | Project Team | Specifiche incomplete, complessità di integrazione con sistemi esterni |
+
 
 
 ---

@@ -46,6 +46,42 @@ Add one narrative for each use case shown in the diagram.
 | Main success scenario   | 1. Utente richiede esportazione dei dati. [FR-11] <br> 2. Sistema elabora le righe che soddisfano eventuali filtri applicati. <br> 3. Sistema genera CSV. <br> 4. Il file viene scaricato|
 | Extensions              | 2a. eccessivo tempo di elaborazione. <br> 2a.1 Presentazione di un  messaggio di errore.
 
+### UC-15: Consultazione statistiche pubbliche
+
+| Use Case                | Consultazione statistiche pubbliche |
+|:------------------------|:-----------------------------------|
+| ID                      | UC-15                              |
+| Scope                   | Piattaforma Participium     |
+| Level                   | User goal                          |
+| Intention in Context    | L’utente, registrato o no, vuole accedere a statistiche generali sulle segnalazioni. |
+| Primary actor           | Utente (registrato/non registrato) |
+| Supporting actors       | - |
+| Stakeholders' interests | L’utente: trasparenza<br> Analista: fare analisi per gli obiettivi del Comune <br> Comune: accountability e insight. |
+| Precondition            | Esistono dati sufficienti per la creazione di statistiche rilevanti. |
+| Minimum guarantees      | Mostra un messaggio di “nessun dato” se non disponibili. |
+| Success guarantees      | Fornisce statistiche aggiornate ed aggregate. |
+| Trigger                 | Accesso alla sezione “Statistiche pubbliche”. |
+| Main success scenario   | 1. Utente entra nella sezione.<br> 2. Sistema calcola metriche.<br> 3. Sistema mostra grafici/tabelle.[FR-13] <br> |
+| Extensions              | 2a. Errore calcolo.<br> 2a.1 messaggio, eventuale retry.<br> <br> 3a. Filtri errati(no dati sufficienti)<br> 3a.1 Reset filtri.
+
+### UC-16: Accettazione/rifiuto segnalazione (con motivazione)
+
+| Use Case                | Accettazione/rifiuto segnalazione |
+|:------------------------|:---------------------------------|
+| ID                      | UC-16                            |
+| Scope                   | Piattaforma Participium  |
+| Level                   | User goal                |
+| Intention in Context    | Operatore comunale valuta e definisce se una segnalazione è valida o non valida, allegando motivazioni. |
+| Primary actor           | Operatore comunale              |
+| Supporting actors       | Server mail |
+| Stakeholders' interests | Comune: correttezza processuale, segnalazioni corrette <br> Utenti: attendibilità delle segnalazioni.<br> Amministratore: supervisione, anche degli account. |
+| Precondition            | Operatore autenticato e segnalazione in stato “nuova”. |
+| Minimum guarantees      | accettazione o rifiuto con motivazione, anche se la segnalazione viene rifiutata  viene loggato il tutto. |
+| Success guarantees      | Stato aggiornato a “accettata” o “rifiutata” con motivazione salvata. |
+| Trigger                 | Operatore seleziona azione accetta/rifiuta + motivazione. |
+| Main success scenario   | 1. Operatore seleziona segnalazione.<br> 2. Indica decisione e motivazione. [FR-18]<br> 3. Sistema salva aggiornamento.<br> 4. Sistema notifica il segnalatore ed i follower (della segnalazione)del cambio di stato.[FR-14, FR-18] |
+| Extensions              | 2a. Motivazione mancante<br>2a.1 Richiesta motivazione obbligatoria.<br><br> 2b Stato mancante.<br>2b.1 Selezione dello stato obbligatoria.<br>
+
 # 3) Traceability Table
 
 | UC ID | REQ ID |

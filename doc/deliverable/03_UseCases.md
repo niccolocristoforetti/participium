@@ -19,7 +19,7 @@ Add one narrative for each use case shown in the diagram.
 | Level                   | User goal                             |
 | Intention in Context    | L’utente vuole vedere tutte le informazioni su una segnalazione selezionata.
 | Primary actor           | Utente (registrato/non registrato)   |
-| Supporting actors       | OpenStreetMap, database segnalazioni |
+| Supporting actors       | OpenStreetMap |
 | Stakeholders' interests | L’utente: (registrato o non) desidera visualizzare i dettagli della segnalazione.<br> Sistema: mostra correttamente i dettagli di una segnalazione |
 | Precondition            | la segnalazione deve esistere |
 | Minimum guarantees      | - |
@@ -37,7 +37,7 @@ Add one narrative for each use case shown in the diagram.
 | Level                   | User goal                                      |
 | Intention in Context    | L’utente, registrato o non, desidera scaricare localmente i dati della vista tabellare. |
 | Primary actor           | Utente (registrato/non registrato)           |
-| Supporting actors       | Data base segnalazioni |
+| Supporting actors       | - |
 | Stakeholders' interests | Utente: esportazione rapida e completa; Sistema: trasparenza |
 | Precondition            | La vista tabellare è popolata con dati delle segnalazioni. |
 | Minimum guarantees      | Viene generato un file CSV vuoto solo con header se nessun dato disponibile. |

@@ -9,79 +9,79 @@ Also, make sure to include the JSON source file downloaded from the UML Modeler 
 # 2) Use Case Narratives
 
 Add one narrative for each use case shown in the diagram.
-| Use Case                |                             |
+| Use Case                |           Registrazione                 |
 |:------------------------|:----------------------------|
-| ID                      | 01                            |
-| Scope                   | piattaforma Participium                            |
+| ID                      | UC-01                            |
+| Scope                   | Piattaforma Participium                            |
 | Level                   | User goal                            |
-| Intention in Context    | Registrazione                            |
-| Primary actor           | Cittadino non registrato / non loggato                            |
-| Supporting actors       | Servizio di autenticazione (STK-5), Mail server (STK-7)  |
-| Stakeholders' interests | **Cittadino non registrato (STK-1)**: Vuole creare un account per poter inserire segnalazioni. |
-| Precondition            | - |
+| Intention in Context    | Creare un nuovo account per partecipare attivamente alla piattaforma                            |
+| Primary actor           | Cittadino non registrato                            |
+| Supporting actors       | Servizio di autenticazione (STK-5), Mail server (STK-7) |
+| Stakeholders' interests | **Cittadino non registrato (STK-1)**: Vuole creare un account per poter inserire segnalazioni. **Comune(STK-9)**: Avere la garanzia che gli utenti registrati siano reali e verificati, riducendo i rischi di sicurezza (GDPR) non conservando direttamente le credenziali di accesso.|
+| Precondition            | L'utente possiede un indirizzo email valido. |
 | Minimum guarantees      |Nessun dato personale viene persistito in caso di registrazione non completata. Le credenziali (password) non vengono mai salvate nei database di Participium. |
 | Success guarantees      | L'utente dispone di un account attivo e verificato sulla piattaforma. L'utente può effettuare il login. |
 | Trigger                 | - |
-| Main success scenario   | 1. L'utente chiede di potersi registrare.<br>2. L'utente inserisce username, nome, cognome, indirizzo email e password.<br>3. L'utente conferma e invia il modulo di registrazione.<br>4. Il sistema crea l'account in stato "non verificato" e invia un'email con link di verifica [FR-01].<br>5. L'utente clicca sul link di verifica ricevuto via email.<br>6. Il sistema attiva l'account [FR-01].<br>7. Il sistema propone al cittadino di completare il profilo: caricare opzionalmente una foto profilo [FR-05] e impostare le preferenze di notifica email [FR-04].<br>8. Il cittadino configura le preferenze desiderate.<br>9. Il sistema salva le impostazioni selezionate [FR-04] [FR-05].<br>10. L'utente viene reindirizzato alla piattaforma come utente autenticato. |
-| Extensions              | 3a. L'utente annulla la registrazione.<br>3a.1 Il sistema non crea l'account, il caso d'uso termina con un fallimento.<br>4a. I dati inseriti non sono validi o sono incompleti.<br>4a.1 Il sistema mostra gli errori e il caso d'uso riprende dal punto 2.<br>8a. Il cittadino salta la configurazione del profilo.<br>8a.1 Il sistema mantiene le impostazioni predefinite e il caso d'uso riprende dal punto 10. |
+| Main success scenario   | 1. L'utente chiede di potersi registrare.<br>2. Il sistema reindirizza l'utente al Servizio di Autenticazione esterno [FR-01].<br>3. L'utente inserisce username, nome, cognome, indirizzo email e password.<br>4. L'utente conferma e invia il modulo di registrazione.<br>5. Il sistema crea l'account in stato "non verificato" e invia un'email con link di verifica [FR-01].<br>6. L'utente clicca sul link di verifica ricevuto via email.<br>7. Il sistema attiva l'account [FR-01].<br>8. Il sistema propone al cittadino di completare il profilo: caricare opzionalmente una foto profilo [FR-05] e impostare le preferenze di notifica email [FR-04].<br>9. Il cittadino configura le preferenze desiderate.<br>10. Il sistema salva le impostazioni selezionate [FR-04] [FR-05].<br>11. L'utente viene reindirizzato alla piattaforma come utente autenticato.<br>Il caso d'uso termina con successo |
+| Extensions              | 4a. L'utente annulla la registrazione.<br>4a.1 Il sistema non crea l'account, il caso d'uso termina con un fallimento.<br>5a. I dati inseriti non sono validi o sono incompleti.<br>5a.1 Il sistema mostra gli errori e il caso d'uso riprende dal punto 2.<br>9a. Il cittadino salta la configurazione del profilo.<br>9a.1 Il sistema mantiene le impostazioni predefinite e il caso d'uso riprende dal punto 10. |
 
-| Use Case                |                             |
+| Use Case                |           Recupero password                  |
 |:------------------------|:----------------------------|
-| ID                      | 02                          |
-| Scope                   | piattaforma Participium     |
+| ID                      | UC-02                          |
+| Scope                   | Piattaforma Participium     |
 | Level                   | User goal                   |
-| Intention in Context    | Recupero password           |
+| Intention in Context    | Ripristinare l'accesso al proprio account in caso di smarrimento della password           |
 | Primary actor           | Cittadino registrato (non loggato) |
 | Supporting actors       | Servizio di autenticazione (STK-5), Mail server (STK-7) |
-| Stakeholders' interests | **Cittadino registrato (STK-2)**: vuole recuperare l'accesso al proprio account.|
+| Stakeholders' interests | **Cittadino registrato (STK-2)**: vuole recuperare l'accesso al proprio account. |
 | Precondition            | L'utente possiede un account sulla piattaforma. |
 | Minimum guarantees      | Le credenziali precedenti rimangono valide fino al completamento del reset. |
 | Success guarantees      | L'utente ha impostato una nuova password e può effettuare il login. |
 | Trigger                 | - |
-| Main success scenario   | 1. L'utente accede alla pagina di recupero password.<br>2. L'utente inserisce l'indirizzo email associato al proprio account.<br>3. L'utente conferma e invia la richiesta.<br>4. Il sistema verifica l'email e genera un link di reset [FR-02].<br>5. Il sistema invia un'email con il link di reset all'indirizzo fornito [FR-02].<br>6. L'utente accede al link di reset ricevuto via email.<br>7. L'utente inserisce e conferma la nuova password.<br>8. Il sistema aggiorna le credenziali [FR-02].<br>9. L'utente viene reindirizzato alla pagina di login. |
-| Extensions              | 3a. L'utente annulla il recupero.<br>3a.1 Il sistema non invia nessuna email, il caso d'uso termina con un fallimento.<br>7a. Le password inserite non coincidono o non rispettano i requisiti di sicurezza.<br>7a.1 Il sistema mostra gli errori e il caso d'uso riprende dal punto 7. |
+| Main success scenario   | 1. L'utente accede alla pagina di recupero password.<br>2. Il sistema reindirizza la richiesta al Servizio di Autenticazione esterno.<br>3. L'utente inserisce l'indirizzo email associato al proprio account.<br>4. L'utente conferma e invia la richiesta.<br>5. Il Servizio di Autenticazione esterno verifica l'email e genera un link di reset [FR-02].<br>6. Il Servizio di Autenticazione esterno invia un'email con il link di reset all'indirizzo fornito [FR-02].<br>7. L'utente accede al link di reset ricevuto via email.<br>8. L'utente inserisce e conferma la nuova password.<br>9. Il sistema aggiorna le credenziali [FR-02].<br>10. L'utente viene reindirizzato alla pagina di login. |
+| Extensions              | 4a. L'utente annulla il recupero.<br>4a.1 Il sistema non invia nessuna email, il caso d'uso termina con un fallimento.<br>8a. Le password inserite non coincidono o non rispettano i requisiti di sicurezza.<br>8a.1 Il sistema mostra gli errori e il caso d'uso riprende dal punto 8. |
 
 
 
-| Use Case                |                             |
+| Use Case                |          Login                   |
 |:------------------------|:----------------------------|
-| ID                      | 03                          |
-| Scope                   | piattaforma Participium     |
+| ID                      | UC-03                          |
+| Scope                   | Piattaforma Participium     |
 | Level                   | User goal                   |
-| Intention in Context    | Login                       |
-| Primary actor           | Utente registrato (Cittadino STK-2, Operatore comunale STK-3) |
+| Intention in Context    | Autenticarsi in modo sicuro per accedere a diverse funzionalità della piattaforma                       |
+| Primary actor           | Utente registrato (Cittadino, Operatore comunale, Admin) |
 | Supporting actors       | Servizio di autenticazione (STK-5) |
-| Stakeholders' interests | **Cittadino (STK-2)**: vuole accedere alla propria area riservata per gestire le segnalazioni. **Operatore comunale (STK-3)**: vuole accedere alla dashboard interna per gestire le pratiche. |
+| Stakeholders' interests | **Cittadino (STK-2)**: vuole accedere alla propria area riservata per gestire le segnalazioni. **Operatore comunale (STK-3)**: vuole accedere alla dashboard interna per gestire le pratiche. **Admin(STK-4)**:vuole accedere alla dashboard privata per amministrare il sistema e consulta le metriche avanzate |
 | Precondition            | L'utente possiede un account attivo e verificato sulla piattaforma. |
 | Minimum guarantees      | -|
 | Success guarantees      | L'utente dispone di una sessione autenticata attiva con i permessi corrispondenti al proprio ruolo. |
 | Trigger                 | - |
-| Main success scenario   | 1. L'utente accede alla pagina di login.<br>2. L'utente inserisce username e password.<br>3. L'utente conferma e invia il modulo di login.<br>4. Il sistema verifica le credenziali tramite il servizio di autenticazione [FR-03].<br>5. Il sistema crea una sessione autenticata [FR-03].<br>6. L'utente viene reindirizzato all'area riservata corrispondente al proprio ruolo. |
-| Extensions              | 3a. L'utente annulla il login.<br>3a.1 Il sistema non crea nessuna sessione, il caso d'uso termina con un fallimento.<br>4a. Le credenziali inserite non sono corrette.<br>4a.1 Il sistema mostra un messaggio di errore generico e il caso d'uso riprende dal punto 2. |
+| Main success scenario   | 1. L'utente accede alla pagina di login.<br>2. Il sistema reindirizza l'utente alla schermata del Servizio di Autenticazione esterno. <br>3. L'utente inserisce username e password.<br>4. L'utente conferma e invia il modulo di login.<br>5. Il sistema verifica le credenziali tramite il servizio di autenticazione [FR-03].<br>6. Il sistema crea una sessione autenticata [FR-03].<br>7. L'utente viene reindirizzato all'area riservata corrispondente al proprio ruolo. |
+| Extensions              | 4a. L'utente annulla il login.<br>4a.1 Il sistema non crea nessuna sessione, il caso d'uso termina con un fallimento.<br>5a. Le credenziali inserite non sono corrette.<br>5a.1 Il sistema mostra un messaggio di errore generico e il caso d'uso riprende dal punto 3. |
 
-| Use Case                |                             |
+| Use Case                |          Logout                   |
 |:------------------------|:----------------------------|
-| ID                      | 04                          |
-| Scope                   | piattaforma Participium     |
+| ID                      | UC-04                          |
+| Scope                   | Piattaforma Participium     |
 | Level                   | User goal                   |
 | Intention in Context    | Logout                      |
-| Primary actor           | Utente registrato (Cittadino STK-2, Operatore comunale STK-3) |
+| Primary actor           | Utente registrato (Cittadino, Operatore comunale, Admin) |
 | Supporting actors       | Servizio di autenticazione (STK-5) |
-| Stakeholders' interests | **Cittadino registrato (STK-2)**: vuole terminare la sessione in modo sicuro per tutelare i propri dati. **Operatore comunale (STK-3)**: vuole disconnettersi al termine del turno di lavoro. |
+| Stakeholders' interests | **Cittadino registrato (STK-2)**: vuole terminare la sessione in modo sicuro per tutelare i propri dati. **Operatore comunale (STK-3)**: vuole disconnettersi al termine del turno di lavoro. **Admin(STK-4)**: vuole disconnettersi dalla dashboard privata dopo aver svolto i suoi compiti|
 | Precondition            | L'utente è autenticato sulla piattaforma. |
 | Minimum guarantees      | - |
 | Success guarantees      | La sessione dell'utente è terminata e nessun dato personale rimane accessibile senza nuova autenticazione. |
 | Trigger                 | - |
-| Main success scenario   | 1. L'utente richiede il logout.<br>2. Il sistema invalida la sessione autenticata [FR-03].<br>3. L'utente viene reindirizzato alla pagina pubblica della piattaforma. |
+| Main success scenario   | 1. L'utente richiede il logout.<br>2. Il sistema invalida la sessione autenticata [FR-03].<br>3. Il sistema richiede al Servizio di Autenticazione esterno di invalidare la sessione globale.<br>4. L'utente viene reindirizzato alla pagina pubblica della piattaforma. |
 | Extensions              | - |
 
-| Use Case                |                             |
+| Use Case                |            Aggiornamento profilo                 |
 |:------------------------|:----------------------------|
-| ID                      | 05                          |
-| Scope                   | piattaforma Participium     |
+| ID                      | UC-05                          |
+| Scope                   | Piattaforma Participium     |
 | Level                   | User goal                   |
-| Intention in Context    | Aggiornamento profilo       |
-| Primary actor           | Cittadino registrato (STK-2) |
+| Intention in Context    | Modificare le proprie informazioni opzionali e le impostazioni di ricezione email.       |
+| Primary actor           | Cittadino registrato |
 | Supporting actors       | -                           |
 | Stakeholders' interests | **Cittadino registrato (STK-2)**: vuole personalizzare il proprio profilo e gestire le preferenze di notifica. |
 | Precondition            | L'utente è autenticato sulla piattaforma. |
@@ -89,7 +89,7 @@ Add one narrative for each use case shown in the diagram.
 | Success guarantees      | Le nuove impostazioni del profilo sono attive. |
 | Trigger                 | - |
 | Main success scenario   | 1. Il cittadino accede alla sezione del proprio profilo. Il sistema mostra le impostazioni correnti.<br>2. Il cittadino apporta le modifiche desiderate: aggiorna le preferenze di notifica email [FR-04] e/o carica una nuova foto profilo [FR-05].<br>3. Il cittadino conferma e salva le modifiche.<br>4. Il sistema aggiorna il profilo con le nuove impostazioni [FR-04] [FR-05].<br>5. Il sistema mostra la conferma di avvenuto aggiornamento. |
-| Extensions              | 3a. Il cittadino annulla le modifiche.<br>3a.1 Il sistema non persiste nessuna modifica, il caso d'uso termina.|
+| Extensions              | 2a. L'utente tenta di caricare una foto di formato o dimensione non supportata.<br>2a.1 Il sistema mostra un errore e richiede un file valido, il caso d'uso riprende dal punto 2.<br>3a. Il cittadino annulla le modifiche.<br>3a.1 Il sistema non persiste nessuna modifica, il caso d'uso termina.|
 
 | Use Case                | Inserimento segnalazione |
 |:------------------------|:----------------------------|

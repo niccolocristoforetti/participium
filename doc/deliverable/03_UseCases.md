@@ -91,67 +91,38 @@ Add one narrative for each use case shown in the diagram.
 | Main success scenario   | 1. Il cittadino accede alla sezione del proprio profilo. Il sistema mostra le impostazioni correnti.<br>2. Il cittadino apporta le modifiche desiderate: aggiorna le preferenze di notifica email [FR-04] e/o carica una nuova foto profilo [FR-05].<br>3. Il cittadino conferma e salva le modifiche.<br>4. Il sistema aggiorna il profilo con le nuove impostazioni [FR-04] [FR-05].<br>5. Il sistema mostra la conferma di avvenuto aggiornamento. |
 | Extensions              | 3a. Il cittadino annulla le modifiche.<br>3a.1 Il sistema non persiste nessuna modifica, il caso d'uso termina.|
 
-| Use Case                |                             |
+| Use Case                | Inserimento segnalazione |
 |:------------------------|:----------------------------|
-| ID                      | 06                          |
-| Scope                   | piattaforma Participium     |
+| ID                      | UC-06                          |
+| Scope                   | Piattaforma Participium     |
 | Level                   | User goal                   |
-| Intention in Context    | Inserimento segnalazione    |
-| Primary actor           | Cittadino registrato (STK-2) |
+| Intention in Context    | Creare una segnalazione specificando: posizione sulla mappa, titolo, descrizione, categoria da lista predefinita e fino a 3 foto     |
+| Primary actor           | Cittadino registrato |
 | Supporting actors       | OpenStreetMap (STK-8) |
 | Stakeholders' interests | **Cittadino registrato (STK-2)**: vuole segnalare un problema urbano. **Operatore comunale (STK-3)**: vuole ricevere segnalazioni con posizione, categoria e foto. **Comune di Torino (STK-9)**: vuole aumentare la partecipazione civica e ricevere dati sulla situazione urbana. |
-| Precondition            | L'utente è autenticato sulla piattaforma. |
+| Precondition            | L'utente è autenticato. L'utente non ha superato il limite massimo di segnalazioni giornaliere (Rate-limiting)  |
 | Minimum guarantees      | In caso di fallimento, nessuna segnalazione viene persistita. |
 | Success guarantees      | La segnalazione è pubblicata sulla piattaforma in stato "Pending Approval" |
-| Trigger                 | - |
+| Trigger                 | Il cittadino riscontra un problema urbano e decide di comunicarlo al Comune. |
 | Main success scenario   | 1. Il cittadino accede al modulo di inserimento segnalazione.<br>2. Il cittadino seleziona la posizione del problema sulla mappa [FR-06].<br>3. Il cittadino inserisce titolo e descrizione e seleziona una categoria dalla lista predefinita [FR-06].<br>4. Il cittadino allega opzionalmente fino a 3 foto, compresse automaticamente lato client [FR-06].<br>5. Il cittadino sceglie se rendere la segnalazione anonima [FR-07].<br>6. Il cittadino conferma e invia la segnalazione.<br>7. Il sistema valida i dati e pubblica la segnalazione in stato "Pending Approval" [FR-06].<br>8. Il sistema mostra la conferma di avvenuta creazione della segnalazione. |
 | Extensions              | 6a. Il cittadino annulla l'inserimento.<br>6a.1 Il sistema scarta i dati, nessuna segnalazione viene creata, il caso d'uso termina con un fallimento.<br>7a. I campi obbligatori (posizione, titolo, categoria) non sono stati compilati.<br>7a.1 Il sistema evidenzia i campi mancanti e il caso d'uso riprende dal punto 2. | 
-| Use Case                | Inserimento Segnalazioni                        |
-|:------------------------|:----------------------------|
-| ID                      |         UC-06                 |
-| Scope                   |           Piattaforma Participium                   |
-| Level                   |          User Goal                   |
-| Intention in Context    |  Creare una segnalazione specificando: posizione sulla mappa, titolo, descrizione, categoria da lista predefinita e fino a 3 foto allegate.                 |
-| Primary actor           |          Cittadino registrato                   |
-| Supporting actors       |          OpenStreetMap (STK-8)                   |
-| Stakeholders' interests |           Cittadino: Inviare la segnalazione in modo rapido e semplice. Comune: Ricevere dati precisi senza saturare l'object storage                  |
-| Precondition            |           L'utente è autenticato. L'utente non ha superato il limite massimo di segnalazioni giornaliere (Rate-limiting)                  |
-| Minimum guarantees      |              La segnalazione non viene salvata se mancano dati obbligatori (descrizione, categoria, titolo ed almeno una foto).               |
-| Success guarantees      |              La segnalazione è salvata con stato "Pending Approval" ed è visibile nel sistema.               |
-| Trigger                 |      Il cittadino riscontra un problema urbano e decide di comunicarlo al Comune.                       |
-| Main success scenario   |            1. Il sistema mostra la mappa interattiva.<br>2. L'utente seleziona un punto sulla mappa per ottenere le coordinate.<br>3. L'utente sceglie una Categoria. <br>4. L'utente inserisce Titolo e Descrizione.<br>5. L'utente allega fino a 3 foto. Il sistema comprime le immagini lato client se superano i 2 MB.<br>6. L'utente spunta l'opzione "Mantieni anonimo" (opzionale).<br>7. L'utente invia la segnalazione.<br>8. Il sistema crea la segnalazione, le assegna lo stato "Pending Approval" e mostra un messaggio di successo.[FR-05, FR-06] <br>
-Il caso d'uso termina con successo.             |
-| Extensions              |         3a. L'utente annulla l'inserimento.<br>3a.1 Il sistema non salva la segnalazione, il caso d'uso termina con un fallimento.<br>5a. I dati inseriti non sono validi (es. formato foto errato o campi obbligatori mancanti).<br>5a.1 Il sistema mostra gli errori e il caso d'uso riprende dal punto 3.                    |
-| ID                      |         UC-06                 |
-| Scope                   |           Piattaforma Participium                   |
-| Level                   |          User Goal                   |
-| Intention in Context    |  Creare una segnalazione specificando: posizione sulla mappa, titolo, descrizione, categoria da lista predefinita e fino a 3 foto allegate.                 |
-| Primary actor           |          Cittadino registrato                   |
-| Supporting actors       |          OpenStreetMap (STK-8)                   |
-| Stakeholders' interests |           Cittadino: Inviare la segnalazione in modo rapido e semplice. Comune: Ricevere dati precisi senza saturare l'object storage                  |
-| Precondition            |           L'utente è autenticato. L'utente non ha superato il limite massimo di segnalazioni giornaliere (Rate-limiting)                  |
-| Minimum guarantees      |              La segnalazione non viene salvata se mancano dati obbligatori (descrizione, categoria, titolo ed almeno una foto).               |
-| Success guarantees      |              La segnalazione è salvata con stato "Pending Approval" ed è visibile nel sistema.               |
-| Trigger                 |      Il cittadino riscontra un problema urbano e decide di comunicarlo al Comune.                       |
-| Main success scenario   |            1. Il sistema mostra la mappa interattiva.<br>2. L'utente seleziona un punto sulla mappa per ottenere le coordinate.<br>3. L'utente sceglie una Categoria. <br>4. L'utente inserisce Titolo e Descrizione.<br>5. L'utente allega fino a 3 foto. Il sistema comprime le immagini lato client se superano i 2 MB.<br>6. L'utente spunta l'opzione "Mantieni anonimo" (opzionale).<br>7. L'utente invia la segnalazione.<br>8. Il sistema crea la segnalazione, le assegna lo stato "Pending Approval" e mostra un messaggio di successo.[FR-05, FR-06] <br>
-Il caso d'uso termina con successo.             |
-| Extensions              |         3a. L'utente annulla l'inserimento.<br>3a.1 Il sistema non salva la segnalazione, il caso d'uso termina con un fallimento.<br>5a. I dati inseriti non sono validi (es. formato foto errato o campi obbligatori mancanti).<br>5a.1 Il sistema mostra gli errori e il caso d'uso riprende dal punto 3.                    |
 
-| Use Case                |  Consultazione proprie segnalazioni                        |
+
+| Use Case                | Consultazione proprie segnalazioni                            |
 |:------------------------|:----------------------------|
-| ID                      |         UC-07                 |
-| Scope                   |           Piattaforma Participium                   |
-| Level                   |          User Goal                   |
-| Intention in Context    |  Visualizzare in dettaglio le segnalazioni inviate personalmente.                 |
-| Primary actor           |          Cittadino registrato                   |
-| Supporting actors       |          -                  |
-| Stakeholders' interests |           Cittadino: Monitorare le pratiche aperte.                 |
-| Precondition            |           L'utente è autenticato.                 |
-| Minimum guarantees      |              L'utente visualizza le segnalazioni associate al proprio account.               |
-| Success guarantees      |              L'utente visualizza l'elenco delle proprie segnalazioni               |
-| Trigger                 |        L'utente ha necessità di verificare lo stato di avanzamento delle pratiche che ha aperto.                    |
-| Main success scenario   |            1. L'utente chiede di visualizzare le proprie segnalazioni.<br>2. Il sistema interroga il database recuperando tutte le segnalazioni associate all'ID dell'utente loggato.<br>3. Il sistema mostra l'elenco in formato tabellare indicando titolo, data, categoria e stato corrente.<br>Il caso d'uso termina con successo. |
-|Extensions              |         2a. L'utente non ha mai effettuato segnalazioni.<br>2a.1 Il sistema mostra un elenco vuoto con un messaggio informativo e il caso d'uso termina con successo.                   |
+| ID                      | UC-07                          |
+| Scope                   | Piattaforma Participium     |
+| Level                   | User goal                   |
+| Intention in Context    | Visualizzare in dettaglio le segnalazioni inviate personalmente e quelle seguite.|
+| Primary actor           | Cittadino registrato |
+| Supporting actors       | -                           |
+| Stakeholders' interests | **Cittadino registrato (STK-2)**: vuole monitorare lo stato di avanzamento delle proprie segnalazioni e di quelle seguite senza dover contattare direttamente gli operatori. **Comune di Torino (STK-9)**: vuole garantire trasparenza ai cittadini sul trattamento delle pratiche aperte. |
+| Precondition            | L'utente è autenticato sulla piattaforma. |
+| Minimum guarantees      | L'utente visualizza esclusivamente le segnalazioni associate al proprio account e quelle che ha scelto di seguire. |
+| Success guarantees      | L'utente dispone di una vista aggiornata di tutte le segnalazioni di suo interesse con relativo stato corrente. |
+| Trigger                 | - |
+| Main success scenario   | 1. L'utente accede alla sezione delle proprie segnalazioni.<br>2. Il sistema recupera e mostra in formato tabellare le segnalazioni create dall'utente e quelle seguite, con titolo, data, categoria e stato corrente [FR-10] [FR-11].<br>3. Il caso d'uso termina con successo. |
+| Extensions              | 2a. L'utente non ha ancora creato né seguito nessuna segnalazione.<br>2a.1 Il sistema mostra un elenco vuoto con un messaggio informativo e il caso d'uso termina con successo. |
 
 
 | Use Case                |  Seguire una segnalazione                       |
@@ -160,46 +131,46 @@ Il caso d'uso termina con successo.             |
 | Scope                   |           Piattaforma Participium                   |
 | Level                   |          User Goal                   |
 | Intention in Context    |  Iscriversi ad una segnalazione creata da un altro utente per ricevere aggiornamenti             |
-| Primary actor           |          Cittadino registrato                   |
+| Primary actor           |          Cittadino registrato                  |
 | Supporting actors       |          -                  |
-| Stakeholders' interests |           Cittadino: Ricevere aggiornamenti senza dover inserire segnalazioni duplicate; Comune: Ridurre le segnalazioni ridondanti.                 |
+| Stakeholders' interests | **Cittadino registrato (STK-2)**: vuole ricevere aggiornamenti sulle segnalazioni di proprio interesse senza doverle creare nuovamente. |
 | Precondition            |           L'utente è autenticato e visualizza il dettaglio di una segnalazione non creata da lui.                 |
-| Minimum guarantees      |   Non vengono create relazioni di follow duplicate.               |
+| Minimum guarantees      | - |
 | Success guarantees      |              L'utente risulta follower della segnalazione e riceverà le future notifiche.              |
-| Trigger                 |        L'utente individua una pratica di interesse (creata da altri) e decide di volerne monitorare l'evoluzione                     |
-| Main success scenario   |            1. L'utente chiede di seguire la segnalazione attualmente visualizzata.<br>2. Il sistema registra la relazione di follow tra l'utente e la segnalazione [FR-09].<br>3. Il sistema aggiorna l'interfaccia confermando che la segnalazione è seguita. <br>Il caso d'uso termina con successo. |
+| Trigger                 | - |
+| Main success scenario   |            1. L'utente chiede di seguire la segnalazione attualmente visualizzata.<br>2. Il sistema registra la relazione di follow tra l'utente e la segnalazione [FR-10].<br>3. Il sistema aggiorna l'interfaccia confermando che la segnalazione è seguita. <br>Il caso d'uso termina con successo. |
 |Extensions              |         2a. L'utente annulla l'operazione.<br>2a.1 Il sistema non registra il follow, il caso d'uso termina con un fallimento.                   |
 
-| Use Case                |  Ricezione notifica                      |
+| Use Case                |  Ricezione e visulizazione notifica                     |
 |:------------------------|:----------------------------|
-| ID                      |         UC-09                 |
-| Scope                   |           Piattaforma Participium                   |
-| Level                   |          Subfunction                   |
-| Intention in Context    |  Consultare gli avvisi relativi ai cambi di stato delle segnalazioni proprie o seguite             |
-| Primary actor           |          Cittadino registrato                   |
-| Supporting actors       |          Servizio Notifiche (STK-6)                 |
-| Stakeholders' interests |           Cittadino: Essere informato tempestivamente sull'evoluzione dei problemi.                 |
-| Precondition            |           L'utente è autenticato. L'operatore comunale cambia lo stato di una segnalazione.               |
-| Minimum guarantees      |   L'utente riceve le notifiche ad ogni cambiamento di stato di una segnalazione da lui creata o seguita.               |
-| Success guarantees      |              Le notifiche vengono visualizzate e marcate come lette.              |
-| Trigger                 |       Il sistema registra un cambio di stato per una segnalazione creata o seguita dall'utente.                    |
-| Main success scenario   |     1. Il sistema mostra all'utente l'avviso del cambiamento per la segnalazione da lui effettuata o seguita [FR-13].<br>2. L'utente clicca sulla notifica specifica.<br>3. Il sistema marca la notifica come letta e reindirizza l'utente alla pagina di dettaglio della segnalazione associata.<br>Il caso d'uso termina con successo. |
-|Extensions              |         1a. Il Servizio Notifiche non è raggiungibile.<br>1a.1 Il sistema mostra un messaggio di errore temporaneo, il caso d'uso termina con un fallimento.                   |
+| ID                      | UC-09                          |
+| Scope                   | Piattaforma Participium     |
+| Level                   | Subfunction                 |
+| Intention in Context    | Ricezione e visualizzazione notifica cambio stato |
+| Primary actor           | Cittadino registrato |
+| Supporting actors       | Servizio notifiche (STK-6), Mail server (STK-7) |
+| Stakeholders' interests | **Cittadino registrato (STK-2)**: vuole essere informato tempestivamente sui cambi di stato delle segnalazioni proprie o seguite senza dover controllare attivamente la piattaforma. **Operatore comunale (STK-3)**: vuole ridurre le richieste dirette di aggiornamento da parte dei cittadini. |
+| Precondition            | L'utente è autenticato sulla piattaforma. L'operatore Comunale cambia lo stato di una segnalazione |
+| Minimum guarantees      | Il cambio di stato della segnalazione viene registrato nel sistema indipendentemente dall'esito della notifica. |
+| Success guarantees      | L'utente è informato del cambio di stato e ha accesso al dettaglio della segnalazione associata. |
+| Trigger                 | Il sistema registra un cambio di stato per una segnalazione creata o seguita dall'utente. |
+| Main success scenario   | 1. Il sistema invia una notifica push all'utente tramite il servizio notifiche [FR-14].<br>2. Il sistema invia opzionalmente una notifica email, se abilitata dall'utente [FR-15].<br>3. L'utente clicca sulla notifica ricevuta.<br>4. Il sistema marca la notifica come letta e reindirizza l'utente alla pagina di dettaglio della segnalazione. Il caso d'uso termina con successo. |
+| Extensions              | 1a. Il servizio notifiche non è raggiungibile.<br>1a.1 Il sistema registra il fallimento della notifica push; il cambio di stato rimane comunque persistito.<br>2a. L'utente ha disabilitato le notifiche email [FR-04].<br>2a.1 Il sistema salta l'invio email e il caso d'uso termina con successo. |
 
 | Use Case                |  Invio messaggio a operatore                      |
 |:------------------------|:----------------------------|
 | ID                      |         UC-10                |
 | Scope                   |           Piattaforma Participium                   |
-| Level                   |          Subfunction                   |
+| Level                   |          User goal                  |
 | Intention in Context    |  Inviare una comunicazione diretta all'operatore incaricato per fornire chiarimenti            |
 | Primary actor           |          Cittadino registrato                   |
 | Supporting actors       |          -               |
-| Stakeholders' interests |           Cittadino: Ricevere delucidazioni aggiuntive sulla segnalazioni o per incentivare l'intervento da parte dell'Ufficio Tecnico del Comune; Operatore: Fornisce informazioni sulle segnalazioni, e supporta qualsiasi problema del cittadino                 |
+| Stakeholders' interests | **Cittadino registrato (STK-2)**: vuole fornire dettagli aggiuntivi o richiedere chiarimenti sulla propria segnalazione direttamente all'operatore. **Operatore comunale (STK-3)**: vuole ricevere informazioni aggiuntive dai cittadini per gestire le segnalazioni in modo più accurato ed efficiente. |
 | Precondition            |           L'utente è autenticato.               |
-| Minimum guarantees      |   Nessun messaggio vuoto o non valido viene inviato.               |
+| Minimum guarantees      | -              |
 | Success guarantees      |              Il messaggio arriva all'operatore che può visualizzarlo nella dashboard interna.              |
-| Trigger                 |       L'utente ha necessità di fornire dettagli aggiuntivi o richiedere chiarimenti tecnici sulla propria pratica.                  |
-| Main success scenario   |     1. L'utente inserisce il testo del messaggio e chiede di inviarlo.<br>2. Il sistema valida il contenuto del messaggio.<br>3. Il sistema salva il messaggio associandolo alla segnalazione e innesca la notifica per l'operatore [FR-15].<br>4. Il sistema aggiorna lo storico chat mostrando il nuovo messaggio inviato.<br>Il caso d'uso termina con successo. |
+| Trigger                 |  - |
+| Main success scenario   |     1. L'utente inserisce il testo del messaggio e chiede di inviarlo.<br>2. Il sistema valida il contenuto del messaggio.<br>3. Il sistema salva il messaggio associandolo alla segnalazione e innesca la notifica per l'operatore [FR-16].<br>4. Il sistema aggiorna lo storico chat mostrando il nuovo messaggio inviato.<br>Il caso d'uso termina con successo. |
 |Extensions              |         2a. Il testo del messaggio è vuoto.<br>2a.1 Il sistema mostra un errore, il caso d'uso riprende dal punto 1.                   |
 
 | Use Case                |  Visualizzazione segnalazioni su mappa                      |
@@ -210,13 +181,13 @@ Il caso d'uso termina con successo.             |
 | Intention in Context    |  Esplorare sulla mappa i problemi urbani segnalati in città            |
 | Primary actor           |          Cittadino registrato   e Cittadino non registrato             |
 | Supporting actors       |          OpenStreetMap (STK-8)               |
-| Stakeholders' interests |           Cittadino registrato e non registrato: Avere una panoramica del territorio con tutti i problemi urbani                 |
+| Stakeholders' interests | **Cittadino non registrato (STK-1)**: vuole esplorare visivamente i problemi urbani nel proprio quartiere senza doversi registrare. **Cittadino registrato (STK-2)**: vuole visualizzare sulla mappa le segnalazioni attive per monitorare la propria zona. **Comune di Torino (STK-9)**: vuole garantire trasparenza pubblica sulla situazione urbana del territorio. |
 | Precondition            |           -               |
-| Minimum guarantees      |   Le segnalazioni in stato "Resolved" o "Rejected" non vengono mostrate sulla mappa per evitare disordine visivo.               |
+| Minimum guarantees      | In caso di indisponibilità della mappa, le segnalazioni rimangono sempre consultabili tramite la vista tabellare. |
 | Success guarantees      |    I marker delle segnalazioni attive vengono renderizzati correttamente sulla mappa                        |
-| Trigger                 |      L'utente desidera esplorare visivamente e geograficamente i problemi urbani attivi sul territorio.                    |
-| Main success scenario   |     1. L'utente chiede di visualizzare la mappa pubblica.<br>2. Il sistema richiede ed utilizza il servizio di  OpenStreetMap.<br>3. Il sistema interroga il database recuperando esclusivamente le segnalazioni negli stati attivi (Pending, Assigned, In Progress, Suspended) [FR-21].<br>4. Il sistema posiziona i marker sulla mappa[FR-07].<br>Il caso d'uso termina con successo. |
-|Extensions              |         2a. OpenStreetMap non è raggiungibile o in timeout.<br>2a.1 Il sistema mostra un messaggio di errore che invita a usare la vista tabellare, il caso d'uso termina con un fallimento.                   |
+| Trigger                 | -                   |
+| Main success scenario   |     1. L'utente chiede di visualizzare la mappa pubblica.<br>2. Il sistema richiede ed utilizza il servizio di  OpenStreetMap.<br>3. Il sistema interroga il database recuperando esclusivamente le segnalazioni negli stati attivi (Pending, Assigned, In Progress, Suspended) [FR-22].<br>4. Il sistema posiziona i marker sulla mappa [FR-08].<br>Il caso d'uso termina con successo. |
+| Extensions              | 2a. OpenStreetMap non è raggiungibile o in timeout.<br>2a.1 Il sistema mostra un messaggio di errore che invita a usare la vista tabellare, il caso d'uso termina con un fallimento.<br>3a. Il database contiene segnalazioni in stato "Resolved" o "Rejected".<br>3a.1 Il sistema le esclude automaticamente dalla visualizzazione sulla mappa [FR-22]. |
 
 | Use Case                |  Visualizzazione segnalazioni su vista tabellare                      |
 |:------------------------|:----------------------------|
@@ -226,12 +197,12 @@ Il caso d'uso termina con successo.             |
 | Intention in Context    |  Ricercare e filtrare lo storico completo delle segnalazioni tramite un elenco in formato tabellare            |
 | Primary actor           |          Cittadino registrato e Cittadino non registrato             |
 | Supporting actors       |         -              |
-| Stakeholders' interests |           Cittadino registrato e non registrato: Consultare dati applicando filtri specifici per analisi future               |
+| Stakeholders' interests | **Cittadino non registrato (STK-1)**: vuole consultare lo storico delle segnalazioni applicando filtri per trovare informazioni specifiche sul proprio quartiere senza doversi registrare. **Cittadino registrato (STK-2)**: vuole ricercare segnalazioni per categoria, stato o data per monitorare l'evoluzione dei problemi urbani. **Comune di Torino (STK-9)**: vuole garantire accesso pubblico e trasparente all'archivio completo delle pratiche. |
 | Precondition            |           -               |
-| Minimum guarantees      |   Vengono illustrate tutte le segnalazioni in base ai filtri applicati              |
+| Minimum guarantees      |  I dati delle segnalazioni non vengono alterati dall'operazione di consultazione.             |
 | Success guarantees      |   L'utente ottiene un elenco coerente con i criteri di ricerca impostati.                        |
-| Trigger                 |       L'utente ha necessità di consultare l'archivio o applicare criteri di ricerca specifici all'elenco delle pratiche.                   |
-| Main success scenario   |     1. L'utente chiede di consultare la vista tabellare.<br>2. Il sistema mostra la tabella paginata includendo tutte le segnalazioni (anche quelle Resolved/Rejected) in ordine cronologico inverso [FR-10, FR-21].<br>3. L'utente imposta criteri di ricerca (es. intervallo di date, categoria, stato).<br>4. Il sistema filtra i risultati in base ai parametri richiesti e aggiorna la tabella [FR-10].<br>Il caso d'uso termina con successo. |
+| Trigger                 | -                   |
+| Main success scenario   |     1. L'utente chiede di consultare la vista tabellare.<br>2. Il sistema mostra la tabella paginata includendo tutte le segnalazioni (anche quelle Resolved/Rejected) in ordine cronologico inverso [FR-11, FR-22].<br>3. L'utente imposta criteri di ricerca (es. intervallo di date, categoria, stato).<br>4. Il sistema filtra i risultati in base ai parametri richiesti e aggiorna la tabella [FR-11].<br>Il caso d'uso termina con successo. |
 |Extensions              |        4a. Nessuna segnalazione corrisponde ai criteri di filtro inseriti.<br>4a.1 Il sistema mostra una tabella vuota con il messaggio "Nessun risultato trovato", il caso d'uso termina con successo.
 
 

@@ -91,7 +91,6 @@ Le API e i protocolli di rete (IF-5, 6, 7, 8) permettono invece al sistema di co
 | US-15 | Operatore comunale                               | Come operatore voglio rispondere ai messaggi dei cittadini tramite la messaggistica interna, così da richiedere chiarimenti senza usare canali esterni.                                                                          |
 | US-16 | Amministratore di sistema                        | Come amministratore voglio gestire gli account degli operatori affinché solo il personale autorizzato acceda all' area  riservata.                                                                                                                           |
 | US-17 | Amministratore di sistema                        | Come amministratore, voglio consultare le statistiche private avanzate (sotto forma di grafici e tabelle), così da produrre report periodici per la dirigenza.                                                                 |
-| US-18 | Amministratore di sistema | Come amministratore voglio sospendere l'account di un cittadino abusivo affinché non possa più interagire con la piattaforma. |
 
 ---
 
@@ -122,7 +121,6 @@ Le API e i protocolli di rete (IF-5, 6, 7, 8) permettono invece al sistema di co
 | FR-21 | Il sistema deve fornire all'admin statistiche private avanzate: segnalazioni per stato, tipologia, segnalante, combinazioni incrociate e distribuzione top 1%/5% dei segnalanti per tipologia.                          | Media    | US-17         |   Requisito necessario per consentire la produzione dei report periodici per la dirigenza.                                                                                  |                                                                   
 | FR-22 | Il sistema non deve mostrare sulla mappa pubblica le segnalazioni in stato "Resolved" o "Rejected", mantenendole comunque sempre ricercabili e consultabili tramite la vista tabellare. |                                      Media    | US-05, US-06         |  Scelta di design per evitare il sovraccarico visivo della mappa nel lungo periodo, garantendo comunque la trasparenza storica nella tabella.  |
 | FR-23 | Il sistema deve consentire all'admin di sospendere l'account di un cittadino registrato, invalidandone la sessione attiva e nascondendo le sue segnalazioni dalla vista pubblica. | Alta | US-18 | Delegato parzialmente a STK-5 per la revoca dei permessi. |
-| FR-24 | Il sistema deve impedire a un cittadino registrato di creare più di N segnalazioni nelle ultime 24 ore, restituendo un messaggio di errore al raggiungimento del limite. | Media | US-03 | Derivato dall'assunzione architetturale #5 e dalla mitigazione di R6. Il valore di N è da definire in fase di implementazione. |
                                                                                   
 ---
 

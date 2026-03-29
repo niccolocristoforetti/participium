@@ -273,6 +273,91 @@ Add one narrative for each use case shown in the diagram.
 | Extensions              | 2a. Motivazione mancante<br>2a.1 Richiesta motivazione obbligatoria.<br><br> 2b Stato mancante.<br>2b.1 Selezione dello stato obbligatoria.<br>
 
 
+| Use Case                |  Risposta a messaggi cittadini                      |
+|:------------------------|:----------------------------|
+| ID                      | UC-19                        |
+| Scope                   | Piattaforma Participium     |
+| Level                   | User goal                   |
+| Intention in Context    | Fornire chiarimenti o aggiornamenti diretti al cittadino in risposta a una sua richiesta |
+| Primary actor           | Operatore comunale (STK-3)  |
+| Supporting actors       | Servizio notifiche (STK-6), Mail server (STK-7) |
+| Stakeholders' interests | **Operatore comunale (STK-3)**: vuole comunicare in modo rapido e tracciato con il segnalante per risolvere dubbi operativi. **Cittadino registrato (STK-2)**: vuole ricevere risposte chiare senza dover telefonare agli uffici. |
+| Precondition            | L'operatore è autenticato e visualizza il dettaglio di una segnalazione con messaggi inviati dai cittadini. |
+| Minimum guarantees      | I messaggi inviati vengono storicizzati e associati permanentemente alla segnalazione. |
+| Success guarantees      | Il messaggio è recapitato al cittadino e la cronologia della conversazione è aggiornata. |
+| Trigger                 | Ricezione di un messaggio da parte di un cittadino (UC-10). |
+| Main success scenario   | 1. L'operatore accede alla sezione messaggistica della segnalazione specifica.<br>2. L'operatore inserisce il testo della risposta.<br>3. L'operatore conferma l'invio.<br>4. Il sistema valida il contenuto e salva il messaggio [FR-16].<br>5. Il sistema invia una notifica push al cittadino segnalante tramite il servizio notifiche [FR-14] e, se abilitata, una notifica email tramite mail server [FR-15].<br>6. Il sistema aggiorna l'interfaccia della chat mostrando il nuovo messaggio. Il caso d'uso termina con successo. |
+| Extensions              | 2a. L'operatore rileva che il messaggio del cittadino viola le norme di comportamento.<br>2a.1 L'operatore segnala il contenuto per moderazione (UC-18) prima di rispondere. |
+
+
+| Use Case                |  Visualizzazione segnalazioni in dashboard (con filtro) |
+|:------------------------|:----------------------------|
+| ID                      | UC-20                        |
+| Scope                   | Piattaforma Participium     |
+| Level                   | User goal                   |
+| Intention in Context    | Monitorare e gestire il carico di lavoro tramite una vista d'insieme delle segnalazioni attive |
+| Primary actor           | Operatore comunale (STK-3)  |
+| Supporting actors       | -                           |
+| Stakeholders' interests | **Operatore comunale (STK-3)**: vuole una lista chiara dei ticket prioritari da gestire per organizzare gli interventi. **Comune di Torino (STK-9)**: vuole efficienza nella gestione dei tempi di risposta ai cittadini. |
+| Precondition            | L'operatore è autenticato nell'area gestionale. |
+| Minimum guarantees      | -                           |
+| Success guarantees      | L'operatore visualizza i dati aggiornati filtrati secondo i propri criteri di competenza. |
+| Trigger                 | -                           |
+| Main success scenario   | 1. L'operatore accede alla dashboard principale del sistema.<br>2. Il sistema mostra la tabella completa di tutte le segnalazioni attive [FR-11].<br>3. L'operatore imposta i filtri desiderati (es. "Solo segnalazioni in stato Pending Approval", "Categoria: Buche", "Zona: Circoscrizione 7") [FR-17].<br>4. Il sistema interroga il database e aggiorna la vista mostrando solo i risultati pertinenti.<br>Il caso d'uso termina con successo. |
+| Extensions              | 4a. Nessuna segnalazione corrisponde ai filtri impostati.<br>4a.1 Il sistema mostra un messaggio "Nessun risultato trovato", il caso d'uso termina con successo. |
+
+
+| Use Case                |  Gestione account operatori comunali                |
+|:------------------------|:----------------------------|
+| ID                      | UC-21                        |
+| Scope                   | Piattaforma Participium     |
+| Level                   | User goal                   |
+| Intention in Context    | Configurare e gestire gli accessi per il personale degli uffici tecnici comunali |
+| Primary actor           | Amministratore (STK-4)      |
+| Supporting actors       | Servizio di autenticazione (STK-5), Mail server (STK-7) |
+| Stakeholders' interests | **Admin (STK-4)**: vuole gestire i permessi del personale comunale in modo centralizzato e sicuro. **Comune di Torino (STK-9)**: vuole che solo personale autorizzato acceda ai dati sensibili delle segnalazioni. |
+| Precondition            | L'Admin è autenticato nella dashboard amministrativa privata. |
+| Minimum guarantees      | L'account non viene creato se l'email istituzionale non è valida o già presente. |
+| Success guarantees      | Un nuovo profilo operatore è attivo nel sistema con le credenziali inviate via email. |
+| Trigger                 | Necessità di autorizzare un nuovo dipendente all'uso della piattaforma. |
+| Main success scenario   | 1. L'Admin accede alla sezione "Gestione Personale Staff".<br>2. L'Admin inserisce i dati identificativi dell'operatore (nome, email istituzionale, ufficio di competenza).<br>3. L'Admin conferma la creazione dell'account.<br>4. Il sistema invia la richiesta di creazione utenza al Servizio di Autenticazione esterno [FR-20].<br>5. Il sistema genera e invia un'email automatica all'operatore con le istruzioni per il primo accesso.<br>6. Il sistema aggiunge il nuovo operatore alla lista degli utenti attivi. Il caso d'uso termina con successo. |
+| Extensions              | 3a. L'Admin decide di revocare l'accesso a un operatore esistente.<br>3a.1 L'Admin seleziona "Disabilita Account", il sistema invalida la sessione e impedisce nuovi login all'operatore [FR-20]. |
+
+
+| Use Case                |  Gestione utenti abusivi (ban)                      |
+|:------------------------|:----------------------------|
+| ID                      | UC-22                        |
+| Scope                   | Piattaforma Participium     |
+| Level                   | User goal                   |
+| Intention in Context    | Sospendere l'accesso a utenti che caricano spam o contenuti inappropriati |
+| Primary actor           | Amministratore (STK-4)      |
+| Supporting actors       | -                           |
+| Stakeholders' interests | **Admin (STK-4)**: vuole proteggere l'integrità dei dati e la reputazione della piattaforma. **Cittadini (STK-2)**: vogliono un ambiente civile e privo di segnalazioni false o offensive. |
+| Precondition            | L'utente in questione è stato segnalato da un operatore per violazione dei termini (UC-18). |
+| Minimum guarantees      | Tutte le segnalazioni pendenti dell'utente bannato vengono rimosse dalla vista pubblica. |
+| Success guarantees      | L'utente non può più autenticarsi o interagire con la piattaforma. |
+| Trigger                 | Accertamento di un comportamento abusivo reiterato. |
+| Main success scenario   | 1. L'Admin accede alla lista degli utenti segnalati per abusi.<br>2. L'Admin revisiona le segnalazioni e le prove caricate (es. foto inappropriate).<br>3. L'Admin seleziona l'opzione "Ban Utente".<br>4. Il sistema comunica al Servizio di Autenticazione di revocare i permessi all'utente [FR-23].<br>5. Il sistema disabilita la sessione attiva dell'utente e nasconde le sue segnalazioni correnti dalla vista pubblica [FR-23].<br>6. Il sistema registra l'azione nel log di moderazione. Il caso d'uso termina con successo. |
+| Extensions              | 3a. L'Admin ritiene la violazione lieve.<br>3a.1 L'Admin invia solo un ammonimento formale tramite email e non procede al ban. |
+
+
+| Use Case                |  Consultazione statistiche private                  |
+|:------------------------|:----------------------------|
+| ID                      | UC-23                        |
+| Scope                   | Piattaforma Participium     |
+| Level                   | User goal                   |
+| Intention in Context    | Analizzare i dati aggregati per monitorare l'andamento del servizio e le performance degli uffici |
+| Primary actor           | Amministratore (STK-4)      |
+| Supporting actors       | -                           |
+| Stakeholders' interests | **Admin (STK-4)**: vuole misurare l'efficienza degli uffici tecnici e il volume di segnalazioni per quartiere. **Comune di Torino (STK-9)**: vuole dati oggettivi per pianificare interventi di manutenzione stradale a lungo termine. |
+| Precondition            | L'Admin è autenticato.      |
+| Minimum guarantees      | I dati sono presentati in forma aggregata garantendo la privacy dei singoli segnalanti. |
+| Success guarantees      | L'Admin visualizza dashboard interattive con trend temporali e performance. |
+| Trigger                 | -                           |
+| Main success scenario   | 1. L'Admin accede alla sezione "Analytics e Reporting" della piattaforma.<br>2. Il sistema genera automaticamente grafici su: volumi per categoria, tempi medi di risoluzione e performance degli operatori [FR-21].<br>3. L'Admin applica filtri temporali (es. "Ultimo semestre") o geografici.<br>4. Il sistema aggiorna i report in tempo reale.<br>5. L'Admin esporta opzionalmente i dati in formato CSV per uso istituzionale [FR-12]. Il caso d'uso termina con successo. |
+| Extensions              | -                           |
+
+
 | Use Case                |                             |
 |:------------------------|:----------------------------|
 | ID                      |                             |

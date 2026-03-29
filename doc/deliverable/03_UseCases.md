@@ -280,29 +280,31 @@ Add one narrative for each use case shown in the diagram.
 | Intention in Context    | Operatore deve aggiornare lo stato e le note delle segnalazioni. |
 | Primary actor           | Operatore comunale                   |
 | Supporting actors       | - |
-| Stakeholders' interests | Comune di Torino: gestione trasparente; Cittadino: trasparenza stato; Sistema: mantenere dati aggiornati e non sovraccaricati. |
-| Precondition            | Operatore autenticato e segnalazione esistente con stato gestibile. |
-| Minimum guarantees      | Aggiornamenti persistono anche se non in stato risolto; in caso di errore messaggio adeguato. |
-| Success guarantees      | Stato e note aggiornati; se stato=risolto, segnalazione eliminata o archiviata e notifica inviata. |
-| Trigger                 | Operatore invia aggiornamento stato/note. |
-| Main success scenario   | 1. Seleziona segnalazione. 2. Modifica stato e note. 3. Sistema aggiorna record. 4. Se risolto, attiva pulizia (elimina/archivia). 5. Notifica le parti interessate. |
-| Extensions              | 2a. Stato non valido -> errore validazione; 4a. Elenco bloccato -> riautomatizza rimozione con retry.
+| Stakeholders' interests | Comune di Torino[STK-9]: gestione trasparente<br> Cittadino[STK-1, STK-2]: trasparenza stato<br> Ufficio Tecnico del Comune di Torino [STK-10]: avere informazioni necessarie per effettuare gli interventi. |
+| Precondition            | Operatore comunale autenticato e segnalazione esistente. |
+| Minimum guarantees      | L'aggiornamento dello stato o delle note è persistente. |
+| Success guarantees      | Si ha aggiornamente dello stato della segnalazione o l'aggiunta di una nota. Se la segnalazione cambia stato si invierà una notifica. |
+| Trigger                 | Operatore effettua un aggiornamento stato o note. |
+| Main success scenario   | 1. Seleziona segnalazione.<br> 2. Modifica stato e/o note. [FR-18, FR-19]<br> 3. Invia notifica di cambio stato o aggiunta nota. [FR-14, FR-15]<br> |
+| Extensions              | 2a. Stato non valido<br> 2a.1 errore, non viene effettuata la modifica<br>
+
 
 | Use Case                | Moderazione contenuti |
 |:------------------------|:----------------------|
 | ID                      | UC-18                |
 | Scope                   | Piattaforma Participium inappropriati |
 | Level                   | User goal            |
-| Intention in Context    | Operatore identifica contenuti non conformi (testo/foto) e avvia flusso di segnalazione all’amministratore. |
+| Intention in Context    | Operatore identifica contenuti non conformi (testo/foto) e avvia una segnalazione all’amministratore. |
 | Primary actor           | Operatore comunale  |
-| Supporting actors       | Backend, servizio notifica, amministratore, registro audit |
-| Stakeholders' interests | Utenti: sicurezza e rispetto; Comune di torino: conformità normativa; Amministratore: monitoraggio e intervento. |
-| Precondition            | Operatore autenticato e con permessi di moderazione; contenuto segnalato identificato. |
-| Minimum guarantees      | Registrazione segnalazione moderazione e feedback base all’operatore. |
-| Success guarantees      | Crea ticket di moderazione, invia notifica amministratore, aggiorna stato contenuto/segno. |
-| Trigger                 | Operatore clicca “Segnala contenuto” per una segnalazione/utente. |
-| Main success scenario   | 1. Operatore seleziona contenuto. 2. Fornisce motivo e dettagli. 3. Sistema registra moderazione. 4. Sistema notifica amministratore. 5. Stato del contenuto aggiornato per blocco/sospensione. |
-| Extensions              | 2a. Dati insufficienti -> richiedi informazioni. 3a. Amministratore non raggiungibile -> coda retry.
+| Supporting actors       | Admin |
+| Stakeholders' interests | Cittadini [STK-1, STK-2]: attendibilità segnalazioni<br> Comune di torino [STK-9]: sistema affidabile. <br> Amministratore [STK-4]: monitoraggio. |
+| Precondition            | Operatore autenticato, contenuto segnalato identificato. |
+| Minimum guarantees      | Ispezione della segnalazione sospetta. Possibile effettuare eventuale moderazione|
+| Success guarantees      | Rimozione sengnalazione(con aggiornamento stato). |
+| Trigger                 | Operatore seleziona di visionare una segnalazione sospetta. |
+| Main success scenario   | 1. Operatore visiona una segnalazione.<br> 2. Fornisce motivo e dettagli per rimozione.[FR-19]<br> 3. Sistema segna il cittadino segnalante. 4. Stato del contenuto aggiornato (Rejected). |
+| Extensions              | 2a. Dati insufficienti<br>
+2a.1 Richieste ulteriori varifiche.
 
 
 # 3) Traceability Table

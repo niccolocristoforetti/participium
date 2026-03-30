@@ -91,6 +91,7 @@ Le API e i protocolli di rete (IF-5, 6, 7, 8) permettono invece al sistema di co
 | US-15 | Operatore comunale                               | Come operatore voglio rispondere ai messaggi dei cittadini tramite la messaggistica interna, così da richiedere chiarimenti senza usare canali esterni.                                                                          |
 | US-16 | Amministratore di sistema                        | Come amministratore voglio gestire gli account degli operatori affinché solo il personale autorizzato acceda all' area  riservata.                                                                                                                           |
 | US-17 | Amministratore di sistema                        | Come amministratore, voglio consultare le statistiche private avanzate (sotto forma di grafici e tabelle), così da produrre report periodici per la dirigenza.                                                                 |
+| US-18 | Amministratore di sistema | Come amministratore voglio sospendere l'account di un cittadino abusivo affinché non possa più interagire con la piattaforma. |
 
 ---
 

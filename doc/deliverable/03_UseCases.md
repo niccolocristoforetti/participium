@@ -213,13 +213,13 @@ Add one narrative for each use case shown in the diagram.
 | Intention in Context    | Cittadino vuole vedere tutte le informazioni su una segnalazione selezionata.
 | Primary actor           | Cittadino (registrato/non registrato)   |
 | Supporting actors       | OpenStreetMap |
-| Stakeholders' interests | Cittadino [STK-1, STK-2]: (registrato o non) desidera visualizzare i dettagli della segnalazione.<br> Comune di torino [STK-9]: mostrare correttamente i dettagli di una segnalazione |
-| Precondition            | la segnalazione deve esistere |
+| Stakeholders' interests | **Cittadino registrato/ non registrato [STK-1, STK-2]**: (registrato o non) desidera visualizzare i dettagli della segnalazione.<br> **Comune di Torino [STK-9]**: mostrare correttamente i dettagli di una segnalazione |
+| Precondition            | La segnalazione deve esistere |
 | Minimum guarantees      | - |
 | Success guarantees      | Visualizzazione corretta in dettaglio della segnalazione. |
-| Trigger                 | Selezione di una segnalazione in elenco o mappa. |
-| Main success scenario   | 1. Cittadino seleziona segnalazione [FR-08].<br> 2. Sistema recupera dati.<br> 3. Sistema mostra dettagli disponibili. |
-| Extensions              | 2a. Il sistema ha un errore di caricamento.<br> 2a.1 mostra errore e termina caso d'uso: fallimento.<br> <br>
+| Trigger                 | - |
+| Main success scenario   | 1. Cittadino seleziona segnalazione dalla mappa o dalla vista tabellare[FR-09].<br> 2. Sistema recupera dati.<br> 3. Sistema mostra dettagli disponibili.<br> Il caso d'uso termina con successo.|
+| Extensions              | 2a. Il sistema ha un errore di caricamento.<br> 2a.1 mostra errore e termina caso d'uso.<br> <br>
 
 
 | Use Case                | Esportazione dati in CSV della vista tabellare |
@@ -230,12 +230,12 @@ Add one narrative for each use case shown in the diagram.
 | Intention in Context    | Cittadino, registrato o non, desidera scaricare localmente i dati della vista tabellare. |
 | Primary actor           | Cittadino (registrato/non registrato)           |
 | Supporting actors       | - |
-| Stakeholders' interests | Cittadino [STK-1, STK-2]: esportazione rapida e completa; Sistema: trasparenza |
-| Precondition            | La vista tabellare è popolata con dati delle segnalazioni. |
+| Stakeholders' interests | **Cittadino registrato/non registrato[STK-1, STK-2]**: esportazione rapida e completa;  |
+| Precondition            | - |
 | Minimum guarantees      | Viene generato un file CSV vuoto solo con header se nessun dato disponibile. |
-| Success guarantees      | File CSV scaricabile avente lo stesso contenuto visualizzato. |
-| Trigger                 | Cittadino seleziona opzione per Esportare in CSV. |
-| Main success scenario   | 1. Cittadino richiede esportazione dei dati. [FR-11] <br> 2. Sistema elabora le righe che soddisfano eventuali filtri applicati. <br> 3. Sistema genera CSV. <br> 4. Il file viene scaricato|
+| Success guarantees      | File CSV scaricabile avente lo stesso contenuto visualizzato della vista tabellare. |
+| Trigger                 | - |
+| Main success scenario   | 1. Cittadino richiede esportazione dei dati. [FR-12] <br> 2. Sistema elabora le righe che soddisfano eventuali filtri applicati. <br> 3. Sistema genera CSV. <br> 4. Il file viene scaricato<br> Il caso d'uso termina con successo.|
 | Extensions              | 2a. eccessivo tempo di elaborazione. <br> 2a.1 Presentazione di un  messaggio di errore.
 
 
@@ -244,16 +244,16 @@ Add one narrative for each use case shown in the diagram.
 | ID                      | UC-15                              |
 | Scope                   | Piattaforma Participium     |
 | Level                   | User goal                          |
-| Intention in Context    | Cittadino, registrato o no, vuole accedere a statistiche generali sulle segnalazioni. |
+| Intention in Context    | Cittadino, registrato o non, vuole accedere a statistiche generali sulle segnalazioni. |
 | Primary actor           | Cittadino (registrato/non registrato) |
 | Supporting actors       | - |
-| Stakeholders' interests | Cittadino[STK-1, STK-2]: trasparenza<br> Analista: fare analisi per gli obiettivi del Comune <br> Comune: accountability e insight. |
-| Precondition            | Esistono dati sufficienti per la creazione di statistiche rilevanti. |
+| Stakeholders' interests | **Cittadino[STK-1, STK-2]**: trasparenza<br> **Comune[STK-9]**: accountability e insight. |
+| Precondition            | - |
 | Minimum guarantees      | Mostra un messaggio di “nessun dato” se non disponibili. |
 | Success guarantees      | Fornisce statistiche aggiornate ed aggregate. |
-| Trigger                 | Accesso alla sezione “Statistiche pubbliche”. |
-| Main success scenario   | 1. Cittadino entra nella sezione.<br> 2. Sistema calcola metriche.<br> 3. Sistema mostra grafici/tabelle.[FR-13] <br> |
-| Extensions              | 2a. Errore calcolo.<br> 2a.1 messaggio, eventuale retry.<br> <br> 3a. Filtri errati(no dati sufficienti)<br> 3a.1 Reset filtri.
+| Trigger                 | - |
+| Main success scenario   | 1. Cittadino entra nella sezione specifica.<br> 2. Sistema calcola metriche.<br> 3. Sistema mostra grafici/tabelle.[FR-13]<br> Il caso d'uso termina con successo. |
+| Extensions              | 2a. Errore calcolo.<br> 2a.1 messaggio, eventuale retry.<br> 
 
 
 | Use Case                | Accettazione/rifiuto segnalazione |
@@ -264,13 +264,13 @@ Add one narrative for each use case shown in the diagram.
 | Intention in Context    | Operatore comunale valuta e definisce se una segnalazione è valida o non valida, allegando motivazioni. |
 | Primary actor           | Operatore comunale              |
 | Supporting actors       | Server mail |
-| Stakeholders' interests | Comune: correttezza processuale, segnalazioni corrette <br> Utenti: attendibilità delle segnalazioni.<br> Amministratore: supervisione, anche degli account. |
-| Precondition            | Operatore autenticato e segnalazione in stato “nuova”. |
-| Minimum guarantees      | accettazione o rifiuto con motivazione, anche se la segnalazione viene rifiutata  viene loggato il tutto. |
-| Success guarantees      | Stato aggiornato a “accettata” o “rifiutata” con motivazione salvata. |
-| Trigger                 | Operatore seleziona azione accetta/rifiuta + motivazione. |
-| Main success scenario   | 1. Operatore seleziona segnalazione.<br> 2. Indica decisione e motivazione. [FR-18]<br> 3. Sistema salva aggiornamento.<br> 4. Sistema notifica il segnalatore ed i follower (della segnalazione)del cambio di stato.[FR-14, FR-18] |
-| Extensions              | 2a. Motivazione mancante<br>2a.1 Richiesta motivazione obbligatoria.<br><br> 2b Stato mancante.<br>2b.1 Selezione dello stato obbligatoria.<br>
+| Stakeholders' interests | **Operatore Comunale[STK-3]**: correttezza processuale, segnalazioni corrette <br> **Cittadino registrato[STK-2]**: attendibilità delle segnalazioni.<br>  |
+| Precondition            | Operatore autenticato. |
+| Minimum guarantees      | Accettazione o rifiuto con motivazione, anche se la segnalazione viene rifiutata  viene loggato il tutto. |
+| Success guarantees      | Stato aggiornato a “Resolved” o "Rejected" con motivazione salvata. |
+| Trigger                 | Il cittadino registrato inserisce una nuova segnalazione |
+| Main success scenario   | 1. Operatore seleziona segnalazione.<br> 2. Indica decisione e motivazione. [FR-19]<br> 3. Sistema salva aggiornamento.<br> 4. Sistema notifica il segnalatore ed i follower (della segnalazione)del cambio di stato.[FR-15, FR-19] <br> Il caso d'uso termina con successo.|
+| Extensions              | 2a. Motivazione mancante<br>2a.1 Richiesta motivazione obbligatoria.<br>
 
 
 | Use Case                | Aggiornamento stato e note segnalazione |
@@ -281,31 +281,31 @@ Add one narrative for each use case shown in the diagram.
 | Intention in Context    | Operatore deve aggiornare lo stato e le note delle segnalazioni. |
 | Primary actor           | Operatore comunale                   |
 | Supporting actors       | - |
-| Stakeholders' interests | Comune di Torino[STK-9]: gestione trasparente<br> Cittadino[STK-1, STK-2]: trasparenza stato<br> Ufficio Tecnico del Comune di Torino [STK-10]: avere informazioni necessarie per effettuare gli interventi. |
+| Stakeholders' interests | **Operatore Comunale[STK-3]**: gestione trasparente<br> **Cittadino registrato /non registrato[STK-1, STK-2]**: trasparenza stato<br> **Ufficio Tecnico del Comune di Torino [STK-10]**: avere informazioni necessarie per effettuare gli interventi. |
 | Precondition            | Operatore comunale autenticato e segnalazione esistente. |
-| Minimum guarantees      | L'aggiornamento dello stato o delle note è persistente. |
-| Success guarantees      | Si ha aggiornamente dello stato della segnalazione o l'aggiunta di una nota. Se la segnalazione cambia stato si invierà una notifica. |
-| Trigger                 | Operatore effettua un aggiornamento stato o note. |
-| Main success scenario   | 1. Seleziona segnalazione.<br> 2. Modifica stato e/o note. [FR-18, FR-19]<br> 3. Invia notifica di cambio stato o aggiunta nota. [FR-14, FR-15]<br> |
-| Extensions              | 2a. Stato non valido<br> 2a.1 errore, non viene effettuata la modifica<br>
+| Minimum guarantees      | Lo stato o le note sono persistenti a prescindere dall'aggiornamento. |
+| Success guarantees      | Si ha aggiornamento dello stato della segnalazione e/o l'aggiunta di una nota. Quando la segnalazione cambia stato si invierà una notifica. |
+| Trigger                 | - |
+| Main success scenario   | 1. Seleziona segnalazione.<br> 2. Modifica stato e/o note. [FR-18, FR-19]<br> 3. Invia notifica di cambio stato e/o aggiunta nota. [FR-14, FR-15]<br> Il caso d'uso termina con successo. |
+| Extensions              |  2a Errore, non viene effettuata la modifica<br>
 
 
 | Use Case                | Moderazione contenuti |
 |:------------------------|:----------------------|
 | ID                      | UC-18                |
-| Scope                   | Piattaforma Participium inappropriati |
+| Scope                   | Piattaforma Participium |
 | Level                   | User goal            |
 | Intention in Context    | Operatore identifica contenuti non conformi (testo/foto) e avvia una segnalazione all’amministratore. |
 | Primary actor           | Operatore comunale  |
 | Supporting actors       | Admin |
-| Stakeholders' interests | Cittadini [STK-1, STK-2]: attendibilità segnalazioni<br> Comune di torino [STK-9]: sistema affidabile. <br> Amministratore [STK-4]: monitoraggio. |
+| Stakeholders' interests | **Cittadino registrato / non registrato [STK-1, STK-2]**: attendibilità segnalazioni <br> **Admin [STK-4]**: monitoraggio. <br> **Operatore Comunale [STK-3]**: garantire un sistema affidabile.|
 | Precondition            | Operatore autenticato, contenuto segnalato identificato. |
-| Minimum guarantees      | Ispezione della segnalazione sospetta. Possibile effettuare eventuale moderazione|
+| Minimum guarantees      | -|
 | Success guarantees      | Rimozione sengnalazione(con aggiornamento stato). |
-| Trigger                 | Operatore seleziona di visionare una segnalazione sospetta. |
-| Main success scenario   | 1. Operatore visiona una segnalazione.<br> 2. Fornisce motivo e dettagli per rimozione.[FR-19]<br> 3. Sistema segna il cittadino segnalante. 4. Stato del contenuto aggiornato (Rejected). |
-| Extensions              | 2a. Dati insufficienti<br>
-2a.1 Richieste ulteriori varifiche.
+| Trigger                 | Operatore rifiuta una segnalazione |
+| Main success scenario   | 1. Fornisce motivo e dettagli per rimozione.[FR-24]<br> 2. Sistema segnala il cittadino segnalante.<br> Il caso d'uso termina con successo.|
+| Extensions              | 1a. Dati insufficienti<br>
+1a.1 Richieste ulteriori varifiche.
 
 
 | Use Case                |  Risposta a messaggi cittadini                      |

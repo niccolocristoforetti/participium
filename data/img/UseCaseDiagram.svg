@@ -1,0 +1,285 @@
+<svg width="1701" height="2631" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#ffffff"><defs><style>
+  text {
+    fill: #212529;
+    font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+  }
+
+  marker, text {
+    fill-opacity: 1;
+  }
+
+  * {
+    overflow: visible;
+  }
+</style></defs><svg x="70" y="70" width="80" height="140" class="Cittadino non registrato/ non loggato" fill="#ffffff"><g><rect width="100%" height="100%" fill="none"></rect><g stroke="black" stroke-width="2"><circle cx="40" cy="25" r="15" stroke="black" fill="white" class="sc-iGgWBj fYmGgq"></circle><line x1="40" y1="40" x2="40" y2="80" stroke="black" class="sc-imWYAI kESMEa"></line><line x1="10" y1="50" x2="70" y2="50" stroke="black" class="sc-imWYAI kESMEa"></line><line x1="40" y1="80" x2="10" y2="110" stroke="black" class="sc-imWYAI kESMEa"></line><line x1="40" y1="80" x2="70" y2="110" stroke="black" class="sc-imWYAI kESMEa"></line></g><text x="40" y="130" dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none">Cittadino non registrato/ non loggato</text></g></svg><svg x="400" y="20" width="180" height="100" class="UC-01: Registrazione" fill="#ffffff"><g><ellipse cx="50%" cy="50%" rx="50%" ry="50%" stroke="black" fill="white" class="sc-kAyceB ldFMTf"></ellipse><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none">UC-01: Registrazione</text></g></svg><svg x="390" y="150" width="230" height="100" class="UC-02: Recupero password" fill="#ffffff"><g><ellipse cx="50%" cy="50%" rx="50%" ry="50%" stroke="black" fill="white" class="sc-kAyceB ldFMTf"></ellipse><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none">UC-02: Recupero password</text></g></svg><svg x="1040" y="90" width="250" height="100" class="Servizio Autenticazione" fill="#ffffff"><g><rect width="100%" height="100%" stroke="black" fill="white" class="sc-fqkvVR uHYUy"></rect><text x="50%" y="16" dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none">&lt;&lt;Servizio Autenticazione&gt;&gt;</text><text x="50%" y="32" dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none">External System</text></g></svg><svg x="1490" y="1890" width="190" height="100" class="Servizio Notifiche" fill="#ffffff"><g><rect width="100%" height="100%" stroke="black" fill="white" class="sc-fqkvVR uHYUy"></rect><text x="50%" y="16" dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none">&lt;&lt;Servizio Notifiche&gt;&gt;</text><text x="50%" y="32" dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none">External System</text></g></svg><svg x="910" y="1010" width="180" height="100" class="OpenStreetMap" fill="#ffffff"><g><rect width="100%" height="100%" stroke="black" fill="white" class="sc-fqkvVR uHYUy"></rect><text x="50%" y="16" dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none">&lt;&lt;OpenStreetMap&gt;&gt;</text><text x="50%" y="32" dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none">External System</text></g></svg><svg x="1120" y="660" width="160" height="100" class="Mail Server" fill="#ffffff"><g><rect width="100%" height="100%" stroke="black" fill="white" class="sc-fqkvVR uHYUy"></rect><text x="50%" y="16" dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none">&lt;&lt;Mail Server&gt;&gt;</text><text x="50%" y="32" dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none">External System</text></g></svg><svg x="420" y="300" width="160" height="100" class="UC-03: Login" fill="#ffffff"><g><ellipse cx="50%" cy="50%" rx="50%" ry="50%" stroke="black" fill="white" class="sc-kAyceB ldFMTf"></ellipse><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none">UC-03: Login</text></g></svg><svg x="60" y="760" width="80" height="140" class="Cittadino registrato" fill="#ffffff"><g><rect width="100%" height="100%" fill="none"></rect><g stroke="black" stroke-width="2"><circle cx="40" cy="25" r="15" stroke="black" fill="white" class="sc-iGgWBj fYmGgq"></circle><line x1="40" y1="40" x2="40" y2="80" stroke="black" class="sc-imWYAI kESMEa"></line><line x1="10" y1="50" x2="70" y2="50" stroke="black" class="sc-imWYAI kESMEa"></line><line x1="40" y1="80" x2="10" y2="110" stroke="black" class="sc-imWYAI kESMEa"></line><line x1="40" y1="80" x2="70" y2="110" stroke="black" class="sc-imWYAI kESMEa"></line></g><text x="40" y="130" dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none">Cittadino registrato</text></g></svg><svg x="420" y="420" width="160" height="100" class="UC-04: Logout" fill="#ffffff"><g><ellipse cx="50%" cy="50%" rx="50%" ry="50%" stroke="black" fill="white" class="sc-kAyceB ldFMTf"></ellipse><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none">UC-04: Logout</text></g></svg><svg x="390" y="550" width="250" height="100" class="UC-05: Aggiornamento profilo" fill="#ffffff"><g><ellipse cx="50%" cy="50%" rx="50%" ry="50%" stroke="black" fill="white" class="sc-kAyceB ldFMTf"></ellipse><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none">UC-05: Aggiornamento profilo</text></g></svg><svg x="390" y="680" width="270" height="100" class="UC-06: Inserimento segnalazione" fill="#ffffff"><g><ellipse cx="50%" cy="50%" rx="50%" ry="50%" stroke="black" fill="white" class="sc-kAyceB ldFMTf"></ellipse><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none">UC-06: Inserimento segnalazione</text></g></svg><svg x="350" y="800" width="350" height="110" class="UC-07: Consultazione proprie segnalazioni" fill="#ffffff"><g><ellipse cx="50%" cy="50%" rx="50%" ry="50%" stroke="black" fill="white" class="sc-kAyceB ldFMTf"></ellipse><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none">UC-07: Consultazione proprie segnalazioni</text></g></svg><svg x="390" y="940" width="270" height="100" class="UC-08: Seguire una segnalazione" fill="#ffffff"><g><ellipse cx="50%" cy="50%" rx="50%" ry="50%" stroke="black" fill="white" class="sc-kAyceB ldFMTf"></ellipse><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none">UC-08: Seguire una segnalazione</text></g></svg><svg x="930" y="1890" width="420" height="100" class="UC-09: Ricezione notifica" fill="#ffffff"><g><ellipse cx="50%" cy="50%" rx="50%" ry="50%" stroke="black" fill="white" class="sc-kAyceB ldFMTf"></ellipse><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none">UC-09: Ricezione notifica</text></g></svg><svg x="370" y="1070" width="290" height="100" class="UC-10: Invio messaggio a operatore" fill="#ffffff"><g><ellipse cx="50%" cy="50%" rx="50%" ry="50%" stroke="black" fill="white" class="sc-kAyceB ldFMTf"></ellipse><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none">UC-10: Invio messaggio a operatore</text></g></svg><svg x="40" y="1410" width="80" height="140" class="Utente (registrato e non)" fill="#ffffff"><g><rect width="100%" height="100%" fill="none"></rect><g stroke="black" stroke-width="2"><circle cx="40" cy="25" r="15" stroke="black" fill="white" class="sc-iGgWBj fYmGgq"></circle><line x1="40" y1="40" x2="40" y2="80" stroke="black" class="sc-imWYAI kESMEa"></line><line x1="10" y1="50" x2="70" y2="50" stroke="black" class="sc-imWYAI kESMEa"></line><line x1="40" y1="80" x2="10" y2="110" stroke="black" class="sc-imWYAI kESMEa"></line><line x1="40" y1="80" x2="70" y2="110" stroke="black" class="sc-imWYAI kESMEa"></line></g><text x="40" y="130" dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none">Utente (registrato e non)</text></g></svg><svg x="330" y="1210" width="370" height="100" class="UC-11: Visualizzazione segnalazioni su mappa" fill="#ffffff"><g><ellipse cx="50%" cy="50%" rx="50%" ry="50%" stroke="black" fill="white" class="sc-kAyceB ldFMTf"></ellipse><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none">UC-11: Visualizzazione segnalazioni su mappa</text></g></svg><svg x="300" y="1340" width="430" height="100" class="UC-11: Visualizzazione segnalazioni su vista tabellare" fill="#ffffff"><g><ellipse cx="50%" cy="50%" rx="50%" ry="50%" stroke="black" fill="white" class="sc-kAyceB ldFMTf"></ellipse><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none">UC-11: Visualizzazione segnalazioni su vista tabellare</text></g></svg><svg x="290" y="1480" width="430" height="100" class="UC-11: Visualizzazione dettaglio segnalazione" fill="#ffffff"><g><ellipse cx="50%" cy="50%" rx="50%" ry="50%" stroke="black" fill="white" class="sc-kAyceB ldFMTf"></ellipse><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none">UC-11: Visualizzazione dettaglio segnalazione</text></g></svg><svg x="830" y="1380" width="270" height="100" class="UC-14: Esportazione dati in CSV" fill="#ffffff"><g><ellipse cx="50%" cy="50%" rx="50%" ry="50%" stroke="black" fill="white" class="sc-kAyceB ldFMTf"></ellipse><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none">UC-14: Esportazione dati in CSV</text></g></svg><svg x="320" y="1600" width="350" height="100" class="UC-15: Consultazione statistiche pubbliche" fill="#ffffff"><g><ellipse cx="50%" cy="50%" rx="50%" ry="50%" stroke="black" fill="white" class="sc-kAyceB ldFMTf"></ellipse><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none">UC-15: Consultazione statistiche pubbliche</text></g></svg><svg x="20" y="1910" width="80" height="140" class="Operatore comunale" fill="#ffffff"><g><rect width="100%" height="100%" fill="none"></rect><g stroke="black" stroke-width="2"><circle cx="40" cy="25" r="15" stroke="black" fill="white" class="sc-iGgWBj fYmGgq"></circle><line x1="40" y1="40" x2="40" y2="80" stroke="black" class="sc-imWYAI kESMEa"></line><line x1="10" y1="50" x2="70" y2="50" stroke="black" class="sc-imWYAI kESMEa"></line><line x1="40" y1="80" x2="10" y2="110" stroke="black" class="sc-imWYAI kESMEa"></line><line x1="40" y1="80" x2="70" y2="110" stroke="black" class="sc-imWYAI kESMEa"></line></g><text x="40" y="130" dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none">Operatore comunale</text></g></svg><svg x="330" y="1720" width="330" height="100" class="UC-16: Accettazione/ rifiuto segnalazione" fill="#ffffff"><g><ellipse cx="50%" cy="50%" rx="50%" ry="50%" stroke="black" fill="white" class="sc-kAyceB ldFMTf"></ellipse><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none">UC-16: Accettazione/ rifiuto segnalazione</text></g></svg><svg x="300" y="1830" width="390" height="100" class="UC-17: Aggiornamento stato e note segnalazione" fill="#ffffff"><g><ellipse cx="50%" cy="50%" rx="50%" ry="50%" stroke="black" fill="white" class="sc-kAyceB ldFMTf"></ellipse><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none">UC-17: Aggiornamento stato e note segnalazione</text></g></svg><svg x="360" y="1940" width="250" height="100" class="UC-18: Moderazione contenuti" fill="#ffffff"><g><ellipse cx="50%" cy="50%" rx="50%" ry="50%" stroke="black" fill="white" class="sc-kAyceB ldFMTf"></ellipse><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none">UC-18: Moderazione contenuti</text></g></svg><svg x="330" y="2050" width="300" height="100" class="UC-19: Risposta a messaggi cittadini" fill="#ffffff"><g><ellipse cx="50%" cy="50%" rx="50%" ry="50%" stroke="black" fill="white" class="sc-kAyceB ldFMTf"></ellipse><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none">UC-19: Risposta a messaggi cittadini</text></g></svg><svg x="280" y="2160" width="400" height="100" class="UC-20: Visualizzazione segnalazioni in dashboard" fill="#ffffff"><g><ellipse cx="50%" cy="50%" rx="50%" ry="50%" stroke="black" fill="white" class="sc-kAyceB ldFMTf"></ellipse><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none">UC-20: Visualizzazione segnalazioni in dashboard</text></g></svg><svg x="60" y="2370" width="80" height="140" class="Amministratore" fill="#ffffff"><g><rect width="100%" height="100%" fill="none"></rect><g stroke="black" stroke-width="2"><circle cx="40" cy="25" r="15" stroke="black" fill="white" class="sc-iGgWBj fYmGgq"></circle><line x1="40" y1="40" x2="40" y2="80" stroke="black" class="sc-imWYAI kESMEa"></line><line x1="10" y1="50" x2="70" y2="50" stroke="black" class="sc-imWYAI kESMEa"></line><line x1="40" y1="80" x2="10" y2="110" stroke="black" class="sc-imWYAI kESMEa"></line><line x1="40" y1="80" x2="70" y2="110" stroke="black" class="sc-imWYAI kESMEa"></line></g><text x="40" y="130" dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none">Amministratore</text></g></svg><svg x="340" y="2280" width="280" height="100" class="UC-21: Gestione account operatori" fill="#ffffff"><g><ellipse cx="50%" cy="50%" rx="50%" ry="50%" stroke="black" fill="white" class="sc-kAyceB ldFMTf"></ellipse><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none">UC-21: Gestione account operatori</text></g></svg><svg x="360" y="2400" width="250" height="100" class="UC-22: Gestione utenti abusivi" fill="#ffffff"><g><ellipse cx="50%" cy="50%" rx="50%" ry="50%" stroke="black" fill="white" class="sc-kAyceB ldFMTf"></ellipse><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none">UC-22: Gestione utenti abusivi</text></g></svg><svg x="310" y="2510" width="330" height="100" class="UC-23: Consultazione statistiche private" fill="#ffffff"><g><ellipse cx="50%" cy="50%" rx="50%" ry="50%" stroke="black" fill="white" class="sc-kAyceB ldFMTf"></ellipse><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none">UC-23: Consultazione statistiche private</text></g></svg><svg x="150" y="70" width="250" height="70" class="" fill="#ffffff"><g><path id="textpath-7d8f4fca-e3a8-440b-9ae5-79f4c82cea74" d="
+        M 0 60
+        L 250 -10
+    "></path><text dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none" dy="20px"><textPath xlink:href="#textpath-7d8f4fca-e3a8-440b-9ae5-79f4c82cea74" startOffset="50%"></textPath></text><polyline points="0 70,250 0" stroke-width="1" stroke="black" fill="none" class="sc-aXZVg eMElBf"></polyline></g></svg><svg x="150" y="140" width="240" height="60" class="" fill="#ffffff"><g><path id="textpath-3e2cf257-6dd0-48dc-aca7-a82a97add32e" d="
+        M 0 -10
+        L 240 50
+    "></path><text dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none" dy="20px"><textPath xlink:href="#textpath-3e2cf257-6dd0-48dc-aca7-a82a97add32e" startOffset="50%"></textPath></text><polyline points="0 0,240 60" stroke-width="1" stroke="black" fill="none" class="sc-aXZVg eMElBf"></polyline></g></svg><svg x="580" y="70" width="460" height="70" class="" fill="#ffffff"><g><g><marker id="marker-b4174180-de68-4b86-884b-7ee29d70e814" viewBox="0 0 30 30" markerWidth="22" markerHeight="30" refX="30" refY="15" orient="auto" markerUnits="strokeWidth"><path d="M0,29 L30,15 L0,1" stroke="black" fill="none" class="sc-gEvEer bFSwyf"></path></marker><path d="
+          M 460 70 L 269.5447534935845 41.017679879458505
+          M 190.45524650641553 28.982320120541495 L 0 0
+        " stroke-dasharray="7" marker-end="url(#marker-b4174180-de68-4b86-884b-7ee29d70e814)" stroke="black" fill="white" class="sc-gEvEer fkqzOi"></path></g><path id="textpath-b4174180-de68-4b86-884b-7ee29d70e814" d="
+          M 269.5447534935845 41.017679879458505
+          L 190.45524650641553 28.982320120541495
+        "></path><text dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none" transform="
+              translate(230, 35)
+              rotate(180)
+              translate(-230, -35)
+            "><textPath xlink:href="#textpath-b4174180-de68-4b86-884b-7ee29d70e814" startOffset="50%">«support»</textPath></text></g></svg><svg x="620" y="140" width="420" height="60" class="" fill="#ffffff"><g><g><marker id="marker-dec41fc0-377d-48e0-a39b-8ed95c0b77a4" viewBox="0 0 30 30" markerWidth="22" markerHeight="30" refX="30" refY="15" orient="auto" markerUnits="strokeWidth"><path d="M0,29 L30,15 L0,1" stroke="black" fill="none" class="sc-gEvEer bFSwyf"></path></marker><path d="
+          M 420 0 L 249.59797974644667 24.34314575050762
+          M 170.40202025355333 35.65685424949238 L 0 60
+        " stroke-dasharray="7" marker-end="url(#marker-dec41fc0-377d-48e0-a39b-8ed95c0b77a4)" stroke="black" fill="white" class="sc-gEvEer fkqzOi"></path></g><path id="textpath-dec41fc0-377d-48e0-a39b-8ed95c0b77a4" d="
+          M 249.59797974644667 24.34314575050762
+          L 170.40202025355333 35.65685424949238
+        "></path><text dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none" transform="
+              translate(210, 30)
+              rotate(180)
+              translate(-210, -30)
+            "><textPath xlink:href="#textpath-dec41fc0-377d-48e0-a39b-8ed95c0b77a4" startOffset="50%">«support»</textPath></text></g></svg><svg x="580" y="70" width="540" height="640" class="" fill="#ffffff"><g><g><marker id="marker-cb74bcf4-d2aa-4741-9b46-e78426dcc611" viewBox="0 0 30 30" markerWidth="22" markerHeight="30" refX="30" refY="15" orient="auto" markerUnits="strokeWidth"><path d="M0,29 L30,15 L0,1" stroke="black" fill="none" class="sc-gEvEer bFSwyf"></path></marker><path d="
+          M 540 640 L 295.7948375683913 350.57165934031565
+          M 244.2051624316087 289.42834065968435 L 0 0
+        " stroke-dasharray="7" marker-end="url(#marker-cb74bcf4-d2aa-4741-9b46-e78426dcc611)" stroke="black" fill="white" class="sc-gEvEer fkqzOi"></path></g><path id="textpath-cb74bcf4-d2aa-4741-9b46-e78426dcc611" d="
+          M 295.7948375683913 350.57165934031565
+          L 244.2051624316087 289.42834065968435
+        "></path><text dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none" transform="
+              translate(270, 320)
+              rotate(180)
+              translate(-270, -320)
+            "><textPath xlink:href="#textpath-cb74bcf4-d2aa-4741-9b46-e78426dcc611" startOffset="50%">«support»</textPath></text></g></svg><svg x="620" y="200" width="500" height="510" class="" fill="#ffffff"><g><g><marker id="marker-aa6c8d7b-acf4-4e47-8488-29a3e5ab0b24" viewBox="0 0 30 30" markerWidth="22" markerHeight="30" refX="30" refY="15" orient="auto" markerUnits="strokeWidth"><path d="M0,29 L30,15 L0,1" stroke="black" fill="none" class="sc-gEvEer bFSwyf"></path></marker><path d="
+          M 500 510 L 278.0028564370423 283.5629135657831
+          M 221.99714356295772 226.43708643421687 L 0 0
+        " stroke-dasharray="7" marker-end="url(#marker-aa6c8d7b-acf4-4e47-8488-29a3e5ab0b24)" stroke="black" fill="white" class="sc-gEvEer fkqzOi"></path></g><path id="textpath-aa6c8d7b-acf4-4e47-8488-29a3e5ab0b24" d="
+          M 278.0028564370423 283.5629135657831
+          L 221.99714356295772 226.43708643421687
+        "></path><text dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none" transform="
+              translate(249.99999999999997, 255)
+              rotate(180)
+              translate(-249.99999999999997, -255)
+            "><textPath xlink:href="#textpath-aa6c8d7b-acf4-4e47-8488-29a3e5ab0b24" startOffset="50%">«support»</textPath></text></g></svg><svg x="140" y="350" width="280" height="480" class="" fill="#ffffff"><g><path id="textpath-6028088c-0fc4-470f-9473-db4468bdc3a2" d="
+        M 0 470
+        L 280 -10
+    "></path><text dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none" dy="20px"><textPath xlink:href="#textpath-6028088c-0fc4-470f-9473-db4468bdc3a2" startOffset="50%"></textPath></text><polyline points="0 480,280 0" stroke-width="1" stroke="black" fill="none" class="sc-aXZVg eMElBf"></polyline></g></svg><svg x="580" y="190" width="585" height="160" class="" fill="#ffffff"><g><g><marker id="marker-92b240c0-a500-4659-bb68-dc3b3a6d654f" viewBox="0 0 30 30" markerWidth="22" markerHeight="30" refX="30" refY="15" orient="auto" markerUnits="strokeWidth"><path d="M0,29 L30,15 L0,1" stroke="black" fill="none" class="sc-gEvEer bFSwyf"></path></marker><path d="
+          M 585 0 L 331.08293271557625 69.44740301796206
+          M 253.91706728442375 90.55259698203794 L 0 160
+        " stroke-dasharray="7" marker-end="url(#marker-92b240c0-a500-4659-bb68-dc3b3a6d654f)" stroke="black" fill="white" class="sc-gEvEer fkqzOi"></path></g><path id="textpath-92b240c0-a500-4659-bb68-dc3b3a6d654f" d="
+          M 331.08293271557625 69.44740301796206
+          L 253.91706728442375 90.55259698203794
+        "></path><text dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none" transform="
+              translate(292.5, 80)
+              rotate(180)
+              translate(-292.5, -80)
+            "><textPath xlink:href="#textpath-92b240c0-a500-4659-bb68-dc3b3a6d654f" startOffset="50%">«support»</textPath></text></g></svg><svg x="140" y="470" width="280" height="360" class="" fill="#ffffff"><g><path id="textpath-95cdc8da-cba2-4fea-829d-bfb80dc379b4" d="
+        M 0 350
+        L 280 -10
+    "></path><text dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none" dy="20px"><textPath xlink:href="#textpath-95cdc8da-cba2-4fea-829d-bfb80dc379b4" startOffset="50%"></textPath></text><polyline points="0 360,280 0" stroke-width="1" stroke="black" fill="none" class="sc-aXZVg eMElBf"></polyline></g></svg><svg x="580" y="190" width="585" height="280" class="" fill="#ffffff"><g><g><marker id="marker-9a452339-6d35-4a3f-b4a6-04c5b951fff4" viewBox="0 0 30 30" markerWidth="22" markerHeight="30" refX="30" refY="15" orient="auto" markerUnits="strokeWidth"><path d="M0,29 L30,15 L0,1" stroke="black" fill="none" class="sc-gEvEer bFSwyf"></path></marker><path d="
+          M 585 0 L 328.5801485222116 122.73086908338593
+          M 256.4198514777884 157.26913091661407 L 0 280
+        " stroke-dasharray="7" marker-end="url(#marker-9a452339-6d35-4a3f-b4a6-04c5b951fff4)" stroke="black" fill="white" class="sc-gEvEer fkqzOi"></path></g><path id="textpath-9a452339-6d35-4a3f-b4a6-04c5b951fff4" d="
+          M 328.5801485222116 122.73086908338593
+          L 256.4198514777884 157.26913091661407
+        "></path><text dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none" transform="
+              translate(292.5, 140)
+              rotate(180)
+              translate(-292.5, -140)
+            "><textPath xlink:href="#textpath-9a452339-6d35-4a3f-b4a6-04c5b951fff4" startOffset="50%">«support»</textPath></text></g></svg><svg x="140" y="600" width="250" height="230" class="" fill="#ffffff"><g><path id="textpath-8e1474e8-dbf3-4166-a7d4-fa4586028061" d="
+        M 250 -10
+        L 0 220
+    "></path><text dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none" dy="20px" transform="
+            translate(125, 115)
+            rotate(180)
+            translate(-125, -115)
+          "><textPath xlink:href="#textpath-8e1474e8-dbf3-4166-a7d4-fa4586028061" startOffset="50%"></textPath></text><polyline points="250 0,0 230" stroke-width="1" stroke="black" fill="none" class="sc-aXZVg eMElBf"></polyline></g></svg><svg x="140" y="730" width="250" height="100" class="" fill="#ffffff"><g><path id="textpath-21e3b60a-a5b2-4576-aeab-20aed21f891c" d="
+        M 250 -10
+        L 0 90
+    "></path><text dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none" dy="20px" transform="
+            translate(125, 50)
+            rotate(180)
+            translate(-125, -50)
+          "><textPath xlink:href="#textpath-21e3b60a-a5b2-4576-aeab-20aed21f891c" startOffset="50%"></textPath></text><polyline points="250 0,0 100" stroke-width="1" stroke="black" fill="none" class="sc-aXZVg eMElBf"></polyline></g></svg><svg x="660" y="730" width="250" height="330" class="" fill="#ffffff"><g><g><marker id="marker-bfc761a7-fa5f-4980-8c58-44de050142dc" viewBox="0 0 30 30" markerWidth="22" markerHeight="30" refX="30" refY="15" orient="auto" markerUnits="strokeWidth"><path d="M0,29 L30,15 L0,1" stroke="black" fill="none" class="sc-gEvEer bFSwyf"></path></marker><path d="
+          M 250 330 L 149.1543075198185 196.8836859261604
+          M 100.8456924801815 133.1163140738396 L 0 0
+        " stroke-dasharray="7" marker-end="url(#marker-bfc761a7-fa5f-4980-8c58-44de050142dc)" stroke="black" fill="white" class="sc-gEvEer fkqzOi"></path></g><path id="textpath-bfc761a7-fa5f-4980-8c58-44de050142dc" d="
+          M 149.1543075198185 196.8836859261604
+          L 100.8456924801815 133.1163140738396
+        "></path><text dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none" transform="
+              translate(125.00000000000001, 165)
+              rotate(180)
+              translate(-125.00000000000001, -165)
+            "><textPath xlink:href="#textpath-bfc761a7-fa5f-4980-8c58-44de050142dc" startOffset="50%">«support»</textPath></text></g></svg><svg x="140" y="830" width="210" height="25" class="" fill="#ffffff"><g><path id="textpath-c28206e4-b7c2-45bd-baf4-d8485dcf4e51" d="
+        M 210 15
+        L 0 -10
+    "></path><text dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none" dy="20px" transform="
+            translate(105, 12.5)
+            rotate(180)
+            translate(-105, -12.5)
+          "><textPath xlink:href="#textpath-c28206e4-b7c2-45bd-baf4-d8485dcf4e51" startOffset="50%"></textPath></text><polyline points="210 25,0 0" stroke-width="1" stroke="black" fill="none" class="sc-aXZVg eMElBf"></polyline></g></svg><svg x="140" y="830" width="250" height="160" class="" fill="#ffffff"><g><path id="textpath-c6ec630d-439f-48aa-a69c-3dab836316ee" d="
+        M 250 150
+        L 0 -10
+    "></path><text dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none" dy="20px" transform="
+            translate(125, 80)
+            rotate(180)
+            translate(-125, -80)
+          "><textPath xlink:href="#textpath-c6ec630d-439f-48aa-a69c-3dab836316ee" startOffset="50%"></textPath></text><polyline points="250 160,0 0" stroke-width="1" stroke="black" fill="none" class="sc-aXZVg eMElBf"></polyline></g></svg><svg x="1350" y="1940" width="140" height="1" class="" fill="#ffffff"><g><g><marker id="marker-c406b3c5-9376-42e2-a9e5-1a4b0424bcfa" viewBox="0 0 30 30" markerWidth="22" markerHeight="30" refX="30" refY="15" orient="auto" markerUnits="strokeWidth"><path d="M0,29 L30,15 L0,1" stroke="black" fill="none" class="sc-gEvEer bFSwyf"></path></marker><path d="
+          M 140 0 L 110 0
+          M 30 0 L 0 0
+        " stroke-dasharray="7" marker-end="url(#marker-c406b3c5-9376-42e2-a9e5-1a4b0424bcfa)" stroke="black" fill="white" class="sc-gEvEer fkqzOi"></path></g><path id="textpath-c406b3c5-9376-42e2-a9e5-1a4b0424bcfa" d="
+          M 110 0
+          L 30 0
+        "></path><text dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none" transform="
+              translate(70, 0)
+              rotate(180)
+              translate(-70, 0)
+            "><textPath xlink:href="#textpath-c406b3c5-9376-42e2-a9e5-1a4b0424bcfa" startOffset="50%">«support»</textPath></text></g></svg><svg x="140" y="830" width="230" height="290" class="" fill="#ffffff"><g><path id="textpath-caf905f8-cd3d-463a-8d40-23b8e00d07e7" d="
+        M 230 280
+        L 0 -10
+    "></path><text dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none" dy="20px" transform="
+            translate(115, 145)
+            rotate(180)
+            translate(-115, -145)
+          "><textPath xlink:href="#textpath-caf905f8-cd3d-463a-8d40-23b8e00d07e7" startOffset="50%"></textPath></text><polyline points="230 290,0 0" stroke-width="1" stroke="black" fill="none" class="sc-aXZVg eMElBf"></polyline></g></svg><svg x="120" y="1260" width="210" height="220" class="" fill="#ffffff"><g><path id="textpath-cb6808f0-525c-42ce-868f-d157fa4ddf03" d="
+        M 210 -10
+        L 0 210
+    "></path><text dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none" dy="20px" transform="
+            translate(105, 110)
+            rotate(180)
+            translate(-105, -110)
+          "><textPath xlink:href="#textpath-cb6808f0-525c-42ce-868f-d157fa4ddf03" startOffset="50%"></textPath></text><polyline points="210 0,0 220" stroke-width="1" stroke="black" fill="none" class="sc-aXZVg eMElBf"></polyline></g></svg><svg x="120" y="1390" width="180" height="90" class="" fill="#ffffff"><g><path id="textpath-19ecb765-ac68-4a50-b58e-34828c274579" d="
+        M 180 -10
+        L 0 80
+    "></path><text dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none" dy="20px" transform="
+            translate(90, 45)
+            rotate(180)
+            translate(-90, -45)
+          "><textPath xlink:href="#textpath-19ecb765-ac68-4a50-b58e-34828c274579" startOffset="50%"></textPath></text><polyline points="180 0,0 90" stroke-width="1" stroke="black" fill="none" class="sc-aXZVg eMElBf"></polyline></g></svg><svg x="120" y="1480" width="170" height="50" class="" fill="#ffffff"><g><path id="textpath-ba33d03a-7f06-4876-ae1c-86d7f1a148dd" d="
+        M 170 40
+        L 0 -10
+    "></path><text dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none" dy="20px" transform="
+            translate(85, 25)
+            rotate(180)
+            translate(-85, -25)
+          "><textPath xlink:href="#textpath-ba33d03a-7f06-4876-ae1c-86d7f1a148dd" startOffset="50%"></textPath></text><polyline points="170 50,0 0" stroke-width="1" stroke="black" fill="none" class="sc-aXZVg eMElBf"></polyline></g></svg><svg x="730" y="1390" width="100" height="40" class="" fill="#ffffff"><g><g><marker id="marker-aeb93f44-95a3-4814-9c46-aa99eaae26ae" viewBox="0 0 30 30" markerWidth="22" markerHeight="30" refX="30" refY="15" orient="auto" markerUnits="strokeWidth"><path d="M0,29 L30,15 L0,1" stroke="black" fill="none" class="sc-gEvEer bFSwyf"></path></marker><path d="
+          M 0 0 L 12.860932364589626 5.14437294583585
+          M 87.13906763541037 34.85562705416415 L 100 40
+        " stroke-dasharray="7" marker-end="url(#marker-aeb93f44-95a3-4814-9c46-aa99eaae26ae)" stroke="black" fill="white" class="sc-gEvEer fkqzOi"></path></g><path id="textpath-aeb93f44-95a3-4814-9c46-aa99eaae26ae" d="
+          M 12.860932364589626 5.14437294583585
+          L 87.13906763541037 34.85562705416415
+        "></path><text dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none"><textPath xlink:href="#textpath-aeb93f44-95a3-4814-9c46-aa99eaae26ae" startOffset="50%">«extend»</textPath></text></g></svg><svg x="120" y="1480" width="200" height="170" class="" fill="#ffffff"><g><path id="textpath-7e4950ff-2ee0-40d6-9564-c357784351a7" d="
+        M 200 160
+        L 0 -10
+    "></path><text dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none" dy="20px" transform="
+            translate(100, 85)
+            rotate(180)
+            translate(-100, -85)
+          "><textPath xlink:href="#textpath-7e4950ff-2ee0-40d6-9564-c357784351a7" startOffset="50%"></textPath></text><polyline points="200 170,0 0" stroke-width="1" stroke="black" fill="none" class="sc-aXZVg eMElBf"></polyline></g></svg><svg x="100" y="1770" width="230" height="210" class="" fill="#ffffff"><g><path id="textpath-3e2a47f3-e5ce-43e1-b9c9-40b89b614498" d="
+        M 0 200
+        L 230 -10
+    "></path><text dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none" dy="20px"><textPath xlink:href="#textpath-3e2a47f3-e5ce-43e1-b9c9-40b89b614498" startOffset="50%"></textPath></text><polyline points="0 210,230 0" stroke-width="1" stroke="black" fill="none" class="sc-aXZVg eMElBf"></polyline></g></svg><svg x="100" y="1880" width="200" height="100" class="" fill="#ffffff"><g><path id="textpath-325eb05b-4889-4b23-9c9d-fa642e3042b5" d="
+        M 200 -10
+        L 0 90
+    "></path><text dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none" dy="20px" transform="
+            translate(100, 50)
+            rotate(180)
+            translate(-100, -50)
+          "><textPath xlink:href="#textpath-325eb05b-4889-4b23-9c9d-fa642e3042b5" startOffset="50%"></textPath></text><polyline points="200 0,0 100" stroke-width="1" stroke="black" fill="none" class="sc-aXZVg eMElBf"></polyline></g></svg><svg x="100" y="1980" width="260" height="10" class="" fill="#ffffff"><g><path id="textpath-cf084ad8-1e5e-4835-827f-93b42bcc97fc" d="
+        M 260 0
+        L 0 -10
+    "></path><text dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none" dy="20px" transform="
+            translate(130, 5)
+            rotate(180)
+            translate(-130, -5)
+          "><textPath xlink:href="#textpath-cf084ad8-1e5e-4835-827f-93b42bcc97fc" startOffset="50%"></textPath></text><polyline points="260 10,0 0" stroke-width="1" stroke="black" fill="none" class="sc-aXZVg eMElBf"></polyline></g></svg><svg x="100" y="1980" width="230" height="120" class="" fill="#ffffff"><g><path id="textpath-ec4d7159-553d-4639-8b30-39e750e77b12" d="
+        M 230 110
+        L 0 -10
+    "></path><text dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none" dy="20px" transform="
+            translate(115, 60)
+            rotate(180)
+            translate(-115, -60)
+          "><textPath xlink:href="#textpath-ec4d7159-553d-4639-8b30-39e750e77b12" startOffset="50%"></textPath></text><polyline points="230 120,0 0" stroke-width="1" stroke="black" fill="none" class="sc-aXZVg eMElBf"></polyline></g></svg><svg x="100" y="1980" width="180" height="230" class="" fill="#ffffff"><g><path id="textpath-1e6aee27-663a-4f56-b6a9-b2b7634b48d4" d="
+        M 180 220
+        L 0 -10
+    "></path><text dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none" dy="20px" transform="
+            translate(90, 115)
+            rotate(180)
+            translate(-90, -115)
+          "><textPath xlink:href="#textpath-1e6aee27-663a-4f56-b6a9-b2b7634b48d4" startOffset="50%"></textPath></text><polyline points="180 230,0 0" stroke-width="1" stroke="black" fill="none" class="sc-aXZVg eMElBf"></polyline></g></svg><svg x="140" y="2440" width="170" height="120" class="" fill="#ffffff"><g><path id="textpath-b4a88f1d-dee1-4636-8403-104a8140c749" d="
+        M 170 110
+        L 0 -10
+    "></path><text dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none" dy="20px" transform="
+            translate(85, 60)
+            rotate(180)
+            translate(-85, -60)
+          "><textPath xlink:href="#textpath-b4a88f1d-dee1-4636-8403-104a8140c749" startOffset="50%"></textPath></text><polyline points="170 120,0 0" stroke-width="1" stroke="black" fill="none" class="sc-aXZVg eMElBf"></polyline></g></svg><svg x="140" y="2440" width="220" height="10" class="" fill="#ffffff"><g><path id="textpath-1afe0884-40fb-412a-93a0-7e2f9a7d3da2" d="
+        M 220 0
+        L 0 -10
+    "></path><text dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none" dy="20px" transform="
+            translate(110, 5)
+            rotate(180)
+            translate(-110, -5)
+          "><textPath xlink:href="#textpath-1afe0884-40fb-412a-93a0-7e2f9a7d3da2" startOffset="50%"></textPath></text><polyline points="220 10,0 0" stroke-width="1" stroke="black" fill="none" class="sc-aXZVg eMElBf"></polyline></g></svg><svg x="140" y="2330" width="200" height="110" class="" fill="#ffffff"><g><path id="textpath-5787862b-2a30-414b-8305-f81407bc055f" d="
+        M 200 -10
+        L 0 100
+    "></path><text dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none" dy="20px" transform="
+            translate(100, 55)
+            rotate(180)
+            translate(-100, -55)
+          "><textPath xlink:href="#textpath-5787862b-2a30-414b-8305-f81407bc055f" startOffset="50%"></textPath></text><polyline points="200 0,0 110" stroke-width="1" stroke="black" fill="none" class="sc-aXZVg eMElBf"></polyline></g></svg><svg x="120" y="1430" width="710" height="50" class="" fill="#ffffff"><g><path id="textpath-0d8df8fa-0c1b-44b8-8254-be94fa2b92ad" d="
+        M 710 -10
+        L 0 40
+    "></path><text dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none" dy="20px" transform="
+            translate(355, 25.000000000000004)
+            rotate(180)
+            translate(-355, -25.000000000000004)
+          "><textPath xlink:href="#textpath-0d8df8fa-0c1b-44b8-8254-be94fa2b92ad" startOffset="50%"></textPath></text><polyline points="710 0,0 50" stroke-width="1" stroke="black" fill="none" class="sc-aXZVg eMElBf"></polyline></g></svg><svg x="660" y="1770" width="270" height="170" class="" fill="#ffffff"><g><g><marker id="marker-afcb4a69-801c-4d47-b732-ec5b67b57fb0" viewBox="0 0 30 30" markerWidth="22" markerHeight="30" refX="30" refY="15" orient="auto" markerUnits="strokeWidth"><path d="M0,29 L30,15 L0,1" stroke="black" fill="none" class="sc-gEvEer bFSwyf"></path></marker><path d="
+          M 0 0 L 101.15068639640998 63.687469212554426
+          M 168.84931360359002 106.31253078744558 L 270 170
+        " stroke-dasharray="7" marker-end="url(#marker-afcb4a69-801c-4d47-b732-ec5b67b57fb0)" stroke="black" fill="white" class="sc-gEvEer fkqzOi"></path></g><path id="textpath-afcb4a69-801c-4d47-b732-ec5b67b57fb0" d="
+          M 101.15068639640998 63.687469212554426
+          L 168.84931360359002 106.31253078744558
+        "></path><text dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none"><textPath xlink:href="#textpath-afcb4a69-801c-4d47-b732-ec5b67b57fb0" startOffset="50%">«include»</textPath></text></g></svg><svg x="690" y="1880" width="240" height="60" class="" fill="#ffffff"><g><g><marker id="marker-31065563-0968-4325-b683-8dbe0dfc3d8b" viewBox="0 0 30 30" markerWidth="22" markerHeight="30" refX="30" refY="15" orient="auto" markerUnits="strokeWidth"><path d="M0,29 L30,15 L0,1" stroke="black" fill="none" class="sc-gEvEer bFSwyf"></path></marker><path d="
+          M 0 0 L 81.19429999418672 20.29857499854668
+          M 158.80570000581326 39.701425001453316 L 240 60
+        " stroke-dasharray="7" marker-end="url(#marker-31065563-0968-4325-b683-8dbe0dfc3d8b)" stroke="black" fill="white" class="sc-gEvEer fkqzOi"></path></g><path id="textpath-31065563-0968-4325-b683-8dbe0dfc3d8b" d="
+          M 81.19429999418672 20.29857499854668
+          L 158.80570000581326 39.701425001453316
+        "></path><text dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none"><textPath xlink:href="#textpath-31065563-0968-4325-b683-8dbe0dfc3d8b" startOffset="50%">«include»</textPath></text></g></svg><svg x="610" y="1940" width="320" height="50" class="" fill="#ffffff"><g><g><marker id="marker-dfa044d9-ed7b-4ff4-991e-a784031f0e86" viewBox="0 0 30 30" markerWidth="22" markerHeight="30" refX="30" refY="15" orient="auto" markerUnits="strokeWidth"><path d="M0,29 L30,15 L0,1" stroke="black" fill="none" class="sc-gEvEer bFSwyf"></path></marker><path d="
+          M 0 50 L 120.47951864995595 31.17507521094438
+          M 199.52048135004407 18.82492478905562 L 320 0
+        " stroke-dasharray="7" marker-end="url(#marker-dfa044d9-ed7b-4ff4-991e-a784031f0e86)" stroke="black" fill="white" class="sc-gEvEer fkqzOi"></path></g><path id="textpath-dfa044d9-ed7b-4ff4-991e-a784031f0e86" d="
+          M 120.47951864995595 31.17507521094438
+          L 199.52048135004407 18.82492478905562
+        "></path><text dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none"><textPath xlink:href="#textpath-dfa044d9-ed7b-4ff4-991e-a784031f0e86" startOffset="50%">«include»</textPath></text></g></svg><svg x="630" y="1940" width="300" height="160" class="" fill="#ffffff"><g><g><marker id="marker-2e62f961-6320-43d9-a2de-813ff6ab6f67" viewBox="0 0 30 30" markerWidth="22" markerHeight="30" refX="30" refY="15" orient="auto" markerUnits="strokeWidth"><path d="M0,29 L30,15 L0,1" stroke="black" fill="none" class="sc-gEvEer bFSwyf"></path></marker><path d="
+          M 0 160 L 114.70588235294117 98.82352941176471
+          M 185.29411764705884 61.17647058823529 L 300 0
+        " stroke-dasharray="7" marker-end="url(#marker-2e62f961-6320-43d9-a2de-813ff6ab6f67)" stroke="black" fill="white" class="sc-gEvEer fkqzOi"></path></g><path id="textpath-2e62f961-6320-43d9-a2de-813ff6ab6f67" d="
+          M 114.70588235294117 98.82352941176471
+          L 185.29411764705884 61.17647058823529
+        "></path><text dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none"><textPath xlink:href="#textpath-2e62f961-6320-43d9-a2de-813ff6ab6f67" startOffset="50%">«include»</textPath></text></g></svg><svg x="610" y="1940" width="320" height="510" class="" fill="#ffffff"><g><g><marker id="marker-f84b29ed-a999-438e-ab05-efcfc4272fe7" viewBox="0 0 30 30" markerWidth="22" markerHeight="30" refX="30" refY="15" orient="auto" markerUnits="strokeWidth"><path d="M0,29 L30,15 L0,1" stroke="black" fill="none" class="sc-gEvEer bFSwyf"></path></marker><path d="
+          M 0 510 L 138.7403571574426 288.8825557803259
+          M 181.2596428425574 221.11744421967407 L 320 0
+        " stroke-dasharray="7" marker-end="url(#marker-f84b29ed-a999-438e-ab05-efcfc4272fe7)" stroke="black" fill="white" class="sc-gEvEer fkqzOi"></path></g><path id="textpath-f84b29ed-a999-438e-ab05-efcfc4272fe7" d="
+          M 138.7403571574426 288.8825557803259
+          L 181.2596428425574 221.11744421967407
+        "></path><text dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none"><textPath xlink:href="#textpath-f84b29ed-a999-438e-ab05-efcfc4272fe7" startOffset="50%">«include»</textPath></text></g></svg><svg x="700" y="1060" width="210" height="200" class="" fill="#ffffff"><g><g><marker id="marker-d3b4612b-f730-4a4c-8fb0-eefd590d27b6" viewBox="0 0 30 30" markerWidth="22" markerHeight="30" refX="30" refY="15" orient="auto" markerUnits="strokeWidth"><path d="M0,29 L30,15 L0,1" stroke="black" fill="none" class="sc-gEvEer bFSwyf"></path></marker><path d="
+          M 210 0 L 133.9655172413793 72.41379310344828
+          M 76.03448275862068 127.58620689655172 L 0 200
+        " stroke-dasharray="7" marker-end="url(#marker-d3b4612b-f730-4a4c-8fb0-eefd590d27b6)" stroke="black" fill="white" class="sc-gEvEer fkqzOi"></path></g><path id="textpath-d3b4612b-f730-4a4c-8fb0-eefd590d27b6" d="
+          M 133.9655172413793 72.41379310344828
+          L 76.03448275862068 127.58620689655172
+        "></path><text dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none" transform="
+              translate(105, 100)
+              rotate(180)
+              translate(-105, -100)
+            "><textPath xlink:href="#textpath-d3b4612b-f730-4a4c-8fb0-eefd590d27b6" startOffset="50%">«support»</textPath></text></g></svg><svg x="1140" y="760" width="60" height="1130" class="" fill="#ffffff"><g><g><marker id="marker-c3ab1229-d6c8-4060-bd0f-f704f9edf92d" viewBox="0 0 30 30" markerWidth="22" markerHeight="30" refX="30" refY="15" orient="auto" markerUnits="strokeWidth"><path d="M0,29 L30,15 L0,1" stroke="black" fill="none" class="sc-gEvEer bFSwyf"></path></marker><path d="
+          M 60 0 L 32.12090614452346 525.0562676114747
+          M 27.879093855476537 604.9437323885253 L 0 1130
+        " stroke-dasharray="7" marker-end="url(#marker-c3ab1229-d6c8-4060-bd0f-f704f9edf92d)" stroke="black" fill="white" class="sc-gEvEer fkqzOi"></path></g><path id="textpath-c3ab1229-d6c8-4060-bd0f-f704f9edf92d" d="
+          M 32.12090614452346 525.0562676114747
+          L 27.879093855476537 604.9437323885253
+        "></path><text dominant-baseline="middle" text-anchor="middle" font-weight="bold" pointer-events="none" transform="
+              translate(30, 565)
+              rotate(180)
+              translate(-30, -565)
+            "><textPath xlink:href="#textpath-c3ab1229-d6c8-4060-bd0f-f704f9edf92d" startOffset="50%">«support»</textPath></text></g></svg></svg>

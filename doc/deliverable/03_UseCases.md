@@ -22,7 +22,7 @@ Add one narrative for each use case shown in the diagram.
 | Minimum guarantees      |Nessun dato personale viene persistito in caso di registrazione non completata. Le credenziali (password) non vengono mai salvate nei database di Participium. |
 | Success guarantees      | L'utente dispone di un account attivo e verificato sulla piattaforma. L'utente può effettuare il login. |
 | Trigger                 | - |
-| Main success scenario   | 1. L'utente chiede di potersi registrare.<br>2. Il sistema reindirizza l'utente al Servizio di Autenticazione esterno [FR-01].<br>3. L'utente inserisce username, nome, cognome, indirizzo email e password.<br>4. L'utente conferma e invia il modulo di registrazione.<br>5. Il sistema crea l'account in stato "non verificato" e invia un'email con link di verifica [FR-01].<br>6. L'utente clicca sul link di verifica ricevuto via email.<br>7. Il sistema attiva l'account [FR-01].<br>8. Il sistema propone al cittadino di completare il profilo: caricare opzionalmente una foto profilo [FR-05] e impostare le preferenze di notifica email [FR-04].<br>9. Il cittadino configura le preferenze desiderate.<br>10. Il sistema salva le impostazioni selezionate [FR-04] [FR-05].<br>11. L'utente viene reindirizzato alla piattaforma come utente autenticato.<br>Il caso d'uso termina con successo |
+| Main success scenario   | 1. L'utente chiede di potersi registrare.<br>2. Il sistema reindirizza l'utente al Servizio di Autenticazione esterno [FR-01].<br>3. L'utente inserisce username, nome, cognome, indirizzo email e password.<br>4. L'utente conferma e invia il modulo di registrazione.<br>5. Il Servizio di Autenticazione esterno crea l'account in stato "non verificato" e invia un'email con link di verifica [FR-01].<br>6. L'utente clicca sul link di verifica ricevuto via email.<br>7. Il sistema attiva l'account [FR-01].<br>8. Il sistema propone al cittadino di completare il profilo: caricare opzionalmente una foto profilo [FR-05] e impostare le preferenze di notifica email [FR-04].<br>9. Il cittadino configura le preferenze desiderate.<br>10. Il sistema salva le impostazioni selezionate [FR-04] [FR-05].<br>11. L'utente viene reindirizzato alla piattaforma come utente autenticato.<br>Il caso d'uso termina con successo |
 | Extensions              | 4a. L'utente annulla la registrazione.<br>4a.1 Il sistema non crea l'account, il caso d'uso termina con un fallimento.<br>5a. I dati inseriti non sono validi o sono incompleti.<br>5a.1 Il sistema mostra gli errori e il caso d'uso riprende dal punto 2.<br>9a. Il cittadino salta la configurazione del profilo.<br>9a.1 Il sistema mantiene le impostazioni predefinite e il caso d'uso riprende dal punto 10. |
 
 | Use Case                |           Recupero password                  |
@@ -38,7 +38,7 @@ Add one narrative for each use case shown in the diagram.
 | Minimum guarantees      | Le credenziali precedenti rimangono valide fino al completamento del reset. |
 | Success guarantees      | L'utente ha impostato una nuova password e può effettuare il login. |
 | Trigger                 | - |
-| Main success scenario   | 1. L'utente accede alla pagina di recupero password.<br>2. Il sistema reindirizza la richiesta al Servizio di Autenticazione esterno.<br>3. L'utente inserisce l'indirizzo email associato al proprio account.<br>4. L'utente conferma e invia la richiesta.<br>5. Il Servizio di Autenticazione esterno verifica l'email e genera un link di reset [FR-02].<br>6. Il Servizio di Autenticazione esterno invia un'email con il link di reset all'indirizzo fornito [FR-02].<br>7. L'utente accede al link di reset ricevuto via email.<br>8. L'utente inserisce e conferma la nuova password.<br>9. Il sistema aggiorna le credenziali [FR-02].<br>10. L'utente viene reindirizzato alla pagina di login. |
+| Main success scenario   | 1. L'utente accede alla pagina di recupero password.<br>2. Il sistema reindirizza la richiesta al Servizio di Autenticazione esterno.<br>3. L'utente inserisce l'indirizzo email associato al proprio account.<br>4. L'utente conferma e invia la richiesta.<br>5. Il Servizio di Autenticazione esterno verifica l'email e genera un link di reset [FR-02].<br>6. Il Servizio di Autenticazione esterno invia un'email con il link di reset all'indirizzo fornito [FR-02].<br>7. L'utente accede al link di reset ricevuto via email.<br>8. L'utente inserisce e conferma la nuova password.<br>9. Il sistema aggiorna le credenziali [FR-02].<br>10. L'utente viene reindirizzato alla pagina di login.<br>Il caso d'uso termina con successo. |
 | Extensions              | 4a. L'utente annulla il recupero.<br>4a.1 Il sistema non invia nessuna email, il caso d'uso termina con un fallimento.<br>8a. Le password inserite non coincidono o non rispettano i requisiti di sicurezza.<br>8a.1 Il sistema mostra gli errori e il caso d'uso riprende dal punto 8. |
 
 
@@ -56,7 +56,7 @@ Add one narrative for each use case shown in the diagram.
 | Minimum guarantees      | -|
 | Success guarantees      | L'utente dispone di una sessione autenticata attiva con i permessi corrispondenti al proprio ruolo. |
 | Trigger                 | - |
-| Main success scenario   | 1. L'utente accede alla pagina di login.<br>2. Il sistema reindirizza l'utente alla schermata del Servizio di Autenticazione esterno. <br>3. L'utente inserisce username e password.<br>4. L'utente conferma e invia il modulo di login.<br>5. Il sistema verifica le credenziali tramite il servizio di autenticazione [FR-03].<br>6. Il sistema crea una sessione autenticata [FR-03].<br>7. L'utente viene reindirizzato all'area riservata corrispondente al proprio ruolo. |
+| Main success scenario   | 1. L'utente accede alla pagina di login.<br>2. Il sistema reindirizza l'utente alla schermata del Servizio di Autenticazione esterno. <br>3. L'utente inserisce username e password.<br>4. L'utente conferma e invia il modulo di login.<br>5. Il sistema verifica le credenziali tramite il servizio di autenticazione [FR-03].<br>6. Il sistema crea una sessione autenticata [FR-03].<br>7. L'utente viene reindirizzato all'area riservata corrispondente al proprio ruolo.<br>Il caso d'uso termina con successo. |
 | Extensions              | 4a. L'utente annulla il login.<br>4a.1 Il sistema non crea nessuna sessione, il caso d'uso termina con un fallimento.<br>5a. Le credenziali inserite non sono corrette.<br>5a.1 Il sistema mostra un messaggio di errore generico e il caso d'uso riprende dal punto 3. |
 
 | Use Case                |          Logout                   |
@@ -72,7 +72,7 @@ Add one narrative for each use case shown in the diagram.
 | Minimum guarantees      | - |
 | Success guarantees      | La sessione dell'utente è terminata e nessun dato personale rimane accessibile senza nuova autenticazione. |
 | Trigger                 | - |
-| Main success scenario   | 1. L'utente richiede il logout.<br>2. Il sistema invalida la sessione autenticata [FR-03].<br>3. Il sistema richiede al Servizio di Autenticazione esterno di invalidare la sessione globale.<br>4. L'utente viene reindirizzato alla pagina pubblica della piattaforma. |
+| Main success scenario   | 1. L'utente richiede il logout.<br>2. Il sistema invalida la sessione autenticata [FR-03].<br>3. Il sistema richiede al Servizio di Autenticazione esterno di invalidare la sessione globale.<br>4. L'utente viene reindirizzato alla pagina pubblica della piattaforma.<br>Il caso d'uso termina con successo. |
 | Extensions              | - |
 
 | Use Case                |            Aggiornamento profilo                 |
@@ -88,7 +88,7 @@ Add one narrative for each use case shown in the diagram.
 | Minimum guarantees      | Le modifiche non confermate non vengono persistite. |
 | Success guarantees      | Le nuove impostazioni del profilo sono attive. |
 | Trigger                 | - |
-| Main success scenario   | 1. Il cittadino accede alla sezione del proprio profilo. Il sistema mostra le impostazioni correnti.<br>2. Il cittadino apporta le modifiche desiderate: aggiorna le preferenze di notifica email [FR-04] e/o carica una nuova foto profilo [FR-05].<br>3. Il cittadino conferma e salva le modifiche.<br>4. Il sistema aggiorna il profilo con le nuove impostazioni [FR-04] [FR-05].<br>5. Il sistema mostra la conferma di avvenuto aggiornamento. |
+| Main success scenario   | 1. Il cittadino accede alla sezione del proprio profilo. Il sistema mostra le impostazioni correnti.<br>2. Il cittadino apporta le modifiche desiderate: aggiorna le preferenze di notifica email [FR-04] e/o carica una nuova foto profilo [FR-05].<br>3. Il cittadino conferma e salva le modifiche.<br>4. Il sistema aggiorna il profilo con le nuove impostazioni [FR-04] [FR-05].<br>5. Il sistema mostra la conferma di avvenuto aggiornamento.<br>Il caso d'uso termina con successo. |
 | Extensions              | 2a. L'utente tenta di caricare una foto di formato o dimensione non supportata.<br>2a.1 Il sistema mostra un errore e richiede un file valido, il caso d'uso riprende dal punto 2.<br>3a. Il cittadino annulla le modifiche.<br>3a.1 Il sistema non persiste nessuna modifica, il caso d'uso termina.|
 
 | Use Case                | Inserimento segnalazione |
@@ -104,11 +104,11 @@ Add one narrative for each use case shown in the diagram.
 | Minimum guarantees      | In caso di fallimento, nessuna segnalazione viene persistita. |
 | Success guarantees      | La segnalazione è pubblicata sulla piattaforma in stato "Pending Approval" |
 | Trigger                 | Il cittadino riscontra un problema urbano e decide di comunicarlo al Comune. |
-| Main success scenario   | 1. Il cittadino accede al modulo di inserimento segnalazione.<br>2. Il cittadino seleziona la posizione del problema sulla mappa [FR-06].<br>3. Il cittadino inserisce titolo e descrizione e seleziona una categoria dalla lista predefinita [FR-06].<br>4. Il cittadino allega opzionalmente fino a 3 foto, compresse automaticamente lato client [FR-06].<br>5. Il cittadino sceglie se rendere la segnalazione anonima [FR-07].<br>6. Il cittadino conferma e invia la segnalazione.<br>7. Il sistema valida i dati e pubblica la segnalazione in stato "Pending Approval" [FR-06].<br>8. Il sistema mostra la conferma di avvenuta creazione della segnalazione. |
-| Extensions              | 6a. Il cittadino annulla l'inserimento.<br>6a.1 Il sistema scarta i dati, nessuna segnalazione viene creata, il caso d'uso termina con un fallimento.<br>7a. I campi obbligatori (posizione, titolo, categoria) non sono stati compilati.<br>7a.1 Il sistema evidenzia i campi mancanti e il caso d'uso riprende dal punto 2. | 
+| Main success scenario   | 1. Il cittadino accede al modulo di inserimento segnalazione.<br>2. Il cittadino seleziona la posizione del problema sulla mappa [FR-06].<br>3. Il cittadino inserisce titolo e descrizione e seleziona una categoria dalla lista predefinita [FR-06].<br>4. Il cittadino allega opzionalmente fino a 3 foto, compresse automaticamente lato client [FR-06].<br>5. Il cittadino sceglie se rendere la segnalazione anonima [FR-07].<br>6. Il cittadino conferma e invia la segnalazione.<br>7. Il sistema valida i dati e pubblica la segnalazione in stato "Pending Approval" [FR-06].<br>8. Il sistema mostra la conferma di avvenuta creazione della segnalazione.<br>Il caso d'uso termina con successo. |
+| Extensions              | 1a. L'utente ha già inviato 5 segnalazioni nella giornata odierna.<br>1a.1 Il sistema mostra un messaggio di blocco per limite raggiunto e impedisce l'accesso al modulo. Il caso d'uso termina.<br>6a. Il cittadino annulla l'inserimento.<br>6a.1 Il sistema scarta i dati, nessuna segnalazione viene creata, il caso d'uso termina con un fallimento.<br>7a. I campi obbligatori (posizione, titolo, categoria) non sono stati compilati.<br>7a.1 Il sistema evidenzia i campi mancanti e il caso d'uso riprende dal punto 2. | 
 
 
-| Use Case                | Consultazione proprie segnalazioni                            |
+| Use Case                | Consultazione  segnalazioni                            |
 |:------------------------|:----------------------------|
 | ID                      | UC-07                          |
 | Scope                   | Piattaforma Participium     |
@@ -121,7 +121,7 @@ Add one narrative for each use case shown in the diagram.
 | Minimum guarantees      | L'utente visualizza esclusivamente le segnalazioni associate al proprio account e quelle che ha scelto di seguire. |
 | Success guarantees      | L'utente dispone di una vista aggiornata di tutte le segnalazioni di suo interesse con relativo stato corrente. |
 | Trigger                 | - |
-| Main success scenario   | 1. L'utente accede alla sezione delle proprie segnalazioni.<br>2. Il sistema recupera e mostra in formato tabellare le segnalazioni create dall'utente e quelle seguite, con titolo, data, categoria e stato corrente [FR-10] [FR-11].<br>3. Il caso d'uso termina con successo. |
+| Main success scenario   | 1. L'utente accede alla sezione delle proprie segnalazioni.<br>2. Il sistema recupera e mostra in formato tabellare le segnalazioni create dall'utente e quelle seguite, con titolo, data, categoria e stato corrente [FR-10] [FR-11].<br> Il caso d'uso termina con successo. |
 | Extensions              | 2a. L'utente non ha ancora creato né seguito nessuna segnalazione.<br>2a.1 Il sistema mostra un elenco vuoto con un messaggio informativo e il caso d'uso termina con successo. |
 
 
@@ -146,16 +146,16 @@ Add one narrative for each use case shown in the diagram.
 | ID                      | UC-09                          |
 | Scope                   | Piattaforma Participium     |
 | Level                   | Subfunction                 |
-| Intention in Context    | Ricezione e visualizzazione notifica cambio stato |
+| Intention in Context    | Informare l'utente di un cambiamento rilevante (cambio stato o nuovo messaggio) e aggiornare la cronologia della segnalazione. |
 | Primary actor           | Cittadino registrato |
 | Supporting actors       | Servizio notifiche (STK-6), Mail server (STK-7) |
-| Stakeholders' interests | **Cittadino registrato (STK-2)**: vuole essere informato tempestivamente sui cambi di stato delle segnalazioni proprie o seguite senza dover controllare attivamente la piattaforma. **Operatore comunale (STK-3)**: vuole ridurre le richieste dirette di aggiornamento da parte dei cittadini. |
-| Precondition            | L'utente è autenticato sulla piattaforma. L'operatore Comunale cambia lo stato di una segnalazione |
-| Minimum guarantees      | Il cambio di stato della segnalazione viene registrato nel sistema indipendentemente dall'esito della notifica. |
-| Success guarantees      | L'utente è informato del cambio di stato e ha accesso al dettaglio della segnalazione associata. |
-| Trigger                 | Il sistema registra un cambio di stato per una segnalazione creata o seguita dall'utente. |
-| Main success scenario   | 1. Il sistema invia una notifica push all'utente tramite il servizio notifiche [FR-14].<br>2. Il sistema invia opzionalmente una notifica email, se abilitata dall'utente [FR-15].<br>3. L'utente clicca sulla notifica ricevuta.<br>4. Il sistema marca la notifica come letta e reindirizza l'utente alla pagina di dettaglio della segnalazione. Il caso d'uso termina con successo. |
-| Extensions              | 1a. Il servizio notifiche non è raggiungibile.<br>1a.1 Il sistema registra il fallimento della notifica push; il cambio di stato rimane comunque persistito.<br>2a. L'utente ha disabilitato le notifiche email [FR-04].<br>2a.1 Il sistema salta l'invio email e il caso d'uso termina con successo. |
+| Stakeholders' interests | **Cittadino registrato (STK-2)**: vuole essere informato tempestivamente sui cambi di stato delle segnalazioni proprie o seguite e sulla messaggistica con l'operatore senza dover controllare attivamente la piattaforma. **Operatore comunale (STK-3)**: vuole che il cittadino veda gli aggiornamenti ufficiali insieme ai messaggi di chiarimento |
+| Precondition            | L'utente è autenticato sulla piattaforma. Si verifica un evento di sistema.|
+| Minimum guarantees      | Il cambio di stato della segnalazione o il messaggio inviato vengono registrati nel sistema indipendentemente dall'esito della notifica. |
+| Success guarantees      | L'utente riceve l'avviso  e ha accesso alla sezione specifica |
+| Trigger                 | L'operatore cambia lo stato della segnalazione o invia un messaggio diretto. |
+| Main success scenario   | 1. Il sistema genera un messaggio automatico di sistema nella sezione messaggistica della segnalazione [FR-16].<br>2. Il sistema invia una notifica push all'utente tramite il servizio notifiche [FR-14].<br>3. Il sistema invia opzionalmente una notifica email, se abilitata [FR-15].<br>4. L'utente clicca sulla notifica.<br>5. Il sistema mostra la pagina di dettaglio con la cronologia aggiornata, evidenziando il nuovo stato o il nuovo messaggio [FR-09, FR-16].<br>6. Il sistema marca la notifica come letta.<br>Il caso d'uso termina con successo.|
+| Extensions              | 1a. L'utente ha disabilitato le notifiche email.<br>1a.1 Il sistema procede solo con il messaggio interno e la notifica push.<br>2a. Il cittadino è già loggato e visualizza la segnalazione.<br>2a.1 Il sistema aggiorna la UI in tempo reale mostrando il nuovo messaggio di sistema senza richiedere il click sulla notifica. |
 
 | Use Case                |  Invio messaggio a operatore                      |
 |:------------------------|:----------------------------|
@@ -211,8 +211,8 @@ Add one narrative for each use case shown in the diagram.
 | Scope                   | Piattaforma Participium    |
 | Level                   | User goal                             |
 | Intention in Context    | Cittadino vuole vedere tutte le informazioni su una segnalazione selezionata.
-| Primary actor           | Cittadino (registrato/non registrato)   |
-| Supporting actors       | OpenStreetMap |
+| Primary actor           | Cittadino registrato e Cittadino non registrato   |
+| Supporting actors       | OpenStreetMap (STK-8) |
 | Stakeholders' interests | **Cittadino registrato/ non registrato [STK-1, STK-2]**: (registrato o non) desidera visualizzare i dettagli della segnalazione.<br> **Comune di Torino [STK-9]**: mostrare correttamente i dettagli di una segnalazione |
 | Precondition            | La segnalazione deve esistere |
 | Minimum guarantees      | - |
@@ -228,7 +228,7 @@ Add one narrative for each use case shown in the diagram.
 | Scope                   | Piattaforma Participium         |
 | Level                   | User goal                                      |
 | Intention in Context    | Cittadino, registrato o non, desidera scaricare localmente i dati della vista tabellare. |
-| Primary actor           | Cittadino (registrato/non registrato)           |
+| Primary actor           | Cittadino registrato e Cittadino non registrato       |
 | Supporting actors       | - |
 | Stakeholders' interests | **Cittadino registrato/non registrato[STK-1, STK-2]**: esportazione rapida e completa;  |
 | Precondition            | - |
@@ -244,16 +244,16 @@ Add one narrative for each use case shown in the diagram.
 | ID                      | UC-15                              |
 | Scope                   | Piattaforma Participium     |
 | Level                   | User goal                          |
-| Intention in Context    | Cittadino, registrato o non, vuole accedere a statistiche generali sulle segnalazioni. |
+| Intention in Context    | Accedere a dashboard pubbliche per visualizzare i dati aggregati sull'andamento delle segnalazioni cittadine. |
 | Primary actor           | Cittadino (registrato/non registrato) |
 | Supporting actors       | - |
-| Stakeholders' interests | **Cittadino[STK-1, STK-2]**: trasparenza<br> **Comune[STK-9]**: accountability e insight. |
+| Stakeholders' interests | **Cittadino registrato/non registrato[STK-1, STK-2]**: vuole trasparenza sulla tipologia di problemi urbani e sui volumi di segnalazioni nel tempo.<br> **Comune[STK-9]**: vuole dimostrare accountability e fornire insight pubblici sull'uso della piattaforma. |
 | Precondition            | - |
 | Minimum guarantees      | Mostra un messaggio di “nessun dato” se non disponibili. |
 | Success guarantees      | Fornisce statistiche aggiornate ed aggregate. |
 | Trigger                 | - |
-| Main success scenario   | 1. Cittadino entra nella sezione specifica.<br> 2. Sistema calcola metriche.<br> 3. Sistema mostra grafici/tabelle.[FR-13]<br> Il caso d'uso termina con successo. |
-| Extensions              | 2a. Errore calcolo.<br> 2a.1 messaggio, eventuale retry.<br> 
+| Main success scenario   | 1. Cittadino entra nella sezione specifica.<br> 2. Sistema calcola metriche.<br> 3. Il sistema genera e mostra i grafici relativi al numero di segnalazioni per categoria e ai trend temporali aggregati per giorno, settimana e mese [FR-13].<br> Il caso d'uso termina con successo. |
+| Extensions              | 2a. Il database non contiene ancora nessuna segnalazione.<br>2a.1 Il sistema mostra i grafici vuoti e un messaggio informativo (es. "Nessun dato ancora disponibile per le statistiche"), il caso d'uso termina con successo<br>2b. Si verifica un errore durante il calcolo o il recupero dei dati dal database.<br>2b.1 Il sistema mostra un messaggio di errore e invita l'utente a ricaricare la pagina più tardi. Il caso d'uso termina con un fallimento.<br> 
 
 
 | Use Case                | Accettazione/rifiuto segnalazione |
@@ -263,14 +263,14 @@ Add one narrative for each use case shown in the diagram.
 | Level                   | User goal                |
 | Intention in Context    | Operatore comunale valuta e definisce se una segnalazione è valida o non valida, allegando motivazioni. |
 | Primary actor           | Operatore comunale              |
-| Supporting actors       | Server mail |
-| Stakeholders' interests | **Operatore Comunale[STK-3]**: correttezza processuale, segnalazioni corrette <br> **Cittadino registrato[STK-2]**: attendibilità delle segnalazioni.<br>  |
-| Precondition            | Operatore autenticato. |
+| Supporting actors       | Servizio notifiche (STK-6), Mail server (STK-7) |
+| Stakeholders' interests | **Operatore Comunale[STK-3]**: correttezza processuale, segnalazioni abusive <br> **Cittadino registrato[STK-2]**: attendibilità delle segnalazioni.<br>  |
+| Precondition            | Operatore autenticato. Ci sono segnalazioni in stato "Pending Approval". |
 | Minimum guarantees      | Accettazione o rifiuto con motivazione, anche se la segnalazione viene rifiutata  viene loggato il tutto. |
-| Success guarantees      | Stato aggiornato a “Resolved” o "Rejected" con motivazione salvata. |
-| Trigger                 | Il cittadino registrato inserisce una nuova segnalazione |
-| Main success scenario   | 1. Operatore seleziona segnalazione.<br> 2. Indica decisione e motivazione. [FR-19]<br> 3. Sistema salva aggiornamento.<br> 4. Sistema notifica il segnalatore ed i follower (della segnalazione)del cambio di stato.[FR-15, FR-19] <br> Il caso d'uso termina con successo.|
-| Extensions              | 2a. Motivazione mancante<br>2a.1 Richiesta motivazione obbligatoria.<br>
+| Success guarantees      | Lo stato è aggiornato ad "Assigned" (diventando pubblica sulla mappa) oppure a "Rejected" (con motivazione salvata, restando nascosta). |
+| Trigger                 | L'operatore decide di smistare la coda delle nuove segnalazioni (in stato Pending Approval) |
+| Main success scenario   | 1. L'operatore seleziona una segnalazione in stato "Pending Approval".<br>2. L'operatore verifica il contenuto (testo e foto) e decide di accettarla.<br>3. Il sistema aggiorna lo stato in "Assigned" e pubblica la segnalazione sulla mappa.<br>4. Il sistema invia una notifica di cambio stato al segnalante [FR-14, FR-15].<br>Il caso d'uso termina con successo.|
+| Extensions              | 2a. L'operatore decide di rifiutare la segnalazione (es. non valida, spam, offensiva).<br>2a.1 L'operatore seleziona l'opzione di rifiuto.<br>2a.2 Il sistema richiede l'inserimento obbligatorio di una motivazione esplicita [FR-19].<br>2a.3 L'operatore inserisce la motivazione e conferma.<br>2a.4 Il sistema imposta lo stato a "Rejected" (la segnalazione non appare sulla mappa) e notifica il segnalante con la motivazione allegata [FR-19]. Il caso d'uso termina.
 
 
 | Use Case                | Aggiornamento stato e note segnalazione |
@@ -278,16 +278,16 @@ Add one narrative for each use case shown in the diagram.
 | ID                      | UC-17                                 |
 | Scope                   | Piattaforma Participium    |
 | Level                   | User goal                             |
-| Intention in Context    | Operatore deve aggiornare lo stato e le note delle segnalazioni. |
+| Intention in Context    | L'operatore aggiorna l'avanzamento dei lavori di una segnalazione già accettata o aggiunge note tecniche di servizio. |
 | Primary actor           | Operatore comunale                   |
-| Supporting actors       | - |
-| Stakeholders' interests | **Operatore Comunale[STK-3]**: gestione trasparente<br> **Cittadino registrato /non registrato[STK-1, STK-2]**: trasparenza stato<br> **Ufficio Tecnico del Comune di Torino [STK-10]**: avere informazioni necessarie per effettuare gli interventi. |
-| Precondition            | Operatore comunale autenticato e segnalazione esistente. |
+| Supporting actors       | Servizio notifiche (STK-6), Mail server (STK-7) |
+| Stakeholders' interests | **Operatore Comunale[STK-3]**: gestione trasparente dell'intervento<br> **Cittadino registrato /non registrato[STK-1, STK-2]**: trasparenza stato dei lavori <br> **Ufficio Tecnico del Comune di Torino [STK-10]**: avere informazioni necessarie per effettuare gli interventi. |
+| Precondition            | Operatore comunale autenticato e segnalazione esistente (es. "Assigned", "In Progress", "Suspended"). |
 | Minimum guarantees      | Lo stato o le note sono persistenti a prescindere dall'aggiornamento. |
-| Success guarantees      | Si ha aggiornamento dello stato della segnalazione e/o l'aggiunta di una nota. Quando la segnalazione cambia stato si invierà una notifica. |
+| Success guarantees      | Lo stato della segnalazione è aggiornato (e/o la nota aggiunta) e gli utenti interessati sono stati notificati. |
 | Trigger                 | - |
-| Main success scenario   | 1. Seleziona segnalazione.<br> 2. Modifica stato e/o note. [FR-18, FR-19]<br> 3. Invia notifica di cambio stato e/o aggiunta nota. [FR-14, FR-15]<br> Il caso d'uso termina con successo. |
-| Extensions              |  2a Errore, non viene effettuata la modifica<br>
+| Main success scenario   | 1. L'operatore seleziona la segnalazione da aggiornare.<br>2. Modifica lo stato (es. verso "In Progress" o "Suspended") e/o aggiunge note esplicative [FR-18].<br>3. Il sistema salva l'aggiornamento in database.<br>4. Il sistema invia la notifica di cambio stato al segnalante e ai follower [FR-14, FR-15].<br>Il caso d'uso termina con successo. |
+| Extensions              |  2a. L'operatore seleziona il nuovo stato "Resolved".<br>2a.1 Il sistema aggiorna lo stato, applica la regola di visualizzazione e rimuove automaticamente il marker della segnalazione dalla mappa pubblica, mantenendola consultabile nella vista tabellare [FR-22]. Il flusso riprende dal punto 3.<br>3a. Errore di connessione al sistema.<br>3a.1 Il sistema mostra un messaggio di errore e non effettua la modifica.
 
 
 | Use Case                | Moderazione contenuti |

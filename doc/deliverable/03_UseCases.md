@@ -269,7 +269,7 @@ Add one narrative for each use case shown in the diagram.
 | Minimum guarantees      | Accettazione o rifiuto con motivazione, anche se la segnalazione viene rifiutata  viene loggato il tutto. |
 | Success guarantees      | Lo stato è aggiornato ad "Assigned" (diventando pubblica sulla mappa) oppure a "Rejected" (con motivazione salvata, restando nascosta). |
 | Trigger                 | L'operatore decide di smistare la coda delle nuove segnalazioni (in stato Pending Approval) |
-| Main success scenario   | 1. L'operatore seleziona una segnalazione in stato "Pending Approval".<br>2. L'operatore verifica il contenuto (testo e foto) e decide di accettarla.<br>3. Il sistema aggiorna lo stato in "Assigned" e pubblica la segnalazione sulla mappa.<br>4. Il sistema invia una notifica di cambio stato al segnalante [FR-14, FR-15].<br>Il caso d'uso termina con successo.|
+| Main success scenario   | 1. L'operatore seleziona una segnalazione in stato "Pending Approval".<br>2. L'operatore verifica il contenuto (testo e foto) e decide di accettarla.<br>3. Il sistema aggiorna lo stato in "Assigned" e pubblica la segnalazione sulla mappa [FR-18].<br>4. Il sistema invia una notifica di cambio stato al segnalante [FR-14, FR-15].<br>Il caso d'uso termina con successo.|
 | Extensions              | 2a. L'operatore decide di rifiutare la segnalazione (es. non valida, spam, offensiva).<br>2a.1 L'operatore seleziona l'opzione di rifiuto.<br>2a.2 Il sistema richiede l'inserimento obbligatorio di una motivazione esplicita [FR-19].<br>2a.3 L'operatore inserisce la motivazione e conferma.<br>2a.4 Il sistema imposta lo stato a "Rejected" (la segnalazione non appare sulla mappa) e notifica il segnalante con la motivazione allegata [FR-19]. Il caso d'uso termina.
 
 

@@ -301,11 +301,10 @@ Add one narrative for each use case shown in the diagram.
 | Stakeholders' interests | **Cittadino registrato / non registrato [STK-1, STK-2]**: attendibilità segnalazioni <br> **Admin [STK-4]**: monitoraggio. <br> **Operatore Comunale [STK-3]**: garantire un sistema affidabile.|
 | Precondition            | Operatore autenticato, contenuto segnalato identificato. |
 | Minimum guarantees      | -|
-| Success guarantees      | Rimozione sengnalazione(con aggiornamento stato). |
+| Success guarantees      | La segnalazione viene inviata all'admin |
 | Trigger                 | Operatore rifiuta una segnalazione |
-| Main success scenario   | 1. Fornisce motivo e dettagli per rimozione.[FR-24]<br> 2. Sistema segnala il cittadino segnalante.<br> Il caso d'uso termina con successo.|
-| Extensions              | 1a. Dati insufficienti<br>
-1a.1 Richieste ulteriori varifiche.
+| Main success scenario   | 1. Fornisce motivo e dettagli per rimozione.[FR-24]<br> 2. Il sistema crea il messaggio di segnalazione del cittadino.<br> Il caso d'uso termina con successo.|
+| Extensions              | 1a. Dati insufficienti<br> 1a.1 Richieste ulteriori varifiche.
 
 
 | Use Case                |  Risposta a messaggi cittadini                      |
@@ -314,15 +313,15 @@ Add one narrative for each use case shown in the diagram.
 | Scope                   | Piattaforma Participium     |
 | Level                   | User goal                   |
 | Intention in Context    | Fornire chiarimenti o aggiornamenti diretti al cittadino in risposta a una sua richiesta |
-| Primary actor           | Operatore comunale (STK-3)  |
+| Primary actor           | Operatore comunale |
 | Supporting actors       | Servizio notifiche (STK-6), Mail server (STK-7) |
 | Stakeholders' interests | **Operatore comunale (STK-3)**: vuole comunicare in modo rapido e tracciato con il segnalante per risolvere dubbi operativi. **Cittadino registrato (STK-2)**: vuole ricevere risposte chiare senza dover telefonare agli uffici. |
 | Precondition            | L'operatore è autenticato e visualizza il dettaglio di una segnalazione con messaggi inviati dai cittadini. |
 | Minimum guarantees      | I messaggi inviati vengono storicizzati e associati permanentemente alla segnalazione. |
 | Success guarantees      | Il messaggio è recapitato al cittadino e la cronologia della conversazione è aggiornata. |
-| Trigger                 | Ricezione di un messaggio da parte di un cittadino (UC-10). |
+| Trigger                 | Ricezione di un messaggio da parte di un cittadino. |
 | Main success scenario   | 1. L'operatore accede alla sezione messaggistica della segnalazione specifica.<br>2. L'operatore inserisce il testo della risposta.<br>3. L'operatore conferma l'invio.<br>4. Il sistema valida il contenuto e salva il messaggio [FR-16].<br>5. Il sistema invia una notifica push al cittadino segnalante tramite il servizio notifiche [FR-14] e, se abilitata, una notifica email tramite mail server [FR-15].<br>6. Il sistema aggiorna l'interfaccia della chat mostrando il nuovo messaggio. Il caso d'uso termina con successo. |
-| Extensions              | 2a. L'operatore rileva che il messaggio del cittadino viola le norme di comportamento.<br>2a.1 L'operatore segnala il contenuto per moderazione (UC-18) prima di rispondere. |
+| Extensions              | - |
 
 
 | Use Case                |  Visualizzazione segnalazioni in dashboard (con filtro) |
@@ -331,7 +330,7 @@ Add one narrative for each use case shown in the diagram.
 | Scope                   | Piattaforma Participium     |
 | Level                   | User goal                   |
 | Intention in Context    | Monitorare e gestire il carico di lavoro tramite una vista d'insieme delle segnalazioni attive |
-| Primary actor           | Operatore comunale (STK-3)  |
+| Primary actor           | Operatore comunale |
 | Supporting actors       | -                           |
 | Stakeholders' interests | **Operatore comunale (STK-3)**: vuole una lista chiara dei ticket prioritari da gestire per organizzare gli interventi. **Comune di Torino (STK-9)**: vuole efficienza nella gestione dei tempi di risposta ai cittadini. |
 | Precondition            | L'operatore è autenticato nell'area gestionale. |
@@ -348,7 +347,7 @@ Add one narrative for each use case shown in the diagram.
 | Scope                   | Piattaforma Participium     |
 | Level                   | User goal                   |
 | Intention in Context    | Configurare e gestire gli accessi per il personale degli uffici tecnici comunali |
-| Primary actor           | Amministratore (STK-4)      |
+| Primary actor           | Amministratore |
 | Supporting actors       | Servizio di autenticazione (STK-5), Mail server (STK-7) |
 | Stakeholders' interests | **Admin (STK-4)**: vuole gestire i permessi del personale comunale in modo centralizzato e sicuro. **Comune di Torino (STK-9)**: vuole che solo personale autorizzato acceda ai dati sensibili delle segnalazioni. |
 | Precondition            | L'Admin è autenticato nella dashboard amministrativa privata. |
@@ -365,13 +364,13 @@ Add one narrative for each use case shown in the diagram.
 | Scope                   | Piattaforma Participium     |
 | Level                   | User goal                   |
 | Intention in Context    | Sospendere l'accesso a utenti che caricano spam o contenuti inappropriati |
-| Primary actor           | Amministratore (STK-4)      |
+| Primary actor           | Amministratore  |
 | Supporting actors       | -                           |
 | Stakeholders' interests | **Admin (STK-4)**: vuole proteggere l'integrità dei dati e la reputazione della piattaforma. **Cittadini (STK-2)**: vogliono un ambiente civile e privo di segnalazioni false o offensive. |
 | Precondition            | L'utente in questione è stato segnalato da un operatore per violazione dei termini (UC-18). |
 | Minimum guarantees      | Tutte le segnalazioni pendenti dell'utente bannato vengono rimosse dalla vista pubblica. |
 | Success guarantees      | L'utente non può più autenticarsi o interagire con la piattaforma. |
-| Trigger                 | Accertamento di un comportamento abusivo reiterato. |
+| Trigger                 | L'Admin riceve la segnalazione di un utente da parte effettuata da un operatore comunale. |
 | Main success scenario   | 1. L'Admin accede alla lista degli utenti segnalati per abusi.<br>2. L'Admin revisiona le segnalazioni e le prove caricate (es. foto inappropriate).<br>3. L'Admin seleziona l'opzione "Ban Utente".<br>4. Il sistema comunica al Servizio di Autenticazione di revocare i permessi all'utente [FR-23].<br>5. Il sistema disabilita la sessione attiva dell'utente e nasconde le sue segnalazioni correnti dalla vista pubblica [FR-23].<br>6. Il sistema registra l'azione nel log di moderazione. Il caso d'uso termina con successo. |
 | Extensions              | 3a. L'Admin ritiene la violazione lieve.<br>3a.1 L'Admin invia solo un ammonimento formale tramite email e non procede al ban. |
 
@@ -382,7 +381,7 @@ Add one narrative for each use case shown in the diagram.
 | Scope                   | Piattaforma Participium     |
 | Level                   | User goal                   |
 | Intention in Context    | Analizzare i dati aggregati per monitorare l'andamento del servizio e le performance degli uffici |
-| Primary actor           | Amministratore (STK-4)      |
+| Primary actor           | Amministratore |
 | Supporting actors       | -                           |
 | Stakeholders' interests | **Admin (STK-4)**: vuole misurare l'efficienza degli uffici tecnici e il volume di segnalazioni per quartiere. **Comune di Torino (STK-9)**: vuole dati oggettivi per pianificare interventi di manutenzione stradale a lungo termine. |
 | Precondition            | L'Admin è autenticato.      |

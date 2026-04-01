@@ -113,7 +113,7 @@ Risk level thresholds (by exposure):
 |:---|:-----|:---------|--:|--:|----:|:------|:-------------------------------|
 | R1 |   Requisiti non stabili   |     Progetto (Scope)    | 3  |  4 |  12   |    Alto   |      MVP chiaro, Roadmap definita, Congelamento formale dei requisiti        |
 | R2 |  Scalabilità (Latenza caricamento mappa/foto)  |     Tecnico / Prestazioni  | 3  |  5 |  15   |    Alto   |    Implementazione del clustering dei marker sulla mappa e stress test prima del rilascio.       |
-| R3 |   Caricamento di dati sensibili nelle foto (volti,targhe)   |   Legale / Privacy    | 4  |  4 |  16   |    Molto Alto   |    Inserire un disclaimer obbligatorio prima dell'upload e moderazione manuale da parte degli operatori prima della pubblicazione sulla mappa pubblica.     |
+| R3 |   Caricamento di dati sensibili nelle foto (volti,targhe)   |   Legale / Privacy    | 5  |  4 |  20   |    Molto Alto   |    Inserire un disclaimer obbligatorio prima dell'upload e moderazione manuale da parte degli operatori prima della pubblicazione sulla mappa pubblica.     |
 | R4 |  Disservizi di OpenStreetMap  |     Esterno/Tecnico  | 2  |  4 |  8   |    Medio   |    Implementazione di caching lato client/server       |
 | R5 |  Vulnerabilità, Data Breach e non conformità GDPR   |     Security/Privacy  | 2  |  5 |  10   |    Medio   |    Test di sicurezza,  cifratura dei dati sensibili nel DB, stesura di un Documento Privacy, log degli accessi    |
 | R6 | Abuso del sistema (Spam o segnalazioni false) | Operativo / Sicurezza | 3 | 3 | 9 | Medio | Inserimento di limitazioni (es. max 5 segnalazioni al giorno per utente) e possibilità di ban per gli amministratori |

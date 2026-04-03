@@ -2,8 +2,6 @@
 
 ![](../../data/img/UseCaseDiagram.svg)
 
-Also, make sure to include the JSON source file downloaded from the UML Modeler used to draw the diagram in the `../data/` folder.
-
 # 2) Use Case Narratives
 
 Add one narrative for each use case shown in the diagram.

@@ -398,4 +398,26 @@ Add one narrative for each use case shown in the diagram.
 
 | UC ID | REQ ID |
 | :---- | :----- |
-| UC-XX | FR-XX  |
+| UC-01 | FR-01, FR-04, FR-05 |
+| UC-02 | FR-02 |
+| UC-03 | FR-03 |
+| UC-04 | FR-03 |
+| UC-05 | FR-04, FR-05 |
+| UC-06 | FR-06, FR-07 |
+| UC-07 | FR-10, FR-11 |
+| UC-08 | FR-10 |
+| UC-09 | FR-09, FR-14, FR-15, FR-16 |
+| UC-10 | FR-16 |
+| UC-11 | FR-08, FR-22 |
+| UC-12 | FR-11, FR-22 |
+| UC-13 | FR-09 |
+| UC-14 | FR-12 |
+| UC-15 | FR-13 |
+| UC-16 | FR-14, FR-15, FR-18, FR-19 |
+| UC-17 | FR-14, FR-15, FR-18, FR-22 |
+| UC-18 | FR-24 |
+| UC-19 | FR-14, FR-15, FR-16 |
+| UC-20 | FR-17 |
+| UC-21 | FR-20 |
+| UC-22 | FR-23 |
+| UC-23 | FR-12, FR-21 |

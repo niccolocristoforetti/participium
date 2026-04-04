@@ -1239,7 +1239,7 @@
     },
     "stat-class-0002": {
       "id": "stat-class-0002",
-      "name": "StatisticheAmministratore",
+      "name": "StatistichePrivate",
       "type": "Class",
       "owner": null,
       "bounds": {

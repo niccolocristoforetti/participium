@@ -1,0 +1,432 @@
+{
+  "version": "3.0.0",
+  "type": "DeploymentDiagram",
+  "size": {
+    "width": 1220,
+    "height": 740
+  },
+  "interactive": {
+    "elements": {},
+    "relationships": {}
+  },
+  "elements": {
+    "7a1a4938-88a1-46b0-a0bd-1f6d006ea7a1": {
+      "id": "7a1a4938-88a1-46b0-a0bd-1f6d006ea7a1",
+      "name": "Web Server",
+      "type": "DeploymentNode",
+      "owner": null,
+      "bounds": {
+        "x": -220,
+        "y": -350,
+        "width": 290,
+        "height": 180
+      },
+      "stereotype": "node",
+      "displayStereotype": true
+    },
+    "abd979b6-f374-4a52-b729-d42af32e4f09": {
+      "id": "abd979b6-f374-4a52-b729-d42af32e4f09",
+      "name": "App web",
+      "type": "DeploymentArtifact",
+      "owner": "7a1a4938-88a1-46b0-a0bd-1f6d006ea7a1",
+      "bounds": {
+        "x": -150,
+        "y": -280,
+        "width": 160,
+        "height": 40
+      }
+    },
+    "3e0c294b-3773-4310-b29f-c0385dbd9fb6": {
+      "id": "3e0c294b-3773-4310-b29f-c0385dbd9fb6",
+      "name": "dashboard operatore",
+      "type": "DeploymentArtifact",
+      "owner": "7a1a4938-88a1-46b0-a0bd-1f6d006ea7a1",
+      "bounds": {
+        "x": -170,
+        "y": -220,
+        "width": 180,
+        "height": 40
+      }
+    },
+    "dc45dd7a-6441-4740-9b32-d6a1241c6ace": {
+      "id": "dc45dd7a-6441-4740-9b32-d6a1241c6ace",
+      "name": "Disp. utente",
+      "type": "DeploymentNode",
+      "owner": null,
+      "bounds": {
+        "x": 320,
+        "y": -340,
+        "width": 250,
+        "height": 150
+      },
+      "stereotype": "node",
+      "displayStereotype": true
+    },
+    "8f4a840e-f3fc-412b-80e3-5c0378d3bf9a": {
+      "id": "8f4a840e-f3fc-412b-80e3-5c0378d3bf9a",
+      "name": "Browser",
+      "type": "DeploymentNode",
+      "owner": "dc45dd7a-6441-4740-9b32-d6a1241c6ace",
+      "bounds": {
+        "x": 370,
+        "y": -270,
+        "width": 160,
+        "height": 60
+      },
+      "stereotype": "exec. env",
+      "displayStereotype": true
+    },
+    "faf3fd43-f92e-4ada-ae21-626521b5a647": {
+      "id": "faf3fd43-f92e-4ada-ae21-626521b5a647",
+      "name": "Application server",
+      "type": "DeploymentNode",
+      "owner": null,
+      "bounds": {
+        "x": -220,
+        "y": -40,
+        "width": 250,
+        "height": 150
+      },
+      "stereotype": "node",
+      "displayStereotype": true
+    },
+    "a53e6cea-24b3-4344-b3ea-4c281bae30d7": {
+      "id": "a53e6cea-24b3-4344-b3ea-4c281bae30d7",
+      "name": "Back end API",
+      "type": "DeploymentArtifact",
+      "owner": "faf3fd43-f92e-4ada-ae21-626521b5a647",
+      "bounds": {
+        "x": -180,
+        "y": 30,
+        "width": 160,
+        "height": 40
+      }
+    },
+    "e1480648-d899-4c64-923e-31af62c1af32": {
+      "id": "e1480648-d899-4c64-923e-31af62c1af32",
+      "name": "OpenStreatMap",
+      "type": "DeploymentNode",
+      "owner": null,
+      "bounds": {
+        "x": 310,
+        "y": 80,
+        "width": 250,
+        "height": 70
+      },
+      "stereotype": "external system",
+      "displayStereotype": true
+    },
+    "fe5fe3d3-2c66-475d-bfd4-cc53086e6caf": {
+      "id": "fe5fe3d3-2c66-475d-bfd4-cc53086e6caf",
+      "name": "DB server",
+      "type": "DeploymentNode",
+      "owner": null,
+      "bounds": {
+        "x": -590,
+        "y": -40,
+        "width": 250,
+        "height": 150
+      },
+      "stereotype": "node",
+      "displayStereotype": true
+    },
+    "067bc77c-56a1-4aad-b6b6-d8b1906a3215": {
+      "id": "067bc77c-56a1-4aad-b6b6-d8b1906a3215",
+      "name": "Database",
+      "type": "DeploymentArtifact",
+      "owner": "fe5fe3d3-2c66-475d-bfd4-cc53086e6caf",
+      "bounds": {
+        "x": -550,
+        "y": 30,
+        "width": 160,
+        "height": 40
+      }
+    },
+    "6f7e4d89-ff49-489d-a1f4-045b76b84528": {
+      "id": "6f7e4d89-ff49-489d-a1f4-045b76b84528",
+      "name": "Sistema di notifica",
+      "type": "DeploymentNode",
+      "owner": null,
+      "bounds": {
+        "x": 170,
+        "y": -110,
+        "width": 250,
+        "height": 70
+      },
+      "stereotype": "external system",
+      "displayStereotype": true
+    },
+    "ae3b3fdb-9914-4f41-847b-45c13ce32dcd": {
+      "id": "ae3b3fdb-9914-4f41-847b-45c13ce32dcd",
+      "name": "Sistema di autenticazione",
+      "type": "DeploymentNode",
+      "owner": null,
+      "bounds": {
+        "x": -220,
+        "y": 170,
+        "width": 250,
+        "height": 70
+      },
+      "stereotype": "external system",
+      "displayStereotype": true
+    },
+    "aec8b37f-a857-4cd8-a19f-a0dfa89df2cd": {
+      "id": "aec8b37f-a857-4cd8-a19f-a0dfa89df2cd",
+      "name": "Sistema di e-mail",
+      "type": "DeploymentNode",
+      "owner": null,
+      "bounds": {
+        "x": 100,
+        "y": 190,
+        "width": 250,
+        "height": 70
+      },
+      "stereotype": "external system",
+      "displayStereotype": true
+    }
+  },
+  "relationships": {
+    "6a30fb59-f521-4cb2-84b9-79c545d16196": {
+      "id": "6a30fb59-f521-4cb2-84b9-79c545d16196",
+      "name": "HTTPS",
+      "type": "DeploymentAssociation",
+      "owner": null,
+      "bounds": {
+        "x": 70,
+        "y": -305,
+        "width": 250,
+        "height": 41
+      },
+      "path": [
+        {
+          "x": 0,
+          "y": 40
+        },
+        {
+          "x": 250,
+          "y": 40
+        }
+      ],
+      "source": {
+        "direction": "Right",
+        "element": "7a1a4938-88a1-46b0-a0bd-1f6d006ea7a1"
+      },
+      "target": {
+        "direction": "Left",
+        "element": "dc45dd7a-6441-4740-9b32-d6a1241c6ace"
+      },
+      "isManuallyLayouted": false
+    },
+    "df0c3539-51a3-4d62-bd0f-55542f6f99a4": {
+      "id": "df0c3539-51a3-4d62-bd0f-55542f6f99a4",
+      "name": "HTTPS",
+      "type": "DeploymentAssociation",
+      "owner": null,
+      "bounds": {
+        "x": -95,
+        "y": -170,
+        "width": 57.41666793823242,
+        "height": 130
+      },
+      "path": [
+        {
+          "x": 0,
+          "y": 130
+        },
+        {
+          "x": 0,
+          "y": 0
+        }
+      ],
+      "source": {
+        "direction": "Up",
+        "element": "faf3fd43-f92e-4ada-ae21-626521b5a647"
+      },
+      "target": {
+        "direction": "Down",
+        "element": "7a1a4938-88a1-46b0-a0bd-1f6d006ea7a1"
+      },
+      "isManuallyLayouted": false
+    },
+    "b4855bbf-9f97-4d4d-a9e4-e4681335ee76": {
+      "id": "b4855bbf-9f97-4d4d-a9e4-e4681335ee76",
+      "name": "HTTPS",
+      "type": "DeploymentAssociation",
+      "owner": null,
+      "bounds": {
+        "x": 30,
+        "y": 35,
+        "width": 280,
+        "height": 80
+      },
+      "path": [
+        {
+          "x": 280,
+          "y": 80
+        },
+        {
+          "x": 140,
+          "y": 80
+        },
+        {
+          "x": 140,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 0
+        }
+      ],
+      "source": {
+        "direction": "Left",
+        "element": "e1480648-d899-4c64-923e-31af62c1af32"
+      },
+      "target": {
+        "direction": "Right",
+        "element": "faf3fd43-f92e-4ada-ae21-626521b5a647"
+      },
+      "isManuallyLayouted": false
+    },
+    "3f956ab5-7616-4ba6-8e86-112ddbb9cd79": {
+      "id": "3f956ab5-7616-4ba6-8e86-112ddbb9cd79",
+      "name": "TCP",
+      "type": "DeploymentAssociation",
+      "owner": null,
+      "bounds": {
+        "x": -340,
+        "y": -5,
+        "width": 120,
+        "height": 41
+      },
+      "path": [
+        {
+          "x": 0,
+          "y": 40
+        },
+        {
+          "x": 120,
+          "y": 40
+        }
+      ],
+      "source": {
+        "direction": "Right",
+        "element": "fe5fe3d3-2c66-475d-bfd4-cc53086e6caf"
+      },
+      "target": {
+        "direction": "Left",
+        "element": "faf3fd43-f92e-4ada-ae21-626521b5a647"
+      },
+      "isManuallyLayouted": false
+    },
+    "9e4eb762-0c40-4f5e-90a4-e456b3a3bb97": {
+      "id": "9e4eb762-0c40-4f5e-90a4-e456b3a3bb97",
+      "name": "HTTPS",
+      "type": "DeploymentAssociation",
+      "owner": null,
+      "bounds": {
+        "x": 30,
+        "y": -75,
+        "width": 140,
+        "height": 110
+      },
+      "path": [
+        {
+          "x": 140,
+          "y": 0
+        },
+        {
+          "x": 70,
+          "y": 0
+        },
+        {
+          "x": 70,
+          "y": 110
+        },
+        {
+          "x": 0,
+          "y": 110
+        }
+      ],
+      "source": {
+        "direction": "Left",
+        "element": "6f7e4d89-ff49-489d-a1f4-045b76b84528"
+      },
+      "target": {
+        "direction": "Right",
+        "element": "faf3fd43-f92e-4ada-ae21-626521b5a647"
+      },
+      "isManuallyLayouted": false
+    },
+    "25c2a1be-3e9e-4cd6-b1f8-e27a9eb3ba01": {
+      "id": "25c2a1be-3e9e-4cd6-b1f8-e27a9eb3ba01",
+      "name": "HTTPS",
+      "type": "DeploymentAssociation",
+      "owner": null,
+      "bounds": {
+        "x": -95,
+        "y": 100,
+        "width": 57.41666793823242,
+        "height": 70
+      },
+      "path": [
+        {
+          "x": 0,
+          "y": 70
+        },
+        {
+          "x": 0,
+          "y": 10
+        }
+      ],
+      "source": {
+        "direction": "Up",
+        "element": "ae3b3fdb-9914-4f41-847b-45c13ce32dcd"
+      },
+      "target": {
+        "direction": "Down",
+        "element": "faf3fd43-f92e-4ada-ae21-626521b5a647"
+      },
+      "isManuallyLayouted": false
+    },
+    "b6bef169-4aaa-4e23-8a80-dac7816ced25": {
+      "id": "b6bef169-4aaa-4e23-8a80-dac7816ced25",
+      "name": "HTTPS",
+      "type": "DeploymentAssociation",
+      "owner": null,
+      "bounds": {
+        "x": -95,
+        "y": 110,
+        "width": 320,
+        "height": 80
+      },
+      "path": [
+        {
+          "x": 320,
+          "y": 80
+        },
+        {
+          "x": 320,
+          "y": 40
+        },
+        {
+          "x": 0,
+          "y": 40
+        },
+        {
+          "x": 0,
+          "y": 0
+        }
+      ],
+      "source": {
+        "direction": "Up",
+        "element": "aec8b37f-a857-4cd8-a19f-a0dfa89df2cd"
+      },
+      "target": {
+        "direction": "Down",
+        "element": "faf3fd43-f92e-4ada-ae21-626521b5a647"
+      },
+      "isManuallyLayouted": false
+    }
+  },
+  "assessments": {}
+}

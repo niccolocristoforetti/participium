@@ -1,6 +1,6 @@
 # 1) Glossary / Class Diagram
 
-![](../../data/img/Glossary_Diagram.png)
+![](../../data/img/Glossary_Diagram.svg)
 ---
 
 # 2) Deployment Diagram

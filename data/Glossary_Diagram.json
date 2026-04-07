@@ -333,7 +333,7 @@
     },
     "f6d90878-495e-4fe3-a0b3-62e5f78a3163": {
       "id": "f6d90878-495e-4fe3-a0b3-62e5f78a3163",
-      "name": "-dataCreazioneAccount: DateTime",
+      "name": "- dataCreazioneAccount: DateTime",
       "type": "ClassAttribute",
       "owner": "362486e1-0f52-4d14-98a2-4c2b06ea7d96",
       "bounds": {
@@ -540,7 +540,7 @@
     },
     "31c912f0-299c-4a45-b957-e104efaca1c9": {
       "id": "31c912f0-299c-4a45-b957-e104efaca1c9",
-      "name": "- idContentutoSospetto:String",
+      "name": "- idContenutoSospetto:String",
       "type": "ClassAttribute",
       "owner": "f556fa2b-4401-4bce-bf34-56470a91daa1",
       "bounds": {
@@ -933,7 +933,7 @@
     },
     "3a680c2d-cac8-4ba2-8c97-0f7e2cdc9dc4": {
       "id": "3a680c2d-cac8-4ba2-8c97-0f7e2cdc9dc4",
-      "name": "-dataModifica: DateTime",
+      "name": "- dataModifica: DateTime",
       "type": "ClassAttribute",
       "owner": "c1876671-514d-4db4-94da-ae9e5f2956b2",
       "bounds": {

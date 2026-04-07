@@ -75,7 +75,7 @@ Considerazioni su GANTT: La schedulazione delle attività è stata progettata pe
 
 ## Diagramma di Gantt
 
-![Diagramma di Gantt](/data/img/gantt.png)
+![Diagramma di Gantt](../../data/img/gantt.png)
 
 ## Critical path
 ```
@@ -83,7 +83,7 @@ T1 → T2 → T3 → T4 → T6 → T8 → T9 → T10 → T11
 
 ```
 
-![Critical path](/data/img/critical_path.png)
+![Critical path](../../data/img/critical_path.png)
 
 Considerazioni sul critical path: Il Frontend (T6)  dura 10 settimane (finendo alla settimana 23).
 Il Backend (T5) dura 8 settimane (finendo alla 21), quindi ha 2 settimane di slack prima che inizi il testing (T8 alla settimana 24).
@@ -121,7 +121,7 @@ Risk level thresholds (by exposure):
 
 Considerazioni sulla Risk Table: L'analisi dei rischi è stata eseguita tenendo a mente il contesto reale di una piattaforma pubblica utilizzata dai cittadini.
 Essendo un'app dove chiunque può scattare foto per strada, è quasi certo (Probabilità 4) che vengano inquadrati volti o targhe. Questo espone il Comune a gravi violazioni del GDPR. Per questo motivo R3 è l'unico rischio valutato come "Molto Alto" (20), portandoci ad assumere che sia obbligatoria una moderazione manuale prima di pubblicare le foto sulla mappa.
-Se l'app viene molto usata, il caricamento di foto pesanti genererà due problemi: un crollo delle prestazioni della mappa (R2) e un'esplosione dei costi per noleggiare i server di storage (R7). Per risolvere questi rischi si è deciso di implementare la compressione delle foto direttamente lato client prima dell'upload e usare il clustering dei marker per non far "crushare" il browser quando ci sono troppe segnalazioni.
+Se l'app viene molto usata, il caricamento di foto pesanti genererà due problemi: un crollo delle prestazioni della mappa (R2) e un'esplosione dei costi per noleggiare i server di storage (R7). Per risolvere questi rischi si è deciso di implementare la compressione delle foto direttamente lato client prima dell'upload e usare il clustering dei marker per non far "crashare" il browser quando ci sono troppe segnalazioni.
 E' molto probabile che una piattaforma comunale aperta a tutti attirerà sicuramente spammer. Da qui la necessità di ridurre l'abuso (R6) tramite rate-limiting (blocchi su chi fa troppe segnalazioni). Inoltre, basando il core dell'app su un servizio esterno (OpenStreetMap), bisogna considerare il rischio di disservizi (R4), introducendo logiche di caching per evitare che l' app smetta di funzionare se il provider delle mappe ha problemi.
 
 

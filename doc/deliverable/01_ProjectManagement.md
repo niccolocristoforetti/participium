@@ -38,7 +38,7 @@ Considerazioni sulla PBS: La PBS è stata guidata dall'architettura logica descr
 | 2 |  Analisi dei requisiti | D1, D2
 | 3 | Architettura UX, API | D3, S2, D4
 | 4 | Sviluppo backend | S2, S3, S4, S6, S7, S8, I1, I3, I5, I6
-| 4.1 | API + scheletro backend( autenticazione, utenti) |I1, I5, I6, S2, S3
+| 4.1 | API + scheletro backend (autenticazione, utenti) |I1, I5, I6, S2, S3
 | 4.2 |  Backend(Logica, Workflow, Servizi Avanzati)  | S7, S4, I3, S8, S6
 | 5 | Sviluppo frontend | S1, S5, S6, S7, S8, I7
 | 6 | Storage services |  I2, I4
@@ -48,7 +48,7 @@ Considerazioni sulla PBS: La PBS è stata guidata dall'architettura logica descr
 | 10 | Finalizzazione dei documenti | D3, D4, D6, D7, D8, D9
 
 Considerazioni sulla WBS: La struttura di questa WBS è stata pensata per ottimizzare i tempi di sviluppo, riducendo i colli di bottiglia tra i team (Frontend, Backend e DevOps) e permettendo di lavorare il più possibile in parallelo dopo una fase iniziale di progettazione sequenziale. 
-Si è  scelto di dividere il Backend in due: prima si realizza lo "scheletro" delle API (WP 4.1), poi la logica complessa (WP 4.2). Consegnando subito i contratti API al team Frontend, sblocchiamo il loro lavoro permettendo uno sviluppo delle interfacce in totale parallelismo.
+Si è scelto di dividere il Backend in due: prima si realizza lo "scheletro" delle API (WP 4.1), poi la logica complessa (WP 4.2). Consegnando subito i contratti API al team Frontend, sblocchiamo il loro lavoro permettendo uno sviluppo delle interfacce in totale parallelismo.
 Abbiamo diviso l'integrazione in due step: prima verifichiamo che il sistema faccia ciò che deve (WP 7), poi passiamo agli stress test e alla sicurezza (WP 8). Dedicare un pacchetto a parte ai test non-funzionali è fondamentale, trattandosi di una piattaforma civica che gestisce foto e dati sensibili.
 La Finalizzazione dei documenti (WP 10) è posizionata alla fine esclusivamente per revisionare gli artefatti, garantendo che rispecchino al 100% il software rilasciato.
 

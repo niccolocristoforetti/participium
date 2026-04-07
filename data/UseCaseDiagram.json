@@ -294,7 +294,7 @@
       "bounds": {
         "x": -270,
         "y": 190,
-        "width": 330,
+        "width": 340,
         "height": 100
       }
     },
@@ -306,7 +306,7 @@
       "bounds": {
         "x": -300,
         "y": 300,
-        "width": 390,
+        "width": 400,
         "height": 100
       }
     },
@@ -366,7 +366,7 @@
       "bounds": {
         "x": -260,
         "y": 750,
-        "width": 280,
+        "width": 290,
         "height": 100
       }
     },
@@ -1029,21 +1029,21 @@
       },
       "path": [
         {
-          "x": 0,
-          "y": 0
-        },
-        {
           "x": 180,
           "y": 50
+        },
+        {
+          "x": 0,
+          "y": 0
         }
       ],
       "source": {
-        "direction": "Right",
-        "element": "1eaad7e5-0382-4fe4-bf48-73b9e1ef8c05"
-      },
-      "target": {
         "direction": "Left",
         "element": "9b5201d2-632a-4b40-9180-f8a8a15b86e8"
+      },
+      "target": {
+        "direction": "Right",
+        "element": "1eaad7e5-0382-4fe4-bf48-73b9e1ef8c05"
       },
       "isManuallyLayouted": false
     },
@@ -1363,9 +1363,9 @@
       "type": "UseCaseInclude",
       "owner": null,
       "bounds": {
-        "x": 60,
+        "x": 70,
         "y": 240,
-        "width": 350,
+        "width": 340,
         "height": 300
       },
       "path": [
@@ -1374,7 +1374,7 @@
           "y": 0
         },
         {
-          "x": 350,
+          "x": 340,
           "y": 300
         }
       ],
@@ -1394,9 +1394,9 @@
       "type": "UseCaseInclude",
       "owner": null,
       "bounds": {
-        "x": 90,
+        "x": 100,
         "y": 350,
-        "width": 320,
+        "width": 310,
         "height": 190
       },
       "path": [
@@ -1405,7 +1405,7 @@
           "y": 0
         },
         {
-          "x": 320,
+          "x": 310,
           "y": 190
         }
       ],
@@ -1642,14 +1642,14 @@
       "type": "UseCaseSupport",
       "owner": null,
       "bounds": {
-        "x": 20,
+        "x": 30,
         "y": -970,
-        "width": 515,
+        "width": 505,
         "height": 1770
       },
       "path": [
         {
-          "x": 515,
+          "x": 505,
           "y": 0
         },
         {
@@ -1673,14 +1673,14 @@
       "type": "UseCaseSupport",
       "owner": null,
       "bounds": {
-        "x": 20,
+        "x": 30,
         "y": -310,
-        "width": 780,
+        "width": 770,
         "height": 1110
       },
       "path": [
         {
-          "x": 780,
+          "x": 770,
           "y": 0
         },
         {

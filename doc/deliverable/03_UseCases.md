@@ -137,7 +137,7 @@ Add one narrative for each use case shown in the diagram.
 | Main success scenario   |            1. L'utente chiede di seguire la segnalazione attualmente visualizzata.<br>2. Il sistema registra la relazione di follow tra l'utente e la segnalazione [FR-10].<br>3. Il sistema aggiorna l'interfaccia confermando che la segnalazione è seguita. <br>Il caso d'uso termina con successo. |
 |Extensions              |         2a. L'utente annulla l'operazione.<br>2a.1 Il sistema non registra il follow, il caso d'uso termina con un fallimento.                   |
 
-| Use Case                |  Ricezione e visulizazione notifica                     |
+| Use Case                |  Ricezione e visualizzazione notifica                     |
 |:------------------------|:----------------------------|
 | ID                      | UC-09                          |
 | Scope                   | Piattaforma Participium     |
@@ -215,7 +215,7 @@ Add one narrative for each use case shown in the diagram.
 | Success guarantees      | Visualizzazione corretta in dettaglio della segnalazione. |
 | Trigger                 | - |
 | Main success scenario   | 1. Cittadino seleziona segnalazione dalla mappa o dalla vista tabellare[FR-09].<br> 2. Sistema recupera dati.<br> 3. Sistema mostra dettagli disponibili.<br> Il caso d'uso termina con successo.|
-| Extensions              | 2a. Il sistema ha un errore di caricamento.<br> 2a.1 mostra errore e termina caso d'uso.<br> <br>
+| Extensions              | 2a. Il sistema ha un errore di caricamento.<br> 2a.1 Mostra errore e termina caso d'uso.<br> <br>
 
 
 | Use Case                | Esportazione dati in CSV della vista tabellare |
@@ -232,7 +232,7 @@ Add one narrative for each use case shown in the diagram.
 | Success guarantees      | File CSV scaricabile avente lo stesso contenuto visualizzato della vista tabellare. |
 | Trigger                 | - |
 | Main success scenario   | 1. Cittadino richiede esportazione dei dati. [FR-12] <br> 2. Sistema elabora le righe che soddisfano eventuali filtri applicati. <br> 3. Sistema genera CSV. <br> 4. Il file viene scaricato<br> Il caso d'uso termina con successo.|
-| Extensions              | 2a. eccessivo tempo di elaborazione. <br> 2a.1 Presentazione di un  messaggio di errore.
+| Extensions              | 2a. Eccessivo tempo di elaborazione. <br> 2a.1 Presentazione di un messaggio di errore.
 
 
 | Use Case                | Consultazione statistiche pubbliche |
@@ -351,7 +351,7 @@ Add one narrative for each use case shown in the diagram.
 | Success guarantees      | Un nuovo profilo operatore è attivo nel sistema con le credenziali inviate via email. |
 | Trigger                 | Necessità di autorizzare un nuovo dipendente all'uso della piattaforma. |
 | Main success scenario   | 1. L'Admin accede alla sezione specifica per la gestione dello staff.<br>2. L'Admin inserisce i dati identificativi dell'operatore (nome, email istituzionale, ufficio di competenza).<br>3. L'Admin conferma la creazione dell'account.<br>4. Il sistema invia la richiesta di creazione utenza al Servizio di Autenticazione esterno [FR-20].<br>5. Il Servizio di Autenticazione genera e invia un'email automatica all'operatore con le istruzioni per il primo accesso.<br>6. Il sistema aggiunge il nuovo operatore alla lista degli utenti attivi.<br>Il caso d'uso termina con successo. |
-| Extensions              | 3a. L'Admin decide di revocare l'accesso a un operatore esistente.<br>3a.1 L'Admin disabilita l'account.<br>3.a.2 il sistema invalida la sessione e impedisce nuovi login all'operatore [FR-20].Il caso d'uso termina |
+| Extensions              | 3a. L'Admin decide di revocare l'accesso a un operatore esistente.<br>3a.1 L'Admin disabilita l'account.<br>3a.2 Il sistema invalida la sessione e impedisce nuovi login all'operatore [FR-20].Il caso d'uso termina |
 
 
 | Use Case                |  Gestione utenti abusivi (ban)                      |

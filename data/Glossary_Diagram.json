@@ -2,8 +2,8 @@
   "version": "3.0.0",
   "type": "ClassDiagram",
   "size": {
-    "width": 2280,
-    "height": 1441
+    "width": 2460,
+    "height": 1522
   },
   "interactive": {
     "elements": {},
@@ -416,8 +416,8 @@
       "type": "Class",
       "owner": null,
       "bounds": {
-        "x": 180,
-        "y": -340,
+        "x": 330,
+        "y": 10,
         "width": 160,
         "height": 40
       },
@@ -1003,8 +1003,8 @@
       "type": "Class",
       "owner": null,
       "bounds": {
-        "x": -260,
-        "y": 530,
+        "x": -1210,
+        "y": 160,
         "width": 230,
         "height": 160
       },
@@ -1022,8 +1022,8 @@
       "type": "ClassAttribute",
       "owner": "foto-class-0001",
       "bounds": {
-        "x": -259.5,
-        "y": 570.5,
+        "x": -1209.5,
+        "y": 200.5,
         "width": 229,
         "height": 30
       }
@@ -1034,8 +1034,8 @@
       "type": "ClassAttribute",
       "owner": "foto-class-0001",
       "bounds": {
-        "x": -259.5,
-        "y": 600.5,
+        "x": -1209.5,
+        "y": 230.5,
         "width": 229,
         "height": 30
       }
@@ -1046,8 +1046,8 @@
       "type": "ClassAttribute",
       "owner": "foto-class-0001",
       "bounds": {
-        "x": -259.5,
-        "y": 630.5,
+        "x": -1209.5,
+        "y": 260.5,
         "width": 229,
         "height": 30
       }
@@ -1058,8 +1058,8 @@
       "type": "ClassAttribute",
       "owner": "foto-class-0001",
       "bounds": {
-        "x": -259.5,
-        "y": 660.5,
+        "x": -1209.5,
+        "y": 290.5,
         "width": 229,
         "height": 30
       }
@@ -1070,8 +1070,8 @@
       "type": "Class",
       "owner": null,
       "bounds": {
-        "x": -870,
-        "y": 230,
+        "x": -740,
+        "y": 480,
         "width": 310,
         "height": 220
       },
@@ -1091,8 +1091,8 @@
       "type": "ClassAttribute",
       "owner": "stat-class-0001",
       "bounds": {
-        "x": -869.5,
-        "y": 270.5,
+        "x": -739.5,
+        "y": 520.5,
         "width": 309,
         "height": 30
       }
@@ -1103,8 +1103,8 @@
       "type": "ClassAttribute",
       "owner": "stat-class-0001",
       "bounds": {
-        "x": -869.5,
-        "y": 300.5,
+        "x": -739.5,
+        "y": 550.5,
         "width": 309,
         "height": 30
       }
@@ -1115,8 +1115,8 @@
       "type": "ClassAttribute",
       "owner": "stat-class-0001",
       "bounds": {
-        "x": -869.5,
-        "y": 330.5,
+        "x": -739.5,
+        "y": 580.5,
         "width": 309,
         "height": 30
       }
@@ -1127,8 +1127,8 @@
       "type": "ClassAttribute",
       "owner": "stat-class-0001",
       "bounds": {
-        "x": -869.5,
-        "y": 360.5,
+        "x": -739.5,
+        "y": 610.5,
         "width": 309,
         "height": 30
       }
@@ -1139,8 +1139,8 @@
       "type": "ClassAttribute",
       "owner": "stat-class-0001",
       "bounds": {
-        "x": -869.5,
-        "y": 390.5,
+        "x": -739.5,
+        "y": 640.5,
         "width": 309,
         "height": 30
       }
@@ -1151,8 +1151,8 @@
       "type": "ClassAttribute",
       "owner": "stat-class-0001",
       "bounds": {
-        "x": -869.5,
-        "y": 420.5,
+        "x": -739.5,
+        "y": 670.5,
         "width": 309,
         "height": 30
       }
@@ -1163,8 +1163,8 @@
       "type": "Class",
       "owner": null,
       "bounds": {
-        "x": 460,
-        "y": -380,
+        "x": 450,
+        "y": -510,
         "width": 240,
         "height": 190
       },
@@ -1183,8 +1183,8 @@
       "type": "ClassAttribute",
       "owner": "logm-class-0001",
       "bounds": {
-        "x": 460.5,
-        "y": -339.5,
+        "x": 450.5,
+        "y": -469.5,
         "width": 239,
         "height": 30
       }
@@ -1195,8 +1195,8 @@
       "type": "ClassAttribute",
       "owner": "logm-class-0001",
       "bounds": {
-        "x": 460.5,
-        "y": -309.5,
+        "x": 450.5,
+        "y": -439.5,
         "width": 239,
         "height": 30
       }
@@ -1207,8 +1207,8 @@
       "type": "ClassAttribute",
       "owner": "logm-class-0001",
       "bounds": {
-        "x": 460.5,
-        "y": -279.5,
+        "x": 450.5,
+        "y": -409.5,
         "width": 239,
         "height": 30
       }
@@ -1219,8 +1219,8 @@
       "type": "ClassAttribute",
       "owner": "logm-class-0001",
       "bounds": {
-        "x": 460.5,
-        "y": -249.5,
+        "x": 450.5,
+        "y": -379.5,
         "width": 239,
         "height": 30
       }
@@ -1231,8 +1231,8 @@
       "type": "ClassAttribute",
       "owner": "logm-class-0001",
       "bounds": {
-        "x": 460.5,
-        "y": -219.5,
+        "x": 450.5,
+        "y": -349.5,
         "width": 239,
         "height": 30
       }
@@ -1243,8 +1243,8 @@
       "type": "Class",
       "owner": null,
       "bounds": {
-        "x": -880,
-        "y": 540.5,
+        "x": 250,
+        "y": 460.5,
         "width": 310,
         "height": 160
       },
@@ -1262,8 +1262,8 @@
       "type": "ClassAttribute",
       "owner": "stat-class-0002",
       "bounds": {
-        "x": -879.5,
-        "y": 581,
+        "x": 250.5,
+        "y": 501,
         "width": 309,
         "height": 30
       }
@@ -1274,8 +1274,8 @@
       "type": "ClassAttribute",
       "owner": "stat-class-0002",
       "bounds": {
-        "x": -879.5,
-        "y": 611,
+        "x": 250.5,
+        "y": 531,
         "width": 309,
         "height": 30
       }
@@ -1286,8 +1286,8 @@
       "type": "ClassAttribute",
       "owner": "stat-class-0002",
       "bounds": {
-        "x": -879.5,
-        "y": 641,
+        "x": 250.5,
+        "y": 561,
         "width": 309,
         "height": 30
       }
@@ -1298,11 +1298,25 @@
       "type": "ClassAttribute",
       "owner": "stat-class-0002",
       "bounds": {
-        "x": -879.5,
-        "y": 671,
+        "x": 250.5,
+        "y": 591,
         "width": 309,
         "height": 30
       }
+    },
+    "1a7542a8-46af-4dbe-9ce8-bb0a1a3e3065": {
+      "id": "1a7542a8-46af-4dbe-9ce8-bb0a1a3e3065",
+      "name": "Cittadino non registrato",
+      "type": "Class",
+      "owner": null,
+      "bounds": {
+        "x": -1120,
+        "y": 370,
+        "width": 200,
+        "height": 40
+      },
+      "attributes": [],
+      "methods": []
     }
   },
   "relationships": {
@@ -1353,16 +1367,16 @@
       "bounds": {
         "x": 20,
         "y": -515,
-        "width": 245,
-        "height": 175
+        "width": 395,
+        "height": 525
       },
       "path": [
         {
-          "x": 240,
-          "y": 175
+          "x": 390,
+          "y": 525
         },
         {
-          "x": 240,
+          "x": 390,
           "y": 10
         },
         {
@@ -1569,7 +1583,7 @@
     },
     "7bf7d73b-8b02-4d90-a205-bdd84129fdf7": {
       "id": "7bf7d73b-8b02-4d90-a205-bdd84129fdf7",
-      "name": "aggregazione",
+      "name": "aggrega",
       "type": "ClassAggregation",
       "owner": null,
       "bounds": {
@@ -1830,29 +1844,29 @@
       "type": "ClassComposition",
       "owner": null,
       "bounds": {
-        "x": -145,
-        "y": 410,
-        "width": 36.703125,
-        "height": 130.65625
+        "x": -980,
+        "y": 230,
+        "width": 730,
+        "height": 49.65625
       },
       "path": [
         {
-          "x": 5,
-          "y": 120
+          "x": 0,
+          "y": 10
         },
         {
-          "x": 5,
-          "y": 0
+          "x": 730,
+          "y": 10
         }
       ],
       "source": {
-        "direction": "Up",
+        "direction": "Right",
         "element": "foto-class-0001",
         "multiplicity": "0..3",
         "role": ""
       },
       "target": {
-        "direction": "Down",
+        "direction": "Left",
         "element": "8330fc41-d06e-43b7-852f-a58189e29a02",
         "multiplicity": "1",
         "role": ""
@@ -1865,19 +1879,23 @@
       "type": "ClassBidirectional",
       "owner": null,
       "bounds": {
-        "x": 340,
-        "y": -330,
-        "width": 120,
-        "height": 49.65625
+        "x": 490,
+        "y": -320,
+        "width": 90.640625,
+        "height": 389.65625
       },
       "path": [
         {
           "x": 0,
-          "y": 10
+          "y": 350
         },
         {
-          "x": 120,
-          "y": 10
+          "x": 80,
+          "y": 350
+        },
+        {
+          "x": 80,
+          "y": 0
         }
       ],
       "source": {
@@ -1887,7 +1905,7 @@
         "role": ""
       },
       "target": {
-        "direction": "Left",
+        "direction": "Down",
         "element": "logm-class-0001",
         "multiplicity": "*",
         "role": ""
@@ -1900,23 +1918,27 @@
       "type": "ClassAggregation",
       "owner": null,
       "bounds": {
-        "x": -560,
-        "y": 310,
-        "width": 310,
-        "height": 49.65625
+        "x": -430,
+        "y": 410,
+        "width": 315.640625,
+        "height": 219.65625
       },
       "path": [
         {
-          "x": 310,
-          "y": 10
+          "x": 305,
+          "y": 0
+        },
+        {
+          "x": 305,
+          "y": 180
         },
         {
           "x": 0,
-          "y": 10
+          "y": 180
         }
       ],
       "source": {
-        "direction": "Left",
+        "direction": "Down",
         "element": "8330fc41-d06e-43b7-852f-a58189e29a02",
         "multiplicity": "*",
         "role": ""
@@ -1935,15 +1957,62 @@
       "type": "ClassInheritance",
       "owner": null,
       "bounds": {
-        "x": -725,
-        "y": 450,
-        "width": 10,
-        "height": 90.5
+        "x": -590,
+        "y": 530.5,
+        "width": 840,
+        "height": 210.5
+      },
+      "path": [
+        {
+          "x": 840,
+          "y": 10
+        },
+        {
+          "x": 800,
+          "y": 10
+        },
+        {
+          "x": 800,
+          "y": 209.5
+        },
+        {
+          "x": 5,
+          "y": 209.5
+        },
+        {
+          "x": 5,
+          "y": 169.5
+        }
+      ],
+      "source": {
+        "direction": "Left",
+        "element": "stat-class-0002",
+        "multiplicity": "",
+        "role": ""
+      },
+      "target": {
+        "direction": "Down",
+        "element": "stat-class-0001",
+        "multiplicity": "",
+        "role": ""
+      },
+      "isManuallyLayouted": false
+    },
+    "3f08957c-ab70-4118-aa08-1aaca594c619": {
+      "id": "3f08957c-ab70-4118-aa08-1aaca594c619",
+      "name": "visualizza",
+      "type": "ClassBidirectional",
+      "owner": null,
+      "bounds": {
+        "x": 405,
+        "y": 50,
+        "width": 33.4375,
+        "height": 421.15625
       },
       "path": [
         {
           "x": 5,
-          "y": 90.5
+          "y": 410.5
         },
         {
           "x": 5,
@@ -1953,13 +2022,87 @@
       "source": {
         "direction": "Up",
         "element": "stat-class-0002",
-        "multiplicity": "",
+        "multiplicity": "1",
         "role": ""
       },
       "target": {
         "direction": "Down",
+        "element": "c7afec9e-58ad-4a23-a1e2-4543fbb55c63",
+        "multiplicity": "1..*",
+        "role": ""
+      },
+      "isManuallyLayouted": false
+    },
+    "65323ff5-4baf-412c-9bd8-66ad3203769d": {
+      "id": "65323ff5-4baf-412c-9bd8-66ad3203769d",
+      "name": "esplora",
+      "type": "ClassBidirectional",
+      "owner": null,
+      "bounds": {
+        "x": -920,
+        "y": 380,
+        "width": 670,
+        "height": 49.65625
+      },
+      "path": [
+        {
+          "x": 0,
+          "y": 10
+        },
+        {
+          "x": 670,
+          "y": 10
+        }
+      ],
+      "source": {
+        "direction": "Right",
+        "element": "1a7542a8-46af-4dbe-9ce8-bb0a1a3e3065",
+        "multiplicity": "1",
+        "role": ""
+      },
+      "target": {
+        "direction": "Downleft",
+        "element": "8330fc41-d06e-43b7-852f-a58189e29a02",
+        "multiplicity": "*",
+        "role": ""
+      },
+      "isManuallyLayouted": false
+    },
+    "3019e13a-9b08-4dcf-a994-e4509c0d9dc0": {
+      "id": "3019e13a-9b08-4dcf-a994-e4509c0d9dc0",
+      "name": "consulta",
+      "type": "ClassBidirectional",
+      "owner": null,
+      "bounds": {
+        "x": -1025,
+        "y": 410,
+        "width": 285,
+        "height": 219.65625
+      },
+      "path": [
+        {
+          "x": 5,
+          "y": 0
+        },
+        {
+          "x": 5,
+          "y": 180
+        },
+        {
+          "x": 285,
+          "y": 180
+        }
+      ],
+      "source": {
+        "direction": "Down",
+        "element": "1a7542a8-46af-4dbe-9ce8-bb0a1a3e3065",
+        "multiplicity": "*",
+        "role": ""
+      },
+      "target": {
+        "direction": "Left",
         "element": "stat-class-0001",
-        "multiplicity": "",
+        "multiplicity": "1",
         "role": ""
       },
       "isManuallyLayouted": false

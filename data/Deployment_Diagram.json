@@ -17,7 +17,7 @@
       "owner": null,
       "bounds": {
         "x": -240,
-        "y": -360,
+        "y": -350,
         "width": 330,
         "height": 210
       },
@@ -31,7 +31,7 @@
       "owner": "7a1a4938-88a1-46b0-a0bd-1f6d006ea7a1",
       "bounds": {
         "x": -160,
-        "y": -300,
+        "y": -290,
         "width": 160,
         "height": 40
       }
@@ -42,9 +42,9 @@
       "type": "DeploymentArtifact",
       "owner": "7a1a4938-88a1-46b0-a0bd-1f6d006ea7a1",
       "bounds": {
-        "x": -170,
-        "y": -250,
-        "width": 180,
+        "x": -190,
+        "y": -240,
+        "width": 220,
         "height": 40
       }
     },
@@ -55,8 +55,8 @@
       "owner": "7a1a4938-88a1-46b0-a0bd-1f6d006ea7a1",
       "bounds": {
         "x": -170,
-        "y": -200,
-        "width": 180,
+        "y": -190,
+        "width": 190,
         "height": 40
       }
     },
@@ -97,10 +97,22 @@
         "x": -220,
         "y": -40,
         "width": 250,
-        "height": 150
+        "height": 200
       },
       "stereotype": "node",
       "displayStereotype": true
+    },
+    "559ae7a8-7edf-4597-905a-200f392098c8": {
+      "id": "559ae7a8-7edf-4597-905a-200f392098c8",
+      "name": "API Gateway / BFF",
+      "type": "DeploymentArtifact",
+      "owner": "faf3fd43-f92e-4ada-ae21-626521b5a647",
+      "bounds": {
+        "x": -200,
+        "y": 35,
+        "width": 200,
+        "height": 40
+      }
     },
     "a53e6cea-24b3-4344-b3ea-4c281bae30d7": {
       "id": "a53e6cea-24b3-4344-b3ea-4c281bae30d7",
@@ -109,14 +121,14 @@
       "owner": "faf3fd43-f92e-4ada-ae21-626521b5a647",
       "bounds": {
         "x": -180,
-        "y": 30,
+        "y": 90,
         "width": 160,
         "height": 40
       }
     },
     "e1480648-d899-4c64-923e-31af62c1af32": {
       "id": "e1480648-d899-4c64-923e-31af62c1af32",
-      "name": "OpenStreatMap",
+      "name": "OpenStreetMap",
       "type": "DeploymentNode",
       "owner": null,
       "bounds": {
@@ -174,8 +186,8 @@
       "type": "DeploymentNode",
       "owner": null,
       "bounds": {
-        "x": -220,
-        "y": 170,
+        "x": -350,
+        "y": 280,
         "width": 250,
         "height": 70
       },
@@ -189,7 +201,7 @@
       "owner": null,
       "bounds": {
         "x": 100,
-        "y": 190,
+        "y": 280,
         "width": 250,
         "height": 70
       },
@@ -292,14 +304,14 @@
       "owner": null,
       "bounds": {
         "x": -95,
-        "y": -150,
-        "width": 57.41666793823242,
-        "height": 110
+        "y": -140,
+        "width": 55.65625,
+        "height": 100
       },
       "path": [
         {
           "x": 0,
-          "y": 110
+          "y": 100
         },
         {
           "x": 0,
@@ -323,26 +335,18 @@
       "owner": null,
       "bounds": {
         "x": 30,
-        "y": 35,
+        "y": 75,
         "width": 280,
-        "height": 80
+        "height": 41
       },
       "path": [
         {
           "x": 280,
-          "y": 80
-        },
-        {
-          "x": 140,
-          "y": 80
-        },
-        {
-          "x": 140,
-          "y": 0
+          "y": 40
         },
         {
           "x": 0,
-          "y": 0
+          "y": 40
         }
       ],
       "source": {
@@ -395,7 +399,7 @@
         "x": 30,
         "y": -75,
         "width": 140,
-        "height": 110
+        "height": 135
       },
       "path": [
         {
@@ -408,11 +412,11 @@
         },
         {
           "x": 70,
-          "y": 110
+          "y": 135
         },
         {
           "x": 0,
-          "y": 110
+          "y": 135
         }
       ],
       "source": {
@@ -431,19 +435,19 @@
       "type": "DeploymentAssociation",
       "owner": null,
       "bounds": {
-        "x": -95,
-        "y": 100,
-        "width": 57.41666793823242,
-        "height": 70
+        "x": -160,
+        "y": 160,
+        "width": 55.65625,
+        "height": 120
       },
       "path": [
         {
           "x": 0,
-          "y": 70
+          "y": 120
         },
         {
           "x": 0,
-          "y": 10
+          "y": 0
         }
       ],
       "source": {
@@ -463,22 +467,22 @@
       "owner": null,
       "bounds": {
         "x": -95,
-        "y": 110,
+        "y": 160,
         "width": 320,
-        "height": 80
+        "height": 120
       },
       "path": [
         {
           "x": 320,
-          "y": 80
+          "y": 120
         },
         {
           "x": 320,
-          "y": 40
+          "y": 60
         },
         {
           "x": 0,
-          "y": 40
+          "y": 60
         },
         {
           "x": 0,
@@ -502,7 +506,7 @@
       "owner": null,
       "bounds": {
         "x": -430,
-        "y": -220,
+        "y": -215,
         "width": 190,
         "height": 41
       },
@@ -533,7 +537,7 @@
       "owner": null,
       "bounds": {
         "x": -430,
-        "y": -330,
+        "y": -325,
         "width": 190,
         "height": 41
       },

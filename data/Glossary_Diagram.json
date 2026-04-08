@@ -2,8 +2,8 @@
   "version": "3.0.0",
   "type": "ClassDiagram",
   "size": {
-    "width": 2460,
-    "height": 1522
+    "width": 2920,
+    "height": 1381
   },
   "interactive": {
     "elements": {},
@@ -416,8 +416,8 @@
       "type": "Class",
       "owner": null,
       "bounds": {
-        "x": 330,
-        "y": 10,
+        "x": 510,
+        "y": -420,
         "width": 160,
         "height": 40
       },
@@ -616,7 +616,7 @@
       "type": "Class",
       "owner": null,
       "bounds": {
-        "x": 80,
+        "x": 20,
         "y": -130,
         "width": 210,
         "height": 190
@@ -636,7 +636,7 @@
       "type": "ClassAttribute",
       "owner": "c1b97963-26d5-4a57-a29b-fa0f65b4af3a",
       "bounds": {
-        "x": 80.5,
+        "x": 20.5,
         "y": -89.5,
         "width": 209,
         "height": 30
@@ -648,7 +648,7 @@
       "type": "ClassAttribute",
       "owner": "c1b97963-26d5-4a57-a29b-fa0f65b4af3a",
       "bounds": {
-        "x": 80.5,
+        "x": 20.5,
         "y": -59.5,
         "width": 209,
         "height": 30
@@ -660,7 +660,7 @@
       "type": "ClassAttribute",
       "owner": "c1b97963-26d5-4a57-a29b-fa0f65b4af3a",
       "bounds": {
-        "x": 80.5,
+        "x": 20.5,
         "y": -29.5,
         "width": 209,
         "height": 30
@@ -672,7 +672,7 @@
       "type": "ClassAttribute",
       "owner": "c1b97963-26d5-4a57-a29b-fa0f65b4af3a",
       "bounds": {
-        "x": 80.5,
+        "x": 20.5,
         "y": 0.5,
         "width": 209,
         "height": 30
@@ -684,7 +684,7 @@
       "type": "ClassAttribute",
       "owner": "c1b97963-26d5-4a57-a29b-fa0f65b4af3a",
       "bounds": {
-        "x": 80.5,
+        "x": 20.5,
         "y": 30.5,
         "width": 209,
         "height": 30
@@ -696,8 +696,8 @@
       "type": "IntermediateClass",
       "owner": null,
       "bounds": {
-        "x": -350,
-        "y": -90,
+        "x": -330,
+        "y": -80,
         "width": 190,
         "height": 80
       },
@@ -712,8 +712,8 @@
       "type": "ClassAttribute",
       "owner": "91f8618f-c966-42b6-b881-0afe977b0b3a",
       "bounds": {
-        "x": -349.5,
-        "y": -39.5,
+        "x": -329.5,
+        "y": -29.5,
         "width": 189,
         "height": 30
       }
@@ -724,8 +724,8 @@
       "type": "Class",
       "owner": null,
       "bounds": {
-        "x": -250,
-        "y": 70,
+        "x": -210,
+        "y": 110,
         "width": 250,
         "height": 340
       },
@@ -749,8 +749,8 @@
       "type": "ClassAttribute",
       "owner": "8330fc41-d06e-43b7-852f-a58189e29a02",
       "bounds": {
-        "x": -249.5,
-        "y": 110.5,
+        "x": -209.5,
+        "y": 150.5,
         "width": 249,
         "height": 30
       }
@@ -761,8 +761,8 @@
       "type": "ClassAttribute",
       "owner": "8330fc41-d06e-43b7-852f-a58189e29a02",
       "bounds": {
-        "x": -249.5,
-        "y": 140.5,
+        "x": -209.5,
+        "y": 180.5,
         "width": 249,
         "height": 30
       }
@@ -773,8 +773,8 @@
       "type": "ClassAttribute",
       "owner": "8330fc41-d06e-43b7-852f-a58189e29a02",
       "bounds": {
-        "x": -249.5,
-        "y": 170.5,
+        "x": -209.5,
+        "y": 210.5,
         "width": 249,
         "height": 30
       }
@@ -785,8 +785,8 @@
       "type": "ClassAttribute",
       "owner": "8330fc41-d06e-43b7-852f-a58189e29a02",
       "bounds": {
-        "x": -249.5,
-        "y": 200.5,
+        "x": -209.5,
+        "y": 240.5,
         "width": 249,
         "height": 30
       }
@@ -797,8 +797,8 @@
       "type": "ClassAttribute",
       "owner": "8330fc41-d06e-43b7-852f-a58189e29a02",
       "bounds": {
-        "x": -249.5,
-        "y": 230.5,
+        "x": -209.5,
+        "y": 270.5,
         "width": 249,
         "height": 30
       }
@@ -809,8 +809,8 @@
       "type": "ClassAttribute",
       "owner": "8330fc41-d06e-43b7-852f-a58189e29a02",
       "bounds": {
-        "x": -249.5,
-        "y": 260.5,
+        "x": -209.5,
+        "y": 300.5,
         "width": 249,
         "height": 30
       }
@@ -821,8 +821,8 @@
       "type": "ClassAttribute",
       "owner": "8330fc41-d06e-43b7-852f-a58189e29a02",
       "bounds": {
-        "x": -249.5,
-        "y": 290.5,
+        "x": -209.5,
+        "y": 330.5,
         "width": 249,
         "height": 30
       }
@@ -833,8 +833,8 @@
       "type": "ClassAttribute",
       "owner": "8330fc41-d06e-43b7-852f-a58189e29a02",
       "bounds": {
-        "x": -249.5,
-        "y": 320.5,
+        "x": -209.5,
+        "y": 360.5,
         "width": 249,
         "height": 30
       }
@@ -845,8 +845,8 @@
       "type": "ClassAttribute",
       "owner": "8330fc41-d06e-43b7-852f-a58189e29a02",
       "bounds": {
-        "x": -249.5,
-        "y": 350.5,
+        "x": -209.5,
+        "y": 390.5,
         "width": 249,
         "height": 30
       }
@@ -857,8 +857,8 @@
       "type": "ClassAttribute",
       "owner": "8330fc41-d06e-43b7-852f-a58189e29a02",
       "bounds": {
-        "x": -249.5,
-        "y": 380.5,
+        "x": -209.5,
+        "y": 420.5,
         "width": 249,
         "height": 30
       }
@@ -950,7 +950,7 @@
       "owner": null,
       "bounds": {
         "x": 650,
-        "y": 250,
+        "y": 280,
         "width": 170,
         "height": 130
       },
@@ -968,7 +968,7 @@
       "owner": "e13f2dce-9bb7-49d4-bea7-5dfe2b500336",
       "bounds": {
         "x": 650.5,
-        "y": 290.5,
+        "y": 320.5,
         "width": 169,
         "height": 30
       }
@@ -980,7 +980,7 @@
       "owner": "e13f2dce-9bb7-49d4-bea7-5dfe2b500336",
       "bounds": {
         "x": 650.5,
-        "y": 320.5,
+        "y": 350.5,
         "width": 169,
         "height": 30
       }
@@ -992,7 +992,7 @@
       "owner": "e13f2dce-9bb7-49d4-bea7-5dfe2b500336",
       "bounds": {
         "x": 650.5,
-        "y": 350.5,
+        "y": 380.5,
         "width": 169,
         "height": 30
       }
@@ -1003,8 +1003,8 @@
       "type": "Class",
       "owner": null,
       "bounds": {
-        "x": -1210,
-        "y": 160,
+        "x": -1090,
+        "y": 130,
         "width": 230,
         "height": 160
       },
@@ -1022,8 +1022,8 @@
       "type": "ClassAttribute",
       "owner": "foto-class-0001",
       "bounds": {
-        "x": -1209.5,
-        "y": 200.5,
+        "x": -1089.5,
+        "y": 170.5,
         "width": 229,
         "height": 30
       }
@@ -1034,8 +1034,8 @@
       "type": "ClassAttribute",
       "owner": "foto-class-0001",
       "bounds": {
-        "x": -1209.5,
-        "y": 230.5,
+        "x": -1089.5,
+        "y": 200.5,
         "width": 229,
         "height": 30
       }
@@ -1046,8 +1046,8 @@
       "type": "ClassAttribute",
       "owner": "foto-class-0001",
       "bounds": {
-        "x": -1209.5,
-        "y": 260.5,
+        "x": -1089.5,
+        "y": 230.5,
         "width": 229,
         "height": 30
       }
@@ -1058,8 +1058,8 @@
       "type": "ClassAttribute",
       "owner": "foto-class-0001",
       "bounds": {
-        "x": -1209.5,
-        "y": 290.5,
+        "x": -1089.5,
+        "y": 260.5,
         "width": 229,
         "height": 30
       }
@@ -1070,8 +1070,8 @@
       "type": "Class",
       "owner": null,
       "bounds": {
-        "x": -740,
-        "y": 480,
+        "x": -1400,
+        "y": -440,
         "width": 310,
         "height": 220
       },
@@ -1091,8 +1091,8 @@
       "type": "ClassAttribute",
       "owner": "stat-class-0001",
       "bounds": {
-        "x": -739.5,
-        "y": 520.5,
+        "x": -1399.5,
+        "y": -399.5,
         "width": 309,
         "height": 30
       }
@@ -1103,8 +1103,8 @@
       "type": "ClassAttribute",
       "owner": "stat-class-0001",
       "bounds": {
-        "x": -739.5,
-        "y": 550.5,
+        "x": -1399.5,
+        "y": -369.5,
         "width": 309,
         "height": 30
       }
@@ -1115,8 +1115,8 @@
       "type": "ClassAttribute",
       "owner": "stat-class-0001",
       "bounds": {
-        "x": -739.5,
-        "y": 580.5,
+        "x": -1399.5,
+        "y": -339.5,
         "width": 309,
         "height": 30
       }
@@ -1127,8 +1127,8 @@
       "type": "ClassAttribute",
       "owner": "stat-class-0001",
       "bounds": {
-        "x": -739.5,
-        "y": 610.5,
+        "x": -1399.5,
+        "y": -309.5,
         "width": 309,
         "height": 30
       }
@@ -1139,8 +1139,8 @@
       "type": "ClassAttribute",
       "owner": "stat-class-0001",
       "bounds": {
-        "x": -739.5,
-        "y": 640.5,
+        "x": -1399.5,
+        "y": -279.5,
         "width": 309,
         "height": 30
       }
@@ -1151,8 +1151,8 @@
       "type": "ClassAttribute",
       "owner": "stat-class-0001",
       "bounds": {
-        "x": -739.5,
-        "y": 670.5,
+        "x": -1399.5,
+        "y": -249.5,
         "width": 309,
         "height": 30
       }
@@ -1163,8 +1163,8 @@
       "type": "Class",
       "owner": null,
       "bounds": {
-        "x": 450,
-        "y": -510,
+        "x": 260,
+        "y": -170,
         "width": 240,
         "height": 190
       },
@@ -1183,8 +1183,8 @@
       "type": "ClassAttribute",
       "owner": "logm-class-0001",
       "bounds": {
-        "x": 450.5,
-        "y": -469.5,
+        "x": 260.5,
+        "y": -129.5,
         "width": 239,
         "height": 30
       }
@@ -1195,8 +1195,8 @@
       "type": "ClassAttribute",
       "owner": "logm-class-0001",
       "bounds": {
-        "x": 450.5,
-        "y": -439.5,
+        "x": 260.5,
+        "y": -99.5,
         "width": 239,
         "height": 30
       }
@@ -1207,8 +1207,8 @@
       "type": "ClassAttribute",
       "owner": "logm-class-0001",
       "bounds": {
-        "x": 450.5,
-        "y": -409.5,
+        "x": 260.5,
+        "y": -69.5,
         "width": 239,
         "height": 30
       }
@@ -1219,8 +1219,8 @@
       "type": "ClassAttribute",
       "owner": "logm-class-0001",
       "bounds": {
-        "x": 450.5,
-        "y": -379.5,
+        "x": 260.5,
+        "y": -39.5,
         "width": 239,
         "height": 30
       }
@@ -1231,8 +1231,8 @@
       "type": "ClassAttribute",
       "owner": "logm-class-0001",
       "bounds": {
-        "x": 450.5,
-        "y": -349.5,
+        "x": 260.5,
+        "y": -9.5,
         "width": 239,
         "height": 30
       }
@@ -1243,8 +1243,8 @@
       "type": "Class",
       "owner": null,
       "bounds": {
-        "x": 250,
-        "y": 460.5,
+        "x": -660,
+        "y": 510.5,
         "width": 310,
         "height": 160
       },
@@ -1262,8 +1262,8 @@
       "type": "ClassAttribute",
       "owner": "stat-class-0002",
       "bounds": {
-        "x": 250.5,
-        "y": 501,
+        "x": -659.5,
+        "y": 551,
         "width": 309,
         "height": 30
       }
@@ -1274,8 +1274,8 @@
       "type": "ClassAttribute",
       "owner": "stat-class-0002",
       "bounds": {
-        "x": 250.5,
-        "y": 531,
+        "x": -659.5,
+        "y": 581,
         "width": 309,
         "height": 30
       }
@@ -1286,8 +1286,8 @@
       "type": "ClassAttribute",
       "owner": "stat-class-0002",
       "bounds": {
-        "x": 250.5,
-        "y": 561,
+        "x": -659.5,
+        "y": 611,
         "width": 309,
         "height": 30
       }
@@ -1298,8 +1298,8 @@
       "type": "ClassAttribute",
       "owner": "stat-class-0002",
       "bounds": {
-        "x": 250.5,
-        "y": 591,
+        "x": -659.5,
+        "y": 641,
         "width": 309,
         "height": 30
       }
@@ -1310,8 +1310,8 @@
       "type": "Class",
       "owner": null,
       "bounds": {
-        "x": -1120,
-        "y": 370,
+        "x": -910,
+        "y": 400,
         "width": 200,
         "height": 40
       },
@@ -1367,16 +1367,16 @@
       "bounds": {
         "x": 20,
         "y": -515,
-        "width": 395,
-        "height": 525
+        "width": 575,
+        "height": 95
       },
       "path": [
         {
-          "x": 390,
-          "y": 525
+          "x": 570,
+          "y": 95
         },
         {
-          "x": 390,
+          "x": 570,
           "y": 10
         },
         {
@@ -1439,10 +1439,10 @@
       "type": "ClassBidirectional",
       "owner": null,
       "bounds": {
-        "x": -210,
+        "x": -200,
         "y": -170,
         "width": 18.90625,
-        "height": 90.65625
+        "height": 100.65625
       },
       "path": [
         {
@@ -1451,7 +1451,7 @@
         },
         {
           "x": 5,
-          "y": 80
+          "y": 90
         }
       ],
       "source": {
@@ -1474,10 +1474,10 @@
       "type": "ClassBidirectional",
       "owner": null,
       "bounds": {
-        "x": -210,
-        "y": -10,
+        "x": -180,
+        "y": 0,
         "width": 18.90625,
-        "height": 90.65625
+        "height": 120.65625
       },
       "path": [
         {
@@ -1486,7 +1486,7 @@
         },
         {
           "x": 5,
-          "y": 80
+          "y": 110
         }
       ],
       "source": {
@@ -1511,7 +1511,7 @@
       "bounds": {
         "x": 10,
         "y": -275,
-        "width": 185.640625,
+        "width": 125.640625,
         "height": 155.65625
       },
       "path": [
@@ -1520,11 +1520,11 @@
           "y": 10
         },
         {
-          "x": 175,
+          "x": 115,
           "y": 10
         },
         {
-          "x": 175,
+          "x": 115,
           "y": 145
         }
       ],
@@ -1548,22 +1548,26 @@
       "type": "ClassBidirectional",
       "owner": null,
       "bounds": {
-        "x": 0,
+        "x": 40,
         "y": 60,
-        "width": 195.640625,
-        "height": 219.65625
+        "width": 100,
+        "height": 220
       },
       "path": [
         {
           "x": 0,
-          "y": 180
+          "y": 220
         },
         {
-          "x": 185,
-          "y": 180
+          "x": 85.5,
+          "y": 220
         },
         {
-          "x": 185,
+          "x": 85.5,
+          "y": 40
+        },
+        {
+          "x": 85,
           "y": 0
         }
       ],
@@ -1579,7 +1583,7 @@
         "multiplicity": "*",
         "role": ""
       },
-      "isManuallyLayouted": false
+      "isManuallyLayouted": true
     },
     "7bf7d73b-8b02-4d90-a205-bdd84129fdf7": {
       "id": "7bf7d73b-8b02-4d90-a205-bdd84129fdf7",
@@ -1587,14 +1591,14 @@
       "type": "ClassAggregation",
       "owner": null,
       "bounds": {
-        "x": 0,
-        "y": 305,
-        "width": 650,
+        "x": 40,
+        "y": 335,
+        "width": 610,
         "height": 49.65625
       },
       "path": [
         {
-          "x": 650,
+          "x": 610,
           "y": 10
         },
         {
@@ -1625,12 +1629,12 @@
         "x": 20,
         "y": -557.5,
         "width": 725.640625,
-        "height": 818.15625
+        "height": 848.15625
       },
       "path": [
         {
           "x": 715,
-          "y": 807.5
+          "y": 837.5
         },
         {
           "x": 715,
@@ -1698,8 +1702,8 @@
       "bounds": {
         "x": -820,
         "y": -5,
-        "width": 570,
-        "height": 199.65625
+        "width": 620,
+        "height": 300
       },
       "path": [
         {
@@ -1707,16 +1711,16 @@
           "y": 10
         },
         {
-          "x": 285,
+          "x": 251,
           "y": 10
         },
         {
-          "x": 285,
-          "y": 160
+          "x": 251,
+          "y": 285
         },
         {
-          "x": 570,
-          "y": 160
+          "x": 610,
+          "y": 285
         }
       ],
       "source": {
@@ -1726,12 +1730,12 @@
         "role": ""
       },
       "target": {
-        "direction": "Upleft",
+        "direction": "Left",
         "element": "8330fc41-d06e-43b7-852f-a58189e29a02",
         "multiplicity": "1",
         "role": ""
       },
-      "isManuallyLayouted": false
+      "isManuallyLayouted": true
     },
     "9a474719-6c83-48ae-afcb-9431c133f815": {
       "id": "9a474719-6c83-48ae-afcb-9431c133f815",
@@ -1809,10 +1813,10 @@
       "type": "ClassBidirectional",
       "owner": null,
       "bounds": {
-        "x": -130,
+        "x": -105,
         "y": -170,
         "width": 18.90625,
-        "height": 250.65625
+        "height": 290.65625
       },
       "path": [
         {
@@ -1821,7 +1825,7 @@
         },
         {
           "x": 5,
-          "y": 240
+          "y": 280
         }
       ],
       "source": {
@@ -1831,7 +1835,7 @@
         "role": ""
       },
       "target": {
-        "direction": "Up",
+        "direction": "Topright",
         "element": "8330fc41-d06e-43b7-852f-a58189e29a02",
         "multiplicity": "*",
         "role": ""
@@ -1844,9 +1848,9 @@
       "type": "ClassComposition",
       "owner": null,
       "bounds": {
-        "x": -980,
-        "y": 230,
-        "width": 730,
+        "x": -860,
+        "y": 200,
+        "width": 650,
         "height": 49.65625
       },
       "path": [
@@ -1855,7 +1859,7 @@
           "y": 10
         },
         {
-          "x": 730,
+          "x": 650,
           "y": 10
         }
       ],
@@ -1866,7 +1870,7 @@
         "role": ""
       },
       "target": {
-        "direction": "Left",
+        "direction": "Downleft",
         "element": "8330fc41-d06e-43b7-852f-a58189e29a02",
         "multiplicity": "1",
         "role": ""
@@ -1879,33 +1883,33 @@
       "type": "ClassBidirectional",
       "owner": null,
       "bounds": {
-        "x": 490,
-        "y": -320,
-        "width": 90.640625,
-        "height": 389.65625
+        "x": 375,
+        "y": -410,
+        "width": 135,
+        "height": 250.65625
       },
       "path": [
         {
-          "x": 0,
-          "y": 350
+          "x": 135,
+          "y": 10
         },
         {
-          "x": 80,
-          "y": 350
+          "x": 5,
+          "y": 10
         },
         {
-          "x": 80,
-          "y": 0
+          "x": 5,
+          "y": 240
         }
       ],
       "source": {
-        "direction": "Right",
+        "direction": "Left",
         "element": "c7afec9e-58ad-4a23-a1e2-4543fbb55c63",
         "multiplicity": "1",
         "role": ""
       },
       "target": {
-        "direction": "Down",
+        "direction": "Up",
         "element": "logm-class-0001",
         "multiplicity": "*",
         "role": ""
@@ -1918,33 +1922,33 @@
       "type": "ClassAggregation",
       "owner": null,
       "bounds": {
-        "x": -430,
-        "y": 410,
-        "width": 315.640625,
-        "height": 219.65625
+        "x": -1327.5,
+        "y": -220,
+        "width": 1117.5,
+        "height": 624.65625
       },
       "path": [
         {
-          "x": 305,
+          "x": 1117.5,
+          "y": 585
+        },
+        {
+          "x": 5,
+          "y": 585
+        },
+        {
+          "x": 5,
           "y": 0
-        },
-        {
-          "x": 305,
-          "y": 180
-        },
-        {
-          "x": 0,
-          "y": 180
         }
       ],
       "source": {
-        "direction": "Down",
+        "direction": "Downleft",
         "element": "8330fc41-d06e-43b7-852f-a58189e29a02",
         "multiplicity": "*",
         "role": ""
       },
       "target": {
-        "direction": "Right",
+        "direction": "Bottomleft",
         "element": "stat-class-0001",
         "multiplicity": "1",
         "role": ""
@@ -1957,31 +1961,23 @@
       "type": "ClassInheritance",
       "owner": null,
       "bounds": {
-        "x": -590,
-        "y": 530.5,
-        "width": 840,
-        "height": 210.5
+        "x": -1250,
+        "y": -220,
+        "width": 590,
+        "height": 831.5
       },
       "path": [
         {
-          "x": 840,
-          "y": 10
-        },
-        {
-          "x": 800,
-          "y": 10
-        },
-        {
-          "x": 800,
-          "y": 209.5
+          "x": 590,
+          "y": 810.5
         },
         {
           "x": 5,
-          "y": 209.5
+          "y": 810.5
         },
         {
           "x": 5,
-          "y": 169.5
+          "y": 0
         }
       ],
       "source": {
@@ -2004,23 +2000,27 @@
       "type": "ClassBidirectional",
       "owner": null,
       "bounds": {
-        "x": 405,
-        "y": 50,
-        "width": 33.4375,
-        "height": 421.15625
+        "x": -350,
+        "y": -380,
+        "width": 968.4375,
+        "height": 1010.15625
       },
       "path": [
         {
-          "x": 5,
-          "y": 410.5
+          "x": 0,
+          "y": 970.5
         },
         {
-          "x": 5,
+          "x": 940,
+          "y": 970.5
+        },
+        {
+          "x": 940,
           "y": 0
         }
       ],
       "source": {
-        "direction": "Up",
+        "direction": "Right",
         "element": "stat-class-0002",
         "multiplicity": "1",
         "role": ""
@@ -2039,9 +2039,9 @@
       "type": "ClassBidirectional",
       "owner": null,
       "bounds": {
-        "x": -920,
-        "y": 380,
-        "width": 670,
+        "x": -710,
+        "y": 410,
+        "width": 500,
         "height": 49.65625
       },
       "path": [
@@ -2050,7 +2050,7 @@
           "y": 10
         },
         {
-          "x": 670,
+          "x": 500,
           "y": 10
         }
       ],
@@ -2074,27 +2074,31 @@
       "type": "ClassBidirectional",
       "owner": null,
       "bounds": {
-        "x": -1025,
-        "y": 410,
-        "width": 285,
-        "height": 219.65625
+        "x": -1440,
+        "y": -340,
+        "width": 530,
+        "height": 799.65625
       },
       "path": [
         {
-          "x": 5,
-          "y": 0
+          "x": 530,
+          "y": 760
         },
         {
-          "x": 5,
-          "y": 180
+          "x": 0,
+          "y": 760
         },
         {
-          "x": 285,
-          "y": 180
+          "x": 0,
+          "y": 10
+        },
+        {
+          "x": 40,
+          "y": 10
         }
       ],
       "source": {
-        "direction": "Down",
+        "direction": "Left",
         "element": "1a7542a8-46af-4dbe-9ce8-bb0a1a3e3065",
         "multiplicity": "*",
         "role": ""
@@ -2103,6 +2107,45 @@
         "direction": "Left",
         "element": "stat-class-0001",
         "multiplicity": "1",
+        "role": ""
+      },
+      "isManuallyLayouted": false
+    },
+    "d3fa5a34-7d39-4ef1-9092-e45456ac413a": {
+      "id": "d3fa5a34-7d39-4ef1-9092-e45456ac413a",
+      "name": "",
+      "type": "ClassBidirectional",
+      "owner": null,
+      "bounds": {
+        "x": -1250,
+        "y": -557.5,
+        "width": 1000,
+        "height": 128.15625
+      },
+      "path": [
+        {
+          "x": 5,
+          "y": 117.5
+        },
+        {
+          "x": 5,
+          "y": 10
+        },
+        {
+          "x": 1000,
+          "y": 10
+        }
+      ],
+      "source": {
+        "direction": "Up",
+        "element": "stat-class-0001",
+        "multiplicity": "1",
+        "role": ""
+      },
+      "target": {
+        "direction": "Upleft",
+        "element": "362486e1-0f52-4d14-98a2-4c2b06ea7d96",
+        "multiplicity": "1..*",
         "role": ""
       },
       "isManuallyLayouted": false

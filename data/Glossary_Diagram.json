@@ -2,7 +2,7 @@
   "version": "3.0.0",
   "type": "ClassDiagram",
   "size": {
-    "width": 2920,
+    "width": 3040,
     "height": 1381
   },
   "interactive": {
@@ -282,7 +282,7 @@
       "type": "AbstractClass",
       "owner": null,
       "bounds": {
-        "x": -250,
+        "x": -260,
         "y": -590,
         "width": 270,
         "height": 170
@@ -301,7 +301,7 @@
       "type": "ClassAttribute",
       "owner": "362486e1-0f52-4d14-98a2-4c2b06ea7d96",
       "bounds": {
-        "x": -249.5,
+        "x": -259.5,
         "y": -539.5,
         "width": 269,
         "height": 30
@@ -313,7 +313,7 @@
       "type": "ClassAttribute",
       "owner": "362486e1-0f52-4d14-98a2-4c2b06ea7d96",
       "bounds": {
-        "x": -249.5,
+        "x": -259.5,
         "y": -509.5,
         "width": 269,
         "height": 30
@@ -325,7 +325,7 @@
       "type": "ClassAttribute",
       "owner": "362486e1-0f52-4d14-98a2-4c2b06ea7d96",
       "bounds": {
-        "x": -249.5,
+        "x": -259.5,
         "y": -479.5,
         "width": 269,
         "height": 30
@@ -337,7 +337,7 @@
       "type": "ClassAttribute",
       "owner": "362486e1-0f52-4d14-98a2-4c2b06ea7d96",
       "bounds": {
-        "x": -249.5,
+        "x": -259.5,
         "y": -449.5,
         "width": 269,
         "height": 30
@@ -1070,8 +1070,8 @@
       "type": "Class",
       "owner": null,
       "bounds": {
-        "x": -1400,
-        "y": -440,
+        "x": -1460,
+        "y": -270,
         "width": 310,
         "height": 220
       },
@@ -1091,8 +1091,8 @@
       "type": "ClassAttribute",
       "owner": "stat-class-0001",
       "bounds": {
-        "x": -1399.5,
-        "y": -399.5,
+        "x": -1459.5,
+        "y": -229.5,
         "width": 309,
         "height": 30
       }
@@ -1103,8 +1103,8 @@
       "type": "ClassAttribute",
       "owner": "stat-class-0001",
       "bounds": {
-        "x": -1399.5,
-        "y": -369.5,
+        "x": -1459.5,
+        "y": -199.5,
         "width": 309,
         "height": 30
       }
@@ -1115,8 +1115,8 @@
       "type": "ClassAttribute",
       "owner": "stat-class-0001",
       "bounds": {
-        "x": -1399.5,
-        "y": -339.5,
+        "x": -1459.5,
+        "y": -169.5,
         "width": 309,
         "height": 30
       }
@@ -1127,8 +1127,8 @@
       "type": "ClassAttribute",
       "owner": "stat-class-0001",
       "bounds": {
-        "x": -1399.5,
-        "y": -309.5,
+        "x": -1459.5,
+        "y": -139.5,
         "width": 309,
         "height": 30
       }
@@ -1139,8 +1139,8 @@
       "type": "ClassAttribute",
       "owner": "stat-class-0001",
       "bounds": {
-        "x": -1399.5,
-        "y": -279.5,
+        "x": -1459.5,
+        "y": -109.5,
         "width": 309,
         "height": 30
       }
@@ -1151,8 +1151,8 @@
       "type": "ClassAttribute",
       "owner": "stat-class-0001",
       "bounds": {
-        "x": -1399.5,
-        "y": -249.5,
+        "x": -1459.5,
+        "y": -79.5,
         "width": 309,
         "height": 30
       }
@@ -1328,7 +1328,7 @@
       "bounds": {
         "x": -965,
         "y": -515,
-        "width": 715,
+        "width": 705,
         "height": 165
       },
       "path": [
@@ -1341,7 +1341,7 @@
           "y": 10
         },
         {
-          "x": 715,
+          "x": 705,
           "y": 10
         }
       ],
@@ -1365,18 +1365,18 @@
       "type": "ClassInheritance",
       "owner": null,
       "bounds": {
-        "x": 20,
+        "x": 10,
         "y": -515,
-        "width": 575,
+        "width": 585,
         "height": 95
       },
       "path": [
         {
-          "x": 570,
+          "x": 580,
           "y": 95
         },
         {
-          "x": 570,
+          "x": 580,
           "y": 10
         },
         {
@@ -1626,18 +1626,18 @@
       "type": "ClassBidirectional",
       "owner": null,
       "bounds": {
-        "x": 20,
+        "x": 10,
         "y": -557.5,
-        "width": 725.640625,
+        "width": 735.640625,
         "height": 848.15625
       },
       "path": [
         {
-          "x": 715,
+          "x": 725,
           "y": 837.5
         },
         {
-          "x": 715,
+          "x": 725,
           "y": 10
         },
         {
@@ -1922,19 +1922,19 @@
       "type": "ClassAggregation",
       "owner": null,
       "bounds": {
-        "x": -1327.5,
-        "y": -220,
-        "width": 1117.5,
-        "height": 624.65625
+        "x": -1387.5,
+        "y": -50,
+        "width": 1177.5,
+        "height": 454.65625
       },
       "path": [
         {
-          "x": 1117.5,
-          "y": 585
+          "x": 1177.5,
+          "y": 415
         },
         {
           "x": 5,
-          "y": 585
+          "y": 415
         },
         {
           "x": 5,
@@ -1961,19 +1961,19 @@
       "type": "ClassInheritance",
       "owner": null,
       "bounds": {
-        "x": -1250,
-        "y": -220,
-        "width": 590,
-        "height": 831.5
+        "x": -1310,
+        "y": -50,
+        "width": 650,
+        "height": 661.5
       },
       "path": [
         {
-          "x": 590,
-          "y": 810.5
+          "x": 650,
+          "y": 640.5
         },
         {
           "x": 5,
-          "y": 810.5
+          "y": 640.5
         },
         {
           "x": 5,
@@ -2074,19 +2074,19 @@
       "type": "ClassBidirectional",
       "owner": null,
       "bounds": {
-        "x": -1440,
-        "y": -340,
-        "width": 530,
-        "height": 799.65625
+        "x": -1500,
+        "y": -170,
+        "width": 590,
+        "height": 629.65625
       },
       "path": [
         {
-          "x": 530,
-          "y": 760
+          "x": 590,
+          "y": 590
         },
         {
           "x": 0,
-          "y": 760
+          "y": 590
         },
         {
           "x": 0,
@@ -2113,26 +2113,26 @@
     },
     "d3fa5a34-7d39-4ef1-9092-e45456ac413a": {
       "id": "d3fa5a34-7d39-4ef1-9092-e45456ac413a",
-      "name": "",
+      "name": "consulta",
       "type": "ClassBidirectional",
       "owner": null,
       "bounds": {
-        "x": -1250,
+        "x": -1310,
         "y": -557.5,
-        "width": 1000,
-        "height": 128.15625
+        "width": 1050,
+        "height": 298.15625
       },
       "path": [
         {
           "x": 5,
-          "y": 117.5
+          "y": 287.5
         },
         {
           "x": 5,
           "y": 10
         },
         {
-          "x": 1000,
+          "x": 1050,
           "y": 10
         }
       ],

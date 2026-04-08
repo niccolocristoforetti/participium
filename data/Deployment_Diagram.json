@@ -334,28 +334,28 @@
       "type": "DeploymentAssociation",
       "owner": null,
       "bounds": {
-        "x": 30,
-        "y": 75,
-        "width": 280,
-        "height": 41
+        "x": 440,
+        "y": -190,
+        "width": 55.65625,
+        "height": 270
       },
       "path": [
         {
-          "x": 280,
-          "y": 40
+          "x": 0,
+          "y": 0
         },
         {
           "x": 0,
-          "y": 40
+          "y": 270
         }
       ],
       "source": {
-        "direction": "Left",
-        "element": "e1480648-d899-4c64-923e-31af62c1af32"
+        "direction": "Down",
+        "element": "dc45dd7a-6441-4740-9b32-d6a1241c6ace"
       },
       "target": {
-        "direction": "Right",
-        "element": "faf3fd43-f92e-4ada-ae21-626521b5a647"
+        "direction": "Up",
+        "element": "e1480648-d899-4c64-923e-31af62c1af32"
       },
       "isManuallyLayouted": false
     },

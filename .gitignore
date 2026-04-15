@@ -1,3 +1,30 @@
-.idea
-.venv
-priv
+# Local IDE/editor state
+.idea/
+
+# Python virtual environments and caches
+.venv/
+src/.venv/
+**/.venv/
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+**/.pytest_cache/
+.coverage
+htmlcov/
+
+# JavaScript dependencies and build outputs
+**/node_modules/
+src/frontend/dist/
+**/dist/
+
+# Local runtime state
+.env
+src/.env
+src/backend/.env
+src/frontend/.env
+src/instance/
+src/backend/instance/
+src/backend/participium/static/uploads/
+*.db
+
+priv/

@@ -1,0 +1,30 @@
+gantt
+    title Participium Project Schedule
+    dateFormat  X
+    axisFormat  W%s
+
+    section WP1 Requirements
+    A1.1 Project initiation, scope baseline, and delivery plan  :crit, a11, 1, 1w
+    A1.2 Requirements engineering and traceability              :crit, a12, 2, 2w
+    Requirements baseline                                       :milestone, m1, 3, 0d
+
+    section WP2 Architecture & Design
+    A2.1 UX structure and public/citizen workflow design         :crit, a21, 4, 2w
+    A2.2 Architecture, domain model, and deployment design      :crit, a22, 4, 2w
+    A2.3 Infrastructure and external integration setup          :crit, a23, 4, 2w
+
+    section WP3 Implementation
+    A3.1 Citizen account and profile implementation             :crit, a31, 6, 2w
+    A3.2 Report submission and public consultation              :crit, a32, 8, 4w
+    A3.3 Municipal report management                            :a33, 8, 3w
+    A3.4 Notifications, email delivery, and direct messaging    :a34, 8, 3w
+    A3.5 Statistics, reporting, and administration              :crit, a35, 12, 3w
+
+    section WP4 Verification & Validation
+    A4.1 System integration and regression testing              :crit, a41, 15, 3w
+    Integrated baseline                                         :milestone, m2, 17, 0d
+    A4.2 Security, privacy, usability, and data-export validation :crit, a42, 18, 2w
+
+    section WP5 Deployment & Go Live
+    A5.1 Release preparation and operational documentation      :crit, a51, 20, 1w
+    Release candidate                                           :milestone, m3, 20, 0d

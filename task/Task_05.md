@@ -95,6 +95,7 @@ Write the black-box test draft under:
 Create one file per target method. The recommended file names are:
 
 - **`test_verify_email.py`**
+- **`test_authenticate.py`**
 - **`test_parse_date.py`**
 - **`test_status_flow.py`**
 - **`test_create_report.py`**

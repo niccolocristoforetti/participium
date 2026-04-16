@@ -1,12 +1,12 @@
-## 1 `participium.services.auth_service.AuthService.verify_email`
+## 1 `participium.services.auth_service.AuthService.authenticate`
 
-Suggested test file: `test_verify_email.py`
+Suggested test file: `test_authenticate.py`
 
-Prototype: `verify_email(token_value: str) -> User`
+Prototype: `authenticate(identifier: str, password: str) -> User`
 
-| TC-ID | token_value | Expected | Fixture |
-| :---- | :---------- | :------- | :------ |
-|  |  |  |  |
+| TC-ID | identifier | password | Expected | Fixture |
+| :---- | :--------- | :------- | :------- | :------ |
+|  |  |  |  |  |
 
 ## 2 `participium.core.utils.parse_date`
 

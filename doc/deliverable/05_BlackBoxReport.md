@@ -16,10 +16,10 @@ Prototype: `authenticate(identifier: str, password: str) -> User`
 | AUTH8 | `"inactive.user@example.com"` (esistente) | `"correct_password"` | `AuthenticationError` (utente inattivo) | utente esistente, email verificata con `is_active=False` |
 | AUTH9 | `"unverified.user@example.com"` (esistente) | `"correct_password"` | `AuthenticationError` (email non verificata) | utente esistente e attivo con `is_email_verified=False` |
 | AUTH10 | `"unverified.user"` (esistente) | `"correct_password"` | `AuthenticationError` (email non verificata) | utente esistente e attivo con `is_email_verified=False` |
-| AUTH10 | `""` (stringa vuota) | `"any_password"` | `AuthenticationError` | nessun utente può corrispondere a stringa vuota |
-| AUTH11 | `"mario.rossi"` (esistente) | `""` (stringa vuota) | `AuthenticationError` | utente esistente e attivo, nessuna password può corrispondere a stringa vuota |
-| AUTH12 | `"mario.rossi@example.com"` (esistente) | `""` (stringa vuota) | `AuthenticationError` | utente esistente e attivo, email verificata, nessuna password può corrispondere a stringa vuota |
-| AUTH13 | `""` (stringa vuota) | `""` (stringa vuota) | `AuthenticationError` | nessun utente e nessuna password possono corrispondere a stringa vuota |
+| AUTH11 | `""` (stringa vuota) | `"any_password"` | `AuthenticationError` | nessun utente può corrispondere a stringa vuota |
+| AUTH12 | `"mario.rossi"` (esistente) | `""` (stringa vuota) | `AuthenticationError` | utente esistente e attivo, nessuna password può corrispondere a stringa vuota |
+| AUTH13 | `"mario.rossi@example.com"` (esistente) | `""` (stringa vuota) | `AuthenticationError` | utente esistente e attivo, email verificata, nessuna password può corrispondere a stringa vuota |
+| AUTH14 | `""` (stringa vuota) | `""` (stringa vuota) | `AuthenticationError` | nessun utente e nessuna password possono corrispondere a stringa vuota |
 
 ## 2 `participium.core.utils.parse_date`
 
@@ -51,6 +51,7 @@ Confini validi di completezza della data ISO e limiti logici del calendario (mes
 | PDB9 | `"2023-10"` | Invalid boundary, data con valori mancanti | `ValueError` | — |
 | PDB10 | `"2024-01-15T24:00:00"` | Invalid boundary, ora > 23 | `ValueError` | — |
 | PDB11 | `"2024-01-15T00:00:-1"` | Invalid boundary, secondi < 0 | `ValueError` | — |
+| PDB12 | `"2023-02-29T10:00:00"` | Invalid boundary, 29 Febbraio in anno non bisestile | `ValueError` | — |
 
 ## 3 `participium.core.status_flow.ensure_transition_allowed`
 
@@ -68,7 +69,42 @@ Allowed transitions:
 
 | TC-ID | current_status | next_status | Expected | Fixture |
 | :---- | :------------- | :---------- | :------- | :------ |
-|  |  |  |  |  |
+| SF1 | `Pending Approval` | `Assigned` | `True` | — |
+| SF2 | `Pending Approval` | `Rejected` | `True` | — |
+| SF3 | `Pending Approval` | `Pending Approval` | `True` | — |
+| SF4 | `Assigned` | `In Progress` | `True` | — |
+| SF5 | `Assigned` | `Suspended` | `True` | — |
+| SF6 | `Assigned` | `Resolved` | `True` | — |
+| SF7 | `Assigned` | `Assigned` | `True` | — |
+| SF8 | `In Progress` | `Suspended` | `True` | — |
+| SF9 | `In Progress` | `Resolved` | `True` | — |
+| SF10 | `In Progress` | `In Progress` | `True` | — |
+| SF11 | `Suspended` | `In Progress` | `True` | — |
+| SF12 | `Suspended` | `Resolved` | `True` | — |
+| SF13 | `Suspended` | `Suspended` | `True` | — |
+| SF14 | `Rejected` | `Rejected` | `True` | — |
+| SF15 | `Resolved` | `Resolved` | `True` | — |
+| SF16 | `Pending Approval` | `Resolved` | `ValidationError` | — |
+| SF17 | `Pending Approval` | `Suspended` | `ValidationError` | — |
+| SF18 | `Pending Approval` | `In Progress` | `ValidationError` | — |
+| SF19 | `Assigned` | `Pending Approval` | `ValidationError` | — |
+| SF20 | `Assigned` | `Rejected` | `ValidationError` | — |
+| SF21 | `In Progress` | `Assigned` | `ValidationError` | — |
+| SF22 | `In Progress` | `Pending Approval` | `ValidationError` | — |
+| SF23 | `In Progress` | `Rejected` | `ValidationError` | — |
+| SF24 | `Suspended` | `Pending Approval` | `ValidationError` | — |
+| SF25 | `Suspended` | `Assigned` | `ValidationError` | — |
+| SF26 | `Suspended` | `Rejected` | `ValidationError` | — |
+| SF27 | `Rejected` | `Assigned` | `ValidationError` | — |
+| SF28 | `Rejected` | `In Progress` | `ValidationError` | — |
+| SF29 | `Rejected` | `Suspended` | `ValidationError` | — |
+| SF30 | `Rejected` | `Resolved` | `ValidationError` | — |
+| SF31 | `Rejected` | `Pending Approval` | `ValidationError` | — |
+| SF32 | `Resolved` | `Pending Approval` | `ValidationError` | — |
+| SF33 | `Resolved` | `Assigned` | `ValidationError` | — |
+| SF34 | `Resolved` | `In Progress` | `ValidationError` | — |
+| SF35 | `Resolved` | `Suspended` | `ValidationError` | — |
+| SF36 | `Resolved` | `Rejected` | `ValidationError` | — |
 
 ## 4 `participium.services.report_service.ReportService.create_report`
 
@@ -78,7 +114,56 @@ Prototype: `create_report(reporter: User, category_id: int | str | None, title: 
 
 | TC-ID | reporter | category_id | title | description | latitude | longitude | photos | is_anonymous | Expected | Fixture |
 | :---- | :------- | :---------- | :---- | :---------- | :------- | :-------- | :----- | :----------- | :------- | :------ |
-|  |  |  |  |  |  |  |  |  |  |  |
+| CR1 | utente valido | `1` (int) | `"Buca"` | `"Descrizione"` | `45.0` | `9.0` | 1 foto valida | `False` | `Report` | utente attivo, categoria attiva |
+| CR2 | utente valido | `"1"` (str) | `"Buca"` | `"Descrizione"` | `"45.0"` | `"9.0"` | 1 foto valida | `False` | `Report` | utente attivo, categoria attiva |
+| CR3 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `45.0` | ` 9.0 ` | 1 foto valida | `True` | `Report` con `is_anonymous=True` | utente attivo, categoria attiva |
+| CR4 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `"45.0"(string)` | `9.0` | 1 foto valida | `False` | `Report`  | utente attivo, categoria attiva |
+| CR5 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `45.0` | `"9.0"(string)` | 1 foto valida | `False` | `Report`  | utente attivo, categoria attiva |
+| CR6 | utente valido | `None` | `"Buca"` | `"Descrizione"` | `45.0` | `9.0` | 1 foto valida | `False` | `ValidationError` | utente attivo |
+| CR7 | utente valido | `"abc"` (malformato) | `"Buca"` | `"Descrizione"` | `45.0` | `9.0` | 1 foto valida | `False` | `ValidationError` | utente attivo |
+| CR8 | utente valido | `9999` (sconosciuta) | `"Buca"` | `"Descrizione"` | `45.0` | `9.0` | 1 foto valida | `False` | `ValidationError` | utente attivo, nessuna categoria con id=9999 |
+| CR9 | utente valido | `2` (inattiva) | `"Buca"` | `"Descrizione"` | `45.0` | `9.0` | 1 foto valida | `False` | `ValidationError` | utente attivo, categoria inattiva con id=2 |
+| CR10 | utente valido | `1` | `None` | `"Descrizione"` | `45.0` | `9.0` | 1 foto valida | `False` | `ValidationError` | utente attivo, categoria attiva |
+| CR11 | utente valido | `1` | `"Buca"` | `None` | `45.0` | `9.0` | 1 foto valida | `False` | `ValidationError` | utente attivo, categoria attiva |
+| CR12 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `None` | `9.0` | 1 foto valida | `False` | `ValidationError` | utente attivo, categoria attiva |
+| CR13 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `45.0` | `None` | 1 foto valida | `False` | `ValidationError` | utente attivo, categoria attiva |
+| CR14 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `"abc"` | `9.0` | 1 foto valida | `False` | `ValidationError` | utente attivo, categoria attiva |
+| CR15 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `45.0` | `"abc"` | 1 foto valida | `False` | `ValidationError` | utente attivo, categoria attiva |
+| CR16 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `45.0` | `9.0` | 1 FileStorage senza filename | `False` | `ValidationError` | utente attivo, categoria attiva |
+
+**Boundary: numero di foto valide**
+Il contratto impone minimo 1 e massimo 3 foto con filename.
+
+| TC-ID | reporter | category_id | title | description | latitude | longitude | photos | is_anonymous | Expected | Fixture |
+| :---- | :------- | :---------- | :---- | :---------- | :------- | :-------- | :----- | :----------- | :------- | :------ |
+| CRB1 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `45.0` | `9.0` | 0 foto valide | `False` | `ValidationError` | utente attivo, categoria attiva |
+| CRB2 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `45.0` | `9.0` | 1 foto valida (minimo) | `False` | `Report` | utente attivo, categoria attiva |
+| CRB3 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `45.0` | `9.0` | 3 foto valide (massimo) | `False` | `Report` | utente attivo, categoria attiva |
+| CRB4 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `45.0` | `9.0` | 4 foto valide (oltre massimo) | `False` | `ValidationError` | utente attivo, categoria attiva |
+
+**Boundary: campi vuoti**
+Test del confine strutturale inferiore (stringa vuota).
+
+| TC-ID | reporter | category_id | title | description | latitude | longitude | photos | is_anonymous | Expected | Fixture |
+| :---- | :------- | :---------- | :---- | :---------- | :------- | :-------- | :----- | :----------- | :------- | :------ |
+| CRB5 | utente valido | `1` | `""` | `"Descrizione"` | `45.0` | `9.0` | 1 foto | `False` | `ValidationError` | utente attivo, categoria attiva |
+| CRB6 | utente valido | `1` | `"Buca"` | `""` | `45.0` | `9.0` | 1 foto | `False` | `ValidationError` | utente attivo, categoria attiva |
+| CRB7 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `""` | `9.0` | 1 foto | `False` | `ValidationError` | utente attivo, categoria attiva |
+| CRB8 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `45.0` | `""` | 1 foto | `False` | `ValidationError` | utente attivo, categoria attiva |
+
+**Boundary: limiti geografici**
+Test dei limiti geografici (Latitudinte [-90, 90], Longitudine [-180, 180]).
+
+| TC-ID | reporter | category_id | title | description | latitude | longitude | photos | is_anonymous | Expected | Fixture |
+| :---- | :------- | :---------- | :---- | :---------- | :------- | :-------- | :----- | :----------- | :------- | :------ |
+| CRB9 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `-90.0` | `0.0` | 1 foto | `False` | `Report` | Limite minimo latitudine |
+| CRB10 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `-90.1` | `0.0` | 1 foto | `False` | `ValidationError` | Oltre limite minimo latitudine |
+| CRB11 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `90.0` | `0.0` | 1 foto | `False` | `Report` | Limite massimo latitudine |
+| CRB12 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `90.1` | `0.0` | 1 foto | `False` | `ValidationError` | Oltre limite massimo latitudine |
+| CRB13 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `0.0` | `-180.0` | 1 foto | `False` | `Report` | Limite minimo longitudine |
+| CRB14 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `0.0` | `-180.1` | 1 foto | `False` | `ValidationError` | Oltre limite minimo longitudine |
+| CRB15 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `0.0` | `180.0` | 1 foto | `False` | `Report` | Limite massimo longitudine |
+| CRB16 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `0.0` | `180.1` | 1 foto | `False` | `ValidationError` | Oltre limite massimo longitudine |
 
 ## 5 `participium.services.report_service.ReportService.update_status`
 

@@ -139,31 +139,33 @@ Il contratto impone minimo 1 e massimo 3 foto con filename.
 | CRB1 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `45.0` | `9.0` | 0 foto valide | `False` | `ValidationError` | utente attivo, categoria attiva |
 | CRB2 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `45.0` | `9.0` | 1 foto valida (minimo) | `False` | `Report` | utente attivo, categoria attiva |
 | CRB3 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `45.0` | `9.0` | 3 foto valide (massimo) | `False` | `Report` | utente attivo, categoria attiva |
-| CRB4 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `45.0` | `9.0` | 4 foto valide (oltre massimo) | `False` | `ValidationError` | utente attivo, categoria attiva |
+| CRB4 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `45.0` | `9.0` | 4 foto valide (oltre massimo) | `False` | `ValidationError` | utente attivo, categoria attiva |   
+| CRB5 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `45.0` | `9.0` | [ ] (0 foto) | `False` | `ValidationError` | utente attivo, categoria attiva |
 
 **Boundary: campi vuoti**
 Test del confine strutturale inferiore (stringa vuota).
 
 | TC-ID | reporter | category_id | title | description | latitude | longitude | photos | is_anonymous | Expected | Fixture |
 | :---- | :------- | :---------- | :---- | :---------- | :------- | :-------- | :----- | :----------- | :------- | :------ |
-| CRB5 | utente valido | `1` | `""` | `"Descrizione"` | `45.0` | `9.0` | 1 foto | `False` | `ValidationError` | utente attivo, categoria attiva |
-| CRB6 | utente valido | `1` | `"Buca"` | `""` | `45.0` | `9.0` | 1 foto | `False` | `ValidationError` | utente attivo, categoria attiva |
-| CRB7 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `""` | `9.0` | 1 foto | `False` | `ValidationError` | utente attivo, categoria attiva |
-| CRB8 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `45.0` | `""` | 1 foto | `False` | `ValidationError` | utente attivo, categoria attiva |
+| CRB6 | utente valido | `1` | `""` | `"Descrizione"` | `45.0` | `9.0` | 1 foto | `False` | `ValidationError` | utente attivo, categoria attiva |
+| CRB7 | utente valido | `1` | `"Buca"` | `""` | `45.0` | `9.0` | 1 foto valida | `False` | `ValidationError` | utente attivo, categoria attiva |
+| CRB8 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `""` | `9.0` | 1 foto valida | `False` | `ValidationError` | utente attivo, categoria attiva |
+| CRB9 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `45.0` | `""` | 1 foto valida| `False` | `ValidationError` | utente attivo, categoria attiva |
+| CRB10 | utente valido | `""` | `"Buca"` | `"Descrizione"` | `45.0` | `9.0` | 1 foto valida| `False` | `ValidationError` | utente attivo |
 
 **Boundary: limiti geografici**
 Test dei limiti geografici (Latitudinte [-90, 90], Longitudine [-180, 180]).
 
 | TC-ID | reporter | category_id | title | description | latitude | longitude | photos | is_anonymous | Expected | Fixture |
 | :---- | :------- | :---------- | :---- | :---------- | :------- | :-------- | :----- | :----------- | :------- | :------ |
-| CRB9 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `-90.0` | `0.0` | 1 foto | `False` | `Report` | Limite minimo latitudine |
-| CRB10 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `-90.1` | `0.0` | 1 foto | `False` | `ValidationError` | Oltre limite minimo latitudine |
-| CRB11 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `90.0` | `0.0` | 1 foto | `False` | `Report` | Limite massimo latitudine |
-| CRB12 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `90.1` | `0.0` | 1 foto | `False` | `ValidationError` | Oltre limite massimo latitudine |
-| CRB13 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `0.0` | `-180.0` | 1 foto | `False` | `Report` | Limite minimo longitudine |
-| CRB14 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `0.0` | `-180.1` | 1 foto | `False` | `ValidationError` | Oltre limite minimo longitudine |
-| CRB15 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `0.0` | `180.0` | 1 foto | `False` | `Report` | Limite massimo longitudine |
-| CRB16 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `0.0` | `180.1` | 1 foto | `False` | `ValidationError` | Oltre limite massimo longitudine |
+| CRB11 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `-90.0` | `0.0` | 1 foto | `False` | `Report` | Limite minimo latitudine |
+| CRB12 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `-90.1` | `0.0` | 1 foto | `False` | `ValidationError` | Oltre limite minimo latitudine |
+| CRB13 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `90.0` | `0.0` | 1 foto | `False` | `Report` | Limite massimo latitudine |
+| CRB14 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `90.1` | `0.0` | 1 foto | `False` | `ValidationError` | Oltre limite massimo latitudine |
+| CRB15 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `0.0` | `-180.0` | 1 foto | `False` | `Report` | Limite minimo longitudine |
+| CRB16 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `0.0` | `-180.1` | 1 foto | `False` | `ValidationError` | Oltre limite minimo longitudine |
+| CRB17 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `0.0` | `180.0` | 1 foto | `False` | `Report` | Limite massimo longitudine |
+| CRB18 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `0.0` | `180.1` | 1 foto | `False` | `ValidationError` | Oltre limite massimo longitudine |
 
 ## 5 `participium.services.report_service.ReportService.update_status`
 

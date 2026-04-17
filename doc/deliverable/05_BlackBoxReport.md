@@ -8,11 +8,11 @@ Prototype: `authenticate(identifier: str, password: str) -> User`
 | :---- | :--------- | :------- | :------- | :------ |
 | AUTH1 | `"mario.rossi"` (username valido) | `"correct_password"` | restituisce `User` (associato ad username: `"mario.rossi"`) | utente esistente e attivo, password hash corrispondente |
 | AUTH2 | `"mario.rossi@example.com"` (email valida) | `"correct_password"` | restituisce `User` (associato ad email: `"mario.rossi@example.com"`) | utente esistente e attivo, email verificata, password hash corrispondente |
-| AUTH3 | `"unknown_user"` (non esistente) | `"any_password"` | `AuthenticationError` | Nessun utente nel Database con username associata: `"unknown_user" |
-| AUTH4 | `"unknown_user@example.com"` (non esistente) | `"any_password"` | `AuthenticationError` | Nessun utente nel Database con email associata: `"unknown_user" |
+| AUTH3 | `"unknown_user"` (non esistente) | `"any_password"` | `AuthenticationError` | Nessun utente nel Database con username associata: `"unknown_user"` |
+| AUTH4 | `"unknown_user@example.com"` (non esistente) | `"any_password"` | `AuthenticationError` | Nessun utente nel Database con email associata: `"unknown_user"` |
 | AUTH5 | `"mario.rossi"` (esistente) | `"wrong_password"` | `AuthenticationError` | utente esistente, password hash non corrispondente |
 | AUTH6 | `"mario.rossi@example.com"` (esistente) | `"wrong_password"` | `AuthenticationError` | utente esistente, password hash non corrispondente |
-| AUTH7 | `"inactive.user"` (esistente) | `"correct_password"` | `AuthenticationError` (utente inattivo) | utente esistente con `is_active=False` |ù
+| AUTH7 | `"inactive.user"` (esistente) | `"correct_password"` | `AuthenticationError` (utente inattivo) | utente esistente con `is_active=False` |
 | AUTH8 | `"inactive.user@example.com"` (esistente) | `"correct_password"` | `AuthenticationError` (utente inattivo) | utente esistente, email verificata con `is_active=False` |
 | AUTH9 | `"unverified.user@example.com"` (esistente) | `"correct_password"` | `AuthenticationError` (email non verificata) | utente esistente e attivo con `is_email_verified=False` |
 | AUTH10 | `"unverified.user"` (esistente) | `"correct_password"` | `AuthenticationError` (email non verificata) | utente esistente e attivo con `is_email_verified=False` |
@@ -29,7 +29,28 @@ Prototype: `parse_date(value: str | None) -> datetime | None`
 
 | TC-ID | value | Expected | Fixture |
 | :---- | :---- | :------- | :------ |
-|  |  |  |  |
+| PD1 | `None` | `None` | — |
+| PD2 | `""` (stringa vuota) | `None` | — |
+| PD3 | `"2024-01-15T10:30:00"` (ISO-8601 con orario) | `datetime(2024, 1, 15, 10, 30, 0)` | — |
+| PD4 | `"not-a-date"` (stringa non valida) | `ValueError` | — |
+
+
+**Boundary: sintassi e limiti del formato ISO-8601**
+Confini validi di completezza della data ISO e limiti logici del calendario (mesi, giorni, ore).
+
+| TC-ID | value | Boundary covered | Expected | Fixture |
+| :---- | :---- | :--------------- | :------- | :------ |
+| PDB1 | `"2023-10-25"` | Valid ISO, minimum completeness (solo data) | `datetime(2023, 10, 25, 0, 0, 0)` | — |
+| PDB2 | `"2023-10-25T10"` | Valid ISO, senza minuti e secondi | `datetime(2023, 10, 25, 10, 0, 0)` | — |
+| PDB3 | `"2023-10-25T10:01"` | Valid ISO, senza secondi | `datetime(2023, 10, 25, 10, 1, 0)` | — |
+| PDB4 | `"2023/10/25T10:00"` | Invalid, separatore errato (`/` invece di `-`) | `ValueError` | — |
+| PDB5 | `"2023-00-25T10:00:00"` | Invalid boundary, mese < 1 (zero) | `ValueError` | — |
+| PDB6 | `"2023-13-25T10:00:00"` | Invalid boundary, mese > 12 | `ValueError` | — |
+| PDB7 | `"2023-10-00T10:00:00"` | Invalid boundary, giorno < 1 (zero) | `ValueError` | — |
+| PDB8 | `"2023-10-32T10:00:00"` | Invalid boundary, giorno > 31 | `ValueError` | — |
+| PDB9 | `"2023-10"` | Invalid boundary, data con valori mancanti | `ValueError` | — |
+| PDB10 | `"2024-01-15T24:00:00"` | Invalid boundary, ora > 23 | `ValueError` | — |
+| PDB11 | `"2024-01-15T00:00:-1"` | Invalid boundary, secondi < 0 | `ValueError` | — |
 
 ## 3 `participium.core.status_flow.ensure_transition_allowed`
 

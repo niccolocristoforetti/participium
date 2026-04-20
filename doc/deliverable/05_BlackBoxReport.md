@@ -21,6 +21,15 @@ Prototype: `authenticate(identifier: str, password: str) -> User`
 | AUTH13 | `"mario.rossi@example.com"` (esistente) | `""` (stringa vuota) | `AuthenticationError` | utente esistente e attivo, email verificata, nessuna password può corrispondere a stringa vuota |
 | AUTH14 | `""` (stringa vuota) | `""` (stringa vuota) | `AuthenticationError` | nessun utente e nessuna password possono corrispondere a stringa vuota |
 
+**Boundary: normalizzazione dell'identificatore**
+Il sistema applica `strip()` sull'identificatore prima del lookup (spazi solo all'inizio o alla fine, mai interni) e tratta le email come case-insensitive.
+
+| TC-ID | identifier | password | Expected | Fixture |
+| :---- | :--------- | :------- | :------- | :------ |
+| AUTH15 | `" mario.rossi@example.com "` (email con spazio iniziale e finale) | `"correct_password"` | restituisce `User` (associato ad email: `"mario.rossi@example.com"`) | utente esistente e attivo, email verificata, password hash corrispondente |
+| AUTH16 | `"Mario.Rossi@Example.Com"` (email con caratteri upper case) | `"correct_password"` | restituisce `User` (associato ad email: `"mario.rossi@example.com"`) | utente esistente e attivo, email verificata, password hash corrispondente |
+| AUTH17 | `" mario.rossi "` (username con spazio iniziale e finale) | `"correct_password"` | restituisce `User` (associato ad username: `"mario.rossi"`) | utente esistente e attivo, password hash corrispondente |
+
 ## 2 `participium.core.utils.parse_date`
 
 Suggested test file: `test_parse_date.py`

@@ -4,22 +4,116 @@ Suggested test file: `test_authenticate.py`
 
 Prototype: `authenticate(identifier: str, password: str) -> User`
 
-| TC-ID | identifier | password | Expected | Fixture |
-| :---- | :--------- | :------- | :------- | :------ |
-| AUTH1 | `"mario.rossi"` (username valido) | `"correct_password"` | restituisce `User` (associato ad username: `"mario.rossi"`) | utente esistente e attivo, password hash corrispondente |
-| AUTH2 | `"mario.rossi@example.com"` (email valida) | `"correct_password"` | restituisce `User` (associato ad email: `"mario.rossi@example.com"`) | utente esistente e attivo, email verificata, password hash corrispondente |
-| AUTH3 | `"unknown_user"` (non esistente) | `"any_password"` | `AuthenticationError` | Nessun utente nel Database con username associata: `"unknown_user"` |
-| AUTH4 | `"unknown_user@example.com"` (non esistente) | `"any_password"` | `AuthenticationError` | Nessun utente nel Database con email associata: `"unknown_user"` |
-| AUTH5 | `"mario.rossi"` (esistente) | `"wrong_password"` | `AuthenticationError` | utente esistente, password hash non corrispondente |
-| AUTH6 | `"mario.rossi@example.com"` (esistente) | `"wrong_password"` | `AuthenticationError` | utente esistente, password hash non corrispondente |
-| AUTH7 | `"inactive.user"` (esistente) | `"correct_password"` | `AuthenticationError` (utente inattivo) | utente esistente con `is_active=False` |
-| AUTH8 | `"inactive.user@example.com"` (esistente) | `"correct_password"` | `AuthenticationError` (utente inattivo) | utente esistente, email verificata con `is_active=False` |
-| AUTH9 | `"unverified.user@example.com"` (esistente) | `"correct_password"` | `AuthenticationError` (email non verificata) | utente esistente e attivo con `is_email_verified=False` |
-| AUTH10 | `"unverified.user"` (esistente) | `"correct_password"` | `AuthenticationError` (email non verificata) | utente esistente e attivo con `is_email_verified=False` |
-| AUTH11 | `""` (stringa vuota) | `"any_password"` | `AuthenticationError` | nessun utente può corrispondere a stringa vuota |
-| AUTH12 | `"mario.rossi"` (esistente) | `""` (stringa vuota) | `AuthenticationError` | utente esistente e attivo, nessuna password può corrispondere a stringa vuota |
-| AUTH13 | `"mario.rossi@example.com"` (esistente) | `""` (stringa vuota) | `AuthenticationError` | utente esistente e attivo, email verificata, nessuna password può corrispondere a stringa vuota |
-| AUTH14 | `""` (stringa vuota) | `""` (stringa vuota) | `AuthenticationError` | nessun utente e nessuna password possono corrispondere a stringa vuota |
+**Requirements**:
+
+Il sistema deve autenticare un utente tramite username o email e password in chiaro.
+
+L'identificatore deve essere normalizzato tramite `strip()` prima del confronto; il confronto per email deve essere case-insensitive.
+
+Se l'identificatore è vuoto (dopo normalizzazione), il sistema deve sollevare `AuthenticationError`.
+
+Se nessun utente corrisponde all'identificatore fornito, il sistema deve sollevare `AuthenticationError`.
+
+Se la password è vuota o non corrisponde all'hash memorizzato dell'utente trovato, il sistema deve sollevare `AuthenticationError`.
+
+Se l'utente corrispondente è inattivo (`is_active == False`), il sistema deve sollevare `AuthenticationError`.
+
+Se l'email dell'utente non è verificata (`is_email_verified == False`), il sistema deve sollevare `AuthenticationError`.
+
+Altrimenti il sistema deve restituire l'utente autenticato.
+
+**Criterion**:
+- identifier
+
+**Predicates**:
+- identifier è vuoto (dopo strip) → non valido (AuthenticationError)
+- identifier non vuoto, nessun utente corrispondente → non valido (AuthenticationError)
+- identifier non vuoto, corrisponde a un utente per username → valido (continua)
+- identifier non vuoto, corrisponde a un utente per email → valido (continua)
+- identifier è email con spazi iniziali/finali → normalizzato via strip, corrisponde a un utente per email → valido (continua)
+- identifier è email con caratteri upper case → normalizzato via lowercase, corrisponde a un utente per email → valido (continua)
+- identifier è username con spazi iniziali/finali → normalizzato via strip, corrisponde a un utente per username → valido (continua)
+
+**Criterion**:
+- password (quando identifier corrisponde a un utente)
+
+**Predicates**:
+- password è vuota → non valida (AuthenticationError)
+- password non corrisponde all'hash memorizzato → non valida (AuthenticationError)
+- password corrisponde all'hash memorizzato → valida (continua)
+
+**Criterion**:
+- stato utente (quando identifier e password sono validi)
+
+**Predicates**:
+- utente inattivo (`is_active == False`) → non valido (AuthenticationError)
+- email non verificata (`is_email_verified == False`) → non valido (AuthenticationError)
+- utente attivo ed email verificata → valido (User)
+
+**Equivalence Classes**
+
+Per identifier:
+
+- EC1: identifier vuoto
+- EC2: identifier non vuoto, nessun utente con username corrispondente
+- EC3: identifier non vuoto, nessun utente con email corrispondente
+- EC4: identifier non vuoto, corrisponde a un utente per username
+- EC5: identifier non vuoto, corrisponde a un utente per email
+- EC6: identifier è email con spazi iniziali/finali, corrisponde a un utente per email dopo strip
+- EC7: identifier è email con caratteri upper case, corrisponde a un utente per email dopo lowercase
+- EC8: identifier è username con spazi iniziali/finali, corrisponde a un utente per username dopo strip
+
+Per password (quando EC4 o EC5):
+
+- EC9: password vuota
+- EC10: password non vuota, non corrisponde all'hash memorizzato
+- EC11: password non vuota, corrisponde all'hash memorizzato
+
+Per stato utente (quando EC4/EC5 e EC11):
+
+- EC12: utente inattivo
+- EC13: utente attivo, email non verificata
+- EC14: utente attivo, email verificata
+
+**Combinations of equivalence classes**
+
+    EC4 × EC11 × EC14
+    EC5 × EC11 × EC14
+    EC2
+    EC3
+    EC4 × EC10
+    EC5 × EC10
+    EC4 × EC11 × EC12
+    EC5 × EC11 × EC12
+    EC5 × EC11 × EC13
+    EC4 × EC11 × EC13
+    EC1
+    EC4 × EC9
+    EC5 × EC9
+    EC1 × EC9
+    EC6 × EC11 × EC14
+    EC7 × EC11 × EC14
+    EC8 × EC11 × EC14
+
+| TC-ID | identifier | password | Expected | Fixture | EC covered |
+| :---- | :--------- | :------- | :------- | :------ | :--------- |
+| AUTH1 | `"mario.rossi"` (username valido) | `"correct_password"` | restituisce `User` (associato ad username: `"mario.rossi"`) | utente esistente e attivo, password hash corrispondente | EC4, EC11, EC14 |
+| AUTH2 | `"mario.rossi@example.com"` (email valida) | `"correct_password"` | restituisce `User` (associato ad email: `"mario.rossi@example.com"`) | utente esistente e attivo, email verificata, password hash corrispondente | EC5, EC11, EC14 |
+| AUTH3 | `"unknown_user"` (non esistente) | `"any_password"` | `AuthenticationError` | Nessun utente nel Database con username associata: `"unknown_user"` | EC2 |
+| AUTH4 | `"unknown_user@example.com"` (non esistente) | `"any_password"` | `AuthenticationError` | Nessun utente nel Database con email associata: `"unknown_user"` | EC3 |
+| AUTH5 | `"mario.rossi"` (esistente) | `"wrong_password"` | `AuthenticationError` | utente esistente, password hash non corrispondente | EC4, EC10 |
+| AUTH6 | `"mario.rossi@example.com"` (esistente) | `"wrong_password"` | `AuthenticationError` | utente esistente, password hash non corrispondente | EC5, EC10 |
+| AUTH7 | `"inactive.user"` (esistente) | `"correct_password"` | `AuthenticationError` (utente inattivo) | utente esistente con `is_active=False` | EC4, EC11, EC12 |
+| AUTH8 | `"inactive.user@example.com"` (esistente) | `"correct_password"` | `AuthenticationError` (utente inattivo) | utente esistente, email verificata con `is_active=False` | EC5, EC11, EC12 |
+| AUTH9 | `"unverified.user@example.com"` (esistente) | `"correct_password"` | `AuthenticationError` (email non verificata) | utente esistente e attivo con `is_email_verified=False` | EC5, EC11, EC13 |
+| AUTH10 | `"unverified.user"` (esistente) | `"correct_password"` | `AuthenticationError` (email non verificata) | utente esistente e attivo con `is_email_verified=False` | EC4, EC11, EC13 |
+| AUTH11 | `""` (stringa vuota) | `"any_password"` | `AuthenticationError` | nessun utente può corrispondere a stringa vuota | EC1 |
+| AUTH12 | `"mario.rossi"` (esistente) | `""` (stringa vuota) | `AuthenticationError` | utente esistente e attivo, nessuna password può corrispondere a stringa vuota | EC4, EC9 |
+| AUTH13 | `"mario.rossi@example.com"` (esistente) | `""` (stringa vuota) | `AuthenticationError` | utente esistente e attivo, email verificata, nessuna password può corrispondere a stringa vuota | EC5, EC9 |
+| AUTH14 | `""` (stringa vuota) | `""` (stringa vuota) | `AuthenticationError` | nessun utente e nessuna password possono corrispondere a stringa vuota | EC1, EC9 |
+| AUTH15 | `" mario.rossi@example.com "` (email con spazio iniziale e finale) | `"correct_password"` | restituisce `User` (associato ad email: `"mario.rossi@example.com"`) | utente esistente e attivo, email verificata, password hash corrispondente | EC6, EC11, EC14 |
+| AUTH16 | `"Mario.Rossi@Example.Com"` (email con caratteri upper case) | `"correct_password"` | restituisce `User` (associato ad email: `"mario.rossi@example.com"`) | utente esistente e attivo, email verificata, password hash corrispondente | EC7, EC11, EC14 |
+| AUTH17 | `" mario.rossi "` (username con spazio iniziale e finale) | `"correct_password"` | restituisce `User` (associato ad username: `"mario.rossi"`) | utente esistente e attivo, password hash corrispondente | EC8, EC11, EC14 |
 
 **Boundary: normalizzazione dell'identificatore**
 Il sistema applica `strip()` sull'identificatore prima del lookup (spazi solo all'inizio o alla fine, mai interni) e tratta le email come case-insensitive.
@@ -36,15 +130,54 @@ Suggested test file: `test_parse_date.py`
 
 Prototype: `parse_date(value: str | None) -> datetime | None`
 
-| TC-ID | value | Expected | Fixture |
-| :---- | :---- | :------- | :------ |
-| PD1 | `None` | `None` | — |
-| PD2 | `""` (stringa vuota) | `None` | — |
-| PD3 | `"2024-01-15T10:30:00"` (ISO-8601 con orario) | `datetime(2024, 1, 15, 10, 30, 0)` | — |
-| PD4 | `"not-a-date"` (stringa non valida) | `ValueError` | — |
+**Requirements**:
+
+Il sistema deve interpretare una stringa come datetime ISO-8601 e restituire il corrispondente oggetto `datetime`.
+
+Se il valore è `None` o una stringa vuota, il sistema deve restituire `None`.
+
+Se il valore è una stringa non conforme al formato ISO-8601, il sistema deve sollevare `ValueError`.
+
+Se il valore rappresenta una data o un orario non valido nel calendario (es. mese fuori range, giorno inesistente, anno non bisestile), il sistema deve sollevare `ValueError`.
+
+**Criterion**:
+- value
+
+**Predicates**:
+- value è None → None
+- value è stringa vuota → None
+- value è non vuoto, ISO-8601 valido → datetime
+- value è non vuoto, ISO-8601 valido con sola data (completezza minima) → datetime
+- value è non vuoto, ISO-8601 valido con data e ora senza minuti e secondi → datetime
+- value è non vuoto, ISO-8601 valido con data, ora e minuti senza secondi → datetime
+- value è non vuoto, ISO-8601 non valido (formato generico) → ValueError
+- value ha separatore di data errato (`/` invece di `-`) → ValueError
+- value ha mese fuori range [1, 12] → ValueError
+- value ha giorno fuori range [1, 31] → ValueError
+- value ha componenti della data mancanti (formato incompleto) → ValueError
+- value ha ora fuori range [0, 23] → ValueError
+- value ha secondi negativi → ValueError
+- value è sintatticamente valido ma rappresenta una data inesistente nel calendario → ValueError
+
+**Equivalence Classes**
+
+Per value:
+
+- EC1: None
+- EC2: stringa vuota
+- EC3: non vuoto, ISO-8601 valido
+- EC4: non vuoto, ISO-8601 non valido (qualsiasi forma)
+
+| TC-ID | value | Expected | Fixture | EC covered |
+| :---- | :---- | :------- | :------ | :--------- |
+| PD1 | `None` | `None` | — | EC1 |
+| PD2 | `""` (stringa vuota) | `None` | — | EC2 |
+| PD3 | `"2024-01-15T10:30:00"` (ISO-8601 con orario) | `datetime(2024, 1, 15, 10, 30, 0)` | — | EC3 |
+| PD4 | `"not-a-date"` (stringa non valida) | `ValueError` | — | EC4 |
 
 
-**Boundary: sintassi e limiti del formato ISO-8601**
+Boundary: sintassi e limiti del formato ISO-8601
+
 Confini validi di completezza della data ISO e limiti logici del calendario (mesi, giorni, ore).
 
 | TC-ID | value | Boundary covered | Expected | Fixture |

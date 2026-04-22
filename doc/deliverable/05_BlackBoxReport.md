@@ -538,8 +538,8 @@ Il sistema solleva: ValidationError se si mette stato "Rejected" senza 'note'.
 - report_id  
 
 **Predicates**:     
-- report_id esistente -> valid      
-- reposrt_id non esistente -> invalid
+- report_id esistente → valid      
+- reposrt_id non esistente → invalid
 
 
 
@@ -547,9 +547,9 @@ Il sistema solleva: ValidationError se si mette stato "Rejected" senza 'note'.
 - operator     
 
 **Predicates**:     
-- operator esistente con ruolo operatore -> valid       
-- operator con ruolo cittadino -> invalid       
-- operator non esistente -> invalid
+- operator esistente con ruolo operatore → valid       
+- operator con ruolo cittadino → invalid       
+- operator non esistente → invalid
 
 
 
@@ -557,8 +557,8 @@ Il sistema solleva: ValidationError se si mette stato "Rejected" senza 'note'.
 - next_status_value   
 
 **Predicates**:
-- next_status_value valore valido di ReportStatus -> valid 
-- next_status_value valore invalido -> invalid
+- next_status_value valore valido di ReportStatus → valid 
+- next_status_value valore invalido → invalid
 
 
 
@@ -566,9 +566,9 @@ Il sistema solleva: ValidationError se si mette stato "Rejected" senza 'note'.
 - note      
 
 **Predicates**:
-- note: presente se next_status_value == "Rejected" -> valid 
-- note valore assente se next_status_value == "Rejected" -> invalid 
-- note qualunque valore negli altri casi -> valid
+- note: presente se next_status_value == "Rejected" → valid 
+- note valore assente se next_status_value == "Rejected" → invalid 
+- note qualunque valore negli altri casi → valid
 
 
 **Equivalence classes**     
@@ -635,7 +635,7 @@ Tali filtri stanno a delle condizioni:
 - category_id deve essere un int associato ad una categoria oppure None
 - status deve essere uno status tra quelli esistenti oppure None
 - date_from, date_to sono datetime e la date_from deve essere antecedente al date_to
-- sort metodo di ordinamento: "asc" o "desc" sulla data
+- sort metodo di ordinamento: "asc" o "desc" sulla data. Se None o invalido non viene considerato
 
 Se i filtri risultano invalidi non si ha nessuna eccezione bensì verra tornata una lista di report vuota.
 
@@ -643,16 +643,103 @@ Se i filtri risultano invalidi non si ha nessuna eccezione bensì verra tornata 
 - category_id   
 
 **Predicates**:
-- category_id: int | None (None, esistente, non esistente)
-- status: ReportStatus | None (None, valido)
-- date_from: datetime | None (None, valido)
-- date_to: datetime | None (None, valido)
-- sort: str ("desc", "asc", invalido)
+- category_id non esistente → valid (ritornerà una lista vuota)
+- category_id nullo → valid
+- category_id esistente → valid
+
+**Criterion:**
+- status   
+
+**Predicates**:
+- status non esistente → valid (ritornerà una lista vuota)
+- status nullo → valid 
+- status esistente (appartenente a ReportStatus) → valid
+
+**Criterion:**
+- date_from   
+
+**Predicates**:
+- date_from invalida o formato errato → valid (ritornerà una lista vuota)
+- date_from valida → valid
+
+**Criterion:**
+- date_to   
+
+**Predicates**:
+- date_to invalida o formato errato → valid (ritornerà una lista vuota)
+- date_to valida → valid
+- date_to valida ma precedente a date_from → valid (rotorna lista vuota)
+
+**Criterion:**
+- sort
+
+**Predicates**:
+- sort invalida o nulla → valid (ritorna lista ordinata per data)
+- sort valida → valid (ritorna lista ordinata secondo il sort)
+
+**Equivalence Classes:**
+- EC1: category_id invalido
+- EC2: category_id valido o None
+- EC3: status invalido
+- EC4: status valido o None
+- EC5: date_from invalido
+- EC6: date_from valido o None
+- EC7: date_to invalido
+- EC8: date_to valido o None
+- EC9: date_to antecedente a date_from
+- EC10: sort valido o None
+- EC11: sort invalido
+
+**Combinations of equivalence classes**
+
+Transizioni consentite con risultato atteso: list[Report] filtrata e ordinata:
+
+- EC2 × EC4 × EC6 × EC8 × EC10 (filtri validi o None, lista popolata)
+
+Transizioni consentite ma con risultato atteso: [] lista vuota:
+
+- EC1 × EC4 × EC6 × EC8 × EC10 (category_id invalido, lista vuota)
+- EC2 × EC3 × EC6 × EC8 × EC10 (status invalido, lista vuota)
+- EC2 × EC4 × EC5 × EC8 × EC10 (date_from invalido, lista vuota)
+- EC2 × EC4 × EC6 × EC7 × EC10 (date_to invalido, lista vuota)
+- EC2 × EC4 × EC6 × EC9 × EC10 (date_to antecedente a date_from, lista vuota)
+- EC2 × EC4 × EC6 × EC8 × EC11 (sort invalido, lista popolata ma ordinata default)
+
+| TC-ID | category_id | status | date_from | date_to | sort | Expected | Fixture | EC covered |
+| :---- | :---------- | :----- | :-------- | :------ | :--- | :------- | :------ | :--------- |
+| PR1 | `None` | `None` | `None` | `None` | `"desc"` | `list[Report]` (tutti report pubblici, ordinati desc) | report pubblici esistenti con date varie | EC2 × EC4 × EC6 × EC8 × EC10 |
+| PR2 | `999` (invalido) | `None` | `None` | `None` | `"desc"` | `[]` (lista vuota) | nessun report in categoria 999 | EC1 × EC4 × EC6 × EC8 × EC10 |
+| PR3 | `None` | `"Stato invalido"` | `None` | `None` | `"desc"` | `[]` (lista vuota) | report pubblici esistenti, ma status invalido | EC2 × EC3 × EC6 × EC8 × EC10 |
+| PR4 | `None` | `None` | `"data invalida"` | `None` | `"desc"` | `[]` (lista vuota) | report pubblici esistenti, ma date_from invalido | EC2 × EC4 × EC5 × EC8 × EC10 |
+| PR5 | `None` | `None` | `None` | `"data invalida"` | `"desc"` | `[]` (lista vuota) | report pubblici esistenti, ma date_to invalido | EC2 × EC4 × EC6 × EC7 × EC10 |
+| PR6 | `None` | `None` | `2024/1/31` | `2024/1/1` | `"desc"` | `[]` (lista vuota, date_to < date_from) | report pubblici esistenti | EC2 × EC4 × EC6 × EC9 × EC10 |
+| PR7 | `None` | `None` | `None` | `None` | `"invalid"` | `list[Report]` (ordinati desc per default) | report pubblici esistenti | EC2 × EC4 × EC6 × EC8 × EC11 |
+| PR8 | `None` | `Assigned` | `None` | `None` | `"desc"` | `list[Report]` (report pubblici con status Assigned) | report pubblici con status Assigned e altri | EC1 × EC6 × EC7 × EC10 × EC14 |
+| PR9 | `None` | `"invalid_status"` | `None` | `None` | `"desc"` | `[]` (lista vuota) | report pubblici esistenti, ma status invalido | EC1 × EC5 × EC7 × EC10 × EC14 |
+| PR10 | `None` | `None` | `2024/1/1` | `2024/1/31` | `"desc"` | `list[Report]` (report pubblici nel range date) | report pubblici con created_at nel range 2024 | EC1 × EC4 × EC9 × EC12 × EC14 |
+| PR11 | `None` | `None` | `"data invalida"` | `None` | `"desc"` | `[]` (lista vuota) | report pubblici esistenti, ma date_from invalido | EC1 × EC4 × EC8 × EC10 × EC14 |
+| PR12 | `None` | `None` | `None` | `"data invalida"` | `"desc"` | `[]` (lista vuota) | report pubblici esistenti, ma date_to invalido | EC1 × EC4 × EC7 × EC11 × EC14 |
+| PR13 | `None` | `None` | `2024/12/31` | `2024/1/1` | `"desc"` | `[]` (lista vuota, date_to < date_from) | report pubblici esistenti | EC1 × EC4 × EC9 × EC13 × EC14 |
+| PR14 | `None` | `None` | `None` | `None` | `"asc"` | `list[Report]` (tutti report pubblici, ordinati asc per created_at) | report pubblici esistenti | EC1 × EC4 × EC7 × EC10 × EC14 |
+| PR15 | `None` | `None` | `None` | `None` | `"invalid"` | `list[Report]` (ordinati desc per default) | report pubblici esistenti | EC1 × EC4 × EC7 × EC10 × EC15 |
 
 
-| TC-ID | category_id | status | date_from | date_to | sort | Expected | Fixture |
-| :---- | :---------- | :----- | :-------- | :------ | :--- | :------- | :------ |
-  |  |  |  |  |
+
+| PR2 | `1` (valido) | `None` | `None` | `None` | `"desc"` | `list[Report]` (report pubblici in categoria 1 ord. desc) | report pubblici in categoria 1 e altre categorie | EC2 × EC4 × EC6 × EC8 × EC10 |
+
+| PR4 | `None` | `Assigned` | `None` | `None` | `"desc"` | `list[Report]` (report pubblici con status Assigned) | report pubblici con status Assigned e altri | EC2 × EC4 × EC6 × EC8 × EC10 |
+
+| PR6 | `None` | `None` | `2024/1/1` | `datetime(2024, 12, 31)` | `"desc"` | `list[Report]` (report pubblici nel range date) | report pubblici con created_at nel range 2024 | EC2 × EC4 × EC6 × EC8 × EC10 |
+
+| PR10 | `None` | `None` | `None` | `None` | `"asc"` | `list[Report]` (tutti report pubblici, ordinati asc per created_at) | report pubblici esistenti | EC2 × EC4 × EC6 × EC8 × EC10 |
+
+**Boundary: ordine date**
+Test del confine logico tra date_from e date_to (date_to deve essere successiva a date_from per filtri validi).
+
+| TC-ID | category_id | status | date_from | date_to | sort | Expected | Fixture | EC covered |
+| :---- | :---------- | :----- | :-------- | :------ | :--- | :------- | :------ | :--------- |
+| PRB1 | `None` | `None` | `2024/6/1` | `2024/6/1` | `"desc"` | `list[Report]` (stessa data, valido) | report pubblici con created_at = 2024-06-01 | EC2 × EC4 × EC6 × EC8 × EC10 |
+| PRB2 | `None` | `None` | `2024/6/1` | `2024/5/31` | `"desc"` | `[]` (date_to < date_from) | report pubblici esistenti | EC2 × EC4 × EC6 × EC9 × EC10 |
 
 
 ## 7 `participium.services.messaging_service.MessagingService.send_message`

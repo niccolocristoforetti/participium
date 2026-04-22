@@ -521,6 +521,81 @@ Suggested test file: `test_update_status.py`
 
 Prototype: `update_status(report_id: int, operator: User, next_status_value: str, note: str | None = None) -> Report`
 
+**Requirements**: Il sistema deve aggiornare lo stato di una segnalazione esistente, verificando autorizzazioni e validità.     
+
+Il sistema deve sollevare: AuthorizationError se l'operatore non ha i permessi per cambiare lo stato della segnalazione.        
+
+Il sistema deve sollevare: NotFoundError se la segnalazione non esiste.     
+
+Il sistema deve sollevare: ValidationError se il valore in 'next_status_value' non è ammesso.     
+
+Il sistema deve sollevare: ValidationError se la transizione non è consentita (ensure_transition_allowed).      
+
+Il sistema solleva: ValidationError se si mette stato "Rejected" senza 'note'.      
+
+
+**Criterion:**
+- report_id  
+
+**Predicates**:     
+- report_id esistente -> valid      
+- reposrt_id non esistente -> invalid
+
+
+
+**Criterion:**
+- operator     
+
+**Predicates**:     
+- operator esistente con ruolo operatore -> valid       
+- operator con ruolo cittadino -> invalid       
+- operator non esistente -> invalid
+
+
+
+**Criterion:**
+- next_status_value   
+
+**Predicates**:
+- next_status_value valore valido di ReportStatus -> valid 
+- next_status_value valore invalido -> invalid
+
+
+
+**Criterion:**
+- note      
+
+**Predicates**:
+- note: presente se next_status_value == "Rejected" -> valid 
+- note valore assente se next_status_value == "Rejected" -> invalid 
+- note qualunque valore negli altri casi -> valid
+
+
+**Equivalence classes**     
+- EC1: report_id esistente
+- EC2: report_id non esistente
+- EC3: operator esistente
+- EC4: operator citizen
+- EC5: operator non esistente
+- EC6: next_status_value valido
+- EC7: next_status_value invalido
+- EC8: note presente (per Rejected)
+- EC9: note assente (per Rejected)
+- EC10: note qualsiasi (per stati non Rejected)
+
+
+**Combinations of equivalence classes**     
+Transizioni consentite:         
+- EC1 x EC3 x EC6 x EC10
+- EC1 x EC3 x EC6 x EC8
+- EC1 x EC3 x EC6 x EC9
+
+Transizioni negate:
+- EC2 x EC3 x EC6 x EC10 (report non esistente NotFoundError)
+- EC1 x EC4 x EC6 x EC10 (operatore non ha permessi AuthorizationError)
+- EC1 x EC5 x EC6 x EC10 (operatore non esistente)
+
+
 | TC-ID | report_id | operator | next_status_value | note | Expected | Fixture |
 | :---- | :-------- | :------- | :---------------- | :--- | :------- | :------ |
 |  |  |  |  |  |  |  |

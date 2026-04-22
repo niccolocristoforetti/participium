@@ -521,11 +521,11 @@ Suggested test file: `test_update_status.py`
 
 Prototype: `update_status(report_id: int, operator: User, next_status_value: str, note: str | None = None) -> Report`
 
-**Requirements**: Il sistema deve aggiornare lo stato di una segnalazione esistente, verificando autorizzazioni e validità.     
+**Requirements**: Il sistema deve aggiornare lo stato di una Report esistente, verificando autorizzazioni e validità.     
 
-Il sistema deve sollevare: AuthorizationError se l'operatore non ha i permessi per cambiare lo stato della segnalazione.        
+Il sistema deve sollevare: AuthorizationError se l'operatore non ha i permessi per cambiare lo stato della Report.        
 
-Il sistema deve sollevare: NotFoundError se la segnalazione non esiste.     
+Il sistema deve sollevare: NotFoundError se la Report non esiste.     
 
 Il sistema deve sollevare: ValidationError se il valore in 'next_status_value' non è ammesso.     
 
@@ -586,19 +586,29 @@ Il sistema solleva: ValidationError se si mette stato "Rejected" senza 'note'.
 
 **Combinations of equivalence classes**     
 Transizioni consentite:         
-- EC1 x EC3 x EC6 x EC10
-- EC1 x EC3 x EC6 x EC8
-- EC1 x EC3 x EC6 x EC9
+- EC1 x EC3 x EC6 x EC10 (se next status_value non 'Rejected')
+- EC1 x EC3 x EC6 x EC9 (se next_status_value non 'Rejected')
+- EC1 x EC3 x EC6 x EC8 (sopratutto se next_status_value e 'Rejected')
 
 Transizioni negate:
 - EC2 x EC3 x EC6 x EC10 (report non esistente NotFoundError)
 - EC1 x EC4 x EC6 x EC10 (operatore non ha permessi AuthorizationError)
-- EC1 x EC5 x EC6 x EC10 (operatore non esistente)
-
+- EC1 x EC5 x EC6 x EC10 (operatore non esistente AuthorizationError)
+- EC1 x EC3 x EC7 x EC10 (next_status_value non ammesso ValidationError)
+- EC1 x EC3 x EC6 x EC9 (next_status_value = 'Rejected' necessita di note, ValidationError)
+- EC1 x EC3 x EC6 x EC10 (next_status_value = 'Rejected' necessita di note, ValidationError)
 
 | TC-ID | report_id | operator | next_status_value | note | Expected | Fixture |
 | :---- | :-------- | :------- | :---------------- | :--- | :------- | :------ |
-|  |  |  |  |  |  |  |
+| US1 | 1(esistente) | operatore comunale | "Assigned" | None | Report con stato aggiornato | Report esistente ed in stato di 'Pending Approval' e operatore esistente |
+| US2 | 1(esistente) | operatore comunale | "In Progress" | None | Report con stato aggiornato | Report esistente ed in stato di 'Pending Approval' e operatore esistente |
+ US3 | 1(esiste) | operatore comunale | "Rejected" | "Motivo del rifiuto" | Report rifiutata, aggiornamento stato e rimozione dalla mappa | Report esistente in stato "Pending Approval" e operatore esistente |
+| US4 | 99(non esiste) | operatore comunale | "Assigned" | None | NotFoundError | Report non esistente ma operatore esistente |
+| US5 | 1(esiste) | cittadino | "Assigned" | None | AuthorizationError | Report esistente in stato "Pending Approval" e cittadino esistente|
+| US6 |	1(esiste) |	operatore comunale | "statoInvalido" |	None | 	ValidationError |	Report esistente e operatore esistente |
+|US7 |	1(esiste) |	operatore comunale |	"Rejected" | None | ValidationError | Reoport esistente in "Pending Approval" e operatore esistente |
+|US8 |	1(esiste) |	operatore comunale |	"Resolved" | None | ValidationError | Reoport esistente in "Pending Approval" e operatore esistente (transizione non concessa) |
+
 
 ## 6 `participium.services.report_service.ReportService.list_public_reports`
 
@@ -608,7 +618,7 @@ Prototype: `list_public_reports(category_id: int | None = None, status: ReportSt
 
 | TC-ID | category_id | status | date_from | date_to | sort | Expected | Fixture |
 | :---- | :---------- | :----- | :-------- | :------ | :--- | :------- | :------ |
-|  |  |  |  |  |  |  |  |
+  |  |  |  |  |
 
 
 ## 7 `participium.services.messaging_service.MessagingService.send_message`

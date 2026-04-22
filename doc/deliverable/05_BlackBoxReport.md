@@ -580,34 +580,47 @@ Il sistema solleva: ValidationError se si mette stato "Rejected" senza 'note'.
 - EC6: next_status_value valido
 - EC7: next_status_value invalido
 - EC8: note presente (per Rejected)
-- EC9: note assente (per Rejected)
-- EC10: note qualsiasi (per stati non Rejected)
-
+- EC9: note assente
 
 **Combinations of equivalence classes**     
 Transizioni consentite:         
-- EC1 x EC3 x EC6 x EC10 (se next status_value non 'Rejected')
 - EC1 x EC3 x EC6 x EC9 (se next_status_value non 'Rejected')
 - EC1 x EC3 x EC6 x EC8 (sopratutto se next_status_value e 'Rejected')
 
 Transizioni negate:
-- EC2 x EC3 x EC6 x EC10 (report non esistente NotFoundError)
-- EC1 x EC4 x EC6 x EC10 (operatore non ha permessi AuthorizationError)
-- EC1 x EC5 x EC6 x EC10 (operatore non esistente AuthorizationError)
-- EC1 x EC3 x EC7 x EC10 (next_status_value non ammesso ValidationError)
-- EC1 x EC3 x EC6 x EC9 (next_status_value = 'Rejected' necessita di note, ValidationError)
-- EC1 x EC3 x EC6 x EC10 (next_status_value = 'Rejected' necessita di note, ValidationError)
+- EC2 x EC3 x EC6 x EC9 (report non esistente NotFoundError)
+- EC1 x EC4 x EC6 x EC9 (operatore non ha permessi AuthorizationError)
+- EC1 x EC5 x EC6 x EC9 (operatore non esistente AuthorizationError)
+- EC1 x EC3 x EC7 x EC9 (next_status_value non ammesso ValidationError)
+- EC1 x EC3 x EC6 x EC8 (next_status_value = 'Rejected' necessita di note, ValidationError)
+- EC1 x EC3 x EC6 x EC8 (next_status_value = 'Rejected' necessita di note, ValidationError)
 
-| TC-ID | report_id | operator | next_status_value | note | Expected | Fixture |
+| TC-ID | report_id | operator | next_status_value | note | Expected | Fixture | EC covered |
 | :---- | :-------- | :------- | :---------------- | :--- | :------- | :------ |
-| US1 | 1(esistente) | operatore comunale | "Assigned" | None | Report con stato aggiornato | Report esistente ed in stato di 'Pending Approval' e operatore esistente |
-| US2 | 1(esistente) | operatore comunale | "In Progress" | None | Report con stato aggiornato | Report esistente ed in stato di 'Pending Approval' e operatore esistente |
- US3 | 1(esiste) | operatore comunale | "Rejected" | "Motivo del rifiuto" | Report rifiutata, aggiornamento stato e rimozione dalla mappa | Report esistente in stato "Pending Approval" e operatore esistente |
-| US4 | 99(non esiste) | operatore comunale | "Assigned" | None | NotFoundError | Report non esistente ma operatore esistente |
-| US5 | 1(esiste) | cittadino | "Assigned" | None | AuthorizationError | Report esistente in stato "Pending Approval" e cittadino esistente|
-| US6 |	1(esiste) |	operatore comunale | "statoInvalido" |	None | 	ValidationError |	Report esistente e operatore esistente |
-|US7 |	1(esiste) |	operatore comunale |	"Rejected" | None | ValidationError | Reoport esistente in "Pending Approval" e operatore esistente |
-|US8 |	1(esiste) |	operatore comunale |	"Resolved" | None | ValidationError | Reoport esistente in "Pending Approval" e operatore esistente (transizione non concessa) |
+| US1 | 1(esistente) | operatore comunale | `"Assigned"` | `None` | Report con stato aggiornato | Report esistente ed in stato di `'Pending Approval'` e operatore esistente | EC1 x EC3 x EC6 x EC9 |
+ US3 | 1(esiste) | operatore comunale | `"Rejected"` | `"Motivo del rifiuto"` | Report rifiutato, aggiornamento stato e rimozione dalla mappa | Report esistente in stato `"Pending Approval"` e operatore esistente | EC1 x EC3 x EC6 x EC8 |
+| US4 | 99(non esiste) | operatore comunale | `"Assigned"` | `None` | `NotFoundError` | Report non esistente ma operatore esistente | EC2 x EC3 x EC6 x EC9 |
+| US5 | 1(esiste) | cittadino | `"Assigned"` | `None` | `AuthorizationError` | Report esistente in stato `"Pending Approval"` e cittadino esistente| EC1 x EC4 x EC6 x EC9 |
+| US6 |	1(esiste) |	operatore comunale | `"statoInvalido"` |	`None` | 	`ValidationError` |	Report esistente e operatore esistente | EC1 x EC3 x EC7 x EC9 |
+|US7 |	1(esiste) |	operatore no valido |	`"Accepted"` | `None` | `AuthenticationError` | Reoport esistente in `"Pending Approval"` e operatore non esistente | EC1 x EC5 x EC6 x EC9 |
+
+| US2 | 1(esistente) | operatore comunale | `"In Progress"` | `None` | Report con stato aggiornato | Report esistente ed in stato di `'Pending Approval'` e operatore esistente | EC1 x EC3 x EC6 x EC9 |
+
+|US8 |	1(esiste) |	operatore comunale |	`"Resolved"` | `None` | `ValidationError` | Reoport esistente in `"Pending Approval"` e operatore esistente (transizione non concessa) | EC1 x EC3 x EC6 x EC9 |
+
+
+`
+report_id: int, operator: User, next_status_value: str, note: str | None = None
+**Boundary : limiti report_id**
+Test sulla validità di un id assegnato ad un Report.
+
+
+**Boundary : validità del next_status_value**
+Test sulla validità della str next_status_value. La validità delle transizioni segue il TC-3 (ensure_transition_allowed)
+
+
+**Boundary : note**
+Test sui possibili valori del note.
 
 
 ## 6 `participium.services.report_service.ReportService.list_public_reports`
@@ -615,6 +628,27 @@ Transizioni negate:
 Suggested test file: `test_public_reports.py`
 
 Prototype: `list_public_reports(category_id: int | None = None, status: ReportStatus | None = None, date_from: datetime | None = None, date_to: datetime | None = None, sort: str = "desc") -> list[Report]`
+
+**Requirements:**       
+Il sistema deve restituire una lista di segnalazioni pubblicamente visibili, opzionalmente filtrate.
+Tali filtri stanno a delle condizioni:
+- category_id deve essere un int associato ad una categoria oppure None
+- status deve essere uno status tra quelli esistenti oppure None
+- date_from, date_to sono datetime e la date_from deve essere antecedente al date_to
+- sort metodo di ordinamento: "asc" o "desc" sulla data
+
+Se i filtri risultano invalidi non si ha nessuna eccezione bensì verra tornata una lista di report vuota.
+
+**Criterion:**
+- category_id   
+
+**Predicates**:
+- category_id: int | None (None, esistente, non esistente)
+- status: ReportStatus | None (None, valido)
+- date_from: datetime | None (None, valido)
+- date_to: datetime | None (None, valido)
+- sort: str ("desc", "asc", invalido)
+
 
 | TC-ID | category_id | status | date_from | date_to | sort | Expected | Fixture |
 | :---- | :---------- | :----- | :-------- | :------ | :--- | :------- | :------ |

@@ -727,15 +727,6 @@ Transizioni consentite ma con risultato atteso: [] lista vuota:
 | PR15 | `None` | `None` | `None` | `None` | `"invalid"` | `list[Report]` (ordinati desc per default) | report pubblici esistenti | EC1 × EC4 × EC7 × EC10 × EC15 |
 
 
-
-| PR2 | `1` (valido) | `None` | `None` | `None` | `"desc"` | `list[Report]` (report pubblici in categoria 1 ord. desc) | report pubblici in categoria 1 e altre categorie | EC2 × EC4 × EC6 × EC8 × EC10 |
-
-| PR4 | `None` | `Assigned` | `None` | `None` | `"desc"` | `list[Report]` (report pubblici con status Assigned) | report pubblici con status Assigned e altri | EC2 × EC4 × EC6 × EC8 × EC10 |
-
-| PR6 | `None` | `None` | `2024/1/1` | `datetime(2024, 12, 31)` | `"desc"` | `list[Report]` (report pubblici nel range date) | report pubblici con created_at nel range 2024 | EC2 × EC4 × EC6 × EC8 × EC10 |
-
-| PR10 | `None` | `None` | `None` | `None` | `"asc"` | `list[Report]` (tutti report pubblici, ordinati asc per created_at) | report pubblici esistenti | EC2 × EC4 × EC6 × EC8 × EC10 |
-
 **Boundary: ordine date**
 Test del confine logico tra date_from e date_to (date_to deve essere successiva a date_from per filtri validi).
 

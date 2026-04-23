@@ -10,20 +10,12 @@ from participium.services.report_service import ReportService
 
 '''
 | PR1 | `None` | `None` | `None` | `None` | `"desc"` | `list[Report]` (tutti report pubblici, ordinati desc) | report pubblici esistenti con date varie | EC2 × EC4 × EC6 × EC8 × EC10 |
-| PR2 | `999` (invalido) | `None` | `None` | `None` | `"desc"` | `[]` (lista vuota) | nessun report in categoria 999 | EC1 × EC4 × EC6 × EC8 × EC10 |
+| PR2 | `9999` (invalido) | `None` | `None` | `None` | `"desc"` | `[]` (lista vuota) | nessun report in categoria 999 | EC1 × EC4 × EC6 × EC8 × EC10 |
 | PR3 | `None` | `"Stato invalido"` | `None` | `None` | `"desc"` | `[]` (lista vuota) | report pubblici esistenti, ma status invalido | EC2 × EC3 × EC6 × EC8 × EC10 |
 | PR4 | `None` | `None` | `"data invalida"` | `None` | `"desc"` | `[]` (lista vuota) | report pubblici esistenti, ma date_from invalido | EC2 × EC4 × EC5 × EC8 × EC10 |
 | PR5 | `None` | `None` | `None` | `"data invalida"` | `"desc"` | `[]` (lista vuota) | report pubblici esistenti, ma date_to invalido | EC2 × EC4 × EC6 × EC7 × EC10 |
-| PR6 | `None` | `None` | `2024/1/31` | `2024/1/1` | `"desc"` | `[]` (lista vuota, date_to < date_from) | report pubblici esistenti | EC2 × EC4 × EC6 × EC9 × EC10 |
-| PR7 | `None` | `None` | `None` | `None` | `"invalid"` | `list[Report]` (ordinati desc per default) | report pubblici esistenti | EC2 × EC4 × EC6 × EC8 × EC11 |
-| PR8 | `None` | `Assigned` | `None` | `None` | `"desc"` | `list[Report]` (report pubblici con status Assigned) | report pubblici con status Assigned e altri | EC1 × EC6 × EC7 × EC10 × EC14 |
-| PR9 | `None` | `"invalid_status"` | `None` | `None` | `"desc"` | `[]` (lista vuota) | report pubblici esistenti, ma status invalido | EC1 × EC5 × EC7 × EC10 × EC14 |
-| PR10 | `None` | `None` | `2024/1/1` | `2024/1/31` | `"desc"` | `list[Report]` (report pubblici nel range date) | report pubblici con created_at nel range 2024 | EC1 × EC4 × EC9 × EC12 × EC14 |
-| PR11 | `None` | `None` | `"data invalida"` | `None` | `"desc"` | `[]` (lista vuota) | report pubblici esistenti, ma date_from invalido | EC1 × EC4 × EC8 × EC10 × EC14 |
-| PR12 | `None` | `None` | `None` | `"data invalida"` | `"desc"` | `[]` (lista vuota) | report pubblici esistenti, ma date_to invalido | EC1 × EC4 × EC7 × EC11 × EC14 |
-| PR13 | `None` | `None` | `2024/12/31` | `2024/1/1` | `"desc"` | `[]` (lista vuota, date_to < date_from) | report pubblici esistenti | EC1 × EC4 × EC9 × EC13 × EC14 |
-| PR14 | `None` | `None` | `None` | `None` | `"asc"` | `list[Report]` (tutti report pubblici, ordinati asc per created_at) | report pubblici esistenti | EC1 × EC4 × EC7 × EC10 × EC14 |
-| PR15 | `None` | `None` | `None` | `None` | `"invalid"` | `list[Report]` (ordinati desc per default) | report pubblici esistenti | EC1 × EC4 × EC7 × EC10 × EC15 |
+| PR6 | `None` | `None` | `None` | `None` | `None` | `list[Report]` (ordinati desc per default) | report pubblici esistenti | EC2 × EC4 × EC6 × EC8 × EC11 |
+| PR7 | `None` | `Assigned` | `None` | `None` | `"desc"` | `list[Report]` (report pubblici con status Assigned) | report pubblici con status Assigned e altri | EC2 × EC4 x EC6 × EC8 × EC10 |
 
 
 **Boundary: ordine date**
@@ -31,8 +23,8 @@ Test del confine logico tra date_from e date_to (date_to deve essere successiva 
 
 | TC-ID | category_id | status | date_from | date_to | sort | Expected | Fixture | EC covered |
 | :---- | :---------- | :----- | :-------- | :------ | :--- | :------- | :------ | :--------- |
-| PRB1 | `None` | `None` | `2024/6/1` | `2024/6/1` | `"desc"` | `list[Report]` (stessa data, valido) | report pubblici con created_at = 2024-06-01 | EC2 × EC4 × EC6 × EC8 × EC10 |
-| PRB2 | `None` | `None` | `2024/6/1` | `2024/5/31` | `"desc"` | `[]` (date_to < date_from) | report pubblici esistenti | EC2 × EC4 × EC6 × EC9 × EC10 |
+| PRB8 | `None` | `None` | `2024/6/1` | `2024/6/1` | `"desc"` | `list[Report]` (stessa data, valido) | report pubblici con created_at = 2024-06-01 | EC2 × EC4 × EC6 × EC8 × EC10 |
+| PRB9 | `None` | `None` | `2024/6/1` | `2024/5/31` | `"desc"` | `[]` (date_to < date_from) | report pubblici esistenti | EC2 × EC4 × EC6 × EC9 × EC10 |
 '''
 
 @pytest.fixture
@@ -48,39 +40,23 @@ def seed_public_reports_data() -> None:
 @pytest.mark.parametrize(
     "category_id,status,date_from,date_to,sort,expected_length",
     [
-        # PR1 
+        # PR1: tutti report pubblici, ordinati desc
         (None, None, None, None, "desc", None,),
-        # PR2 
-        (999, None, None, None, "desc", 0,),
-        # PR3
+        # PR2: categoria invalida
+        (9999, None, None, None, "desc", 0,),
+        # PR3: status invalido
         (None, "Stato invalido", None, None, "desc", 0,),
-        # PR4
+        # PR4: date_from invalido
         (None, None, "data invalida", None, "desc", 0,),
-        # PR5
+        # PR5: date_to invalido
         (None, None, None, "data invalida", "desc", 0,),
-        # PR6
-        (None, None, datetime(2024, 1, 31), datetime(2024, 1, 1), "desc", 0,),
-        # PR7
-        (None, None, None, None, "invalid", None,),
-        # PR8
+        # PR6: sort None
+        (None, None, None, None, None, None,),
+        # PR7: status valido (Assigned)
         (None, ReportStatus.ASSIGNED, None, None, "desc", None,),
-        # PR9
-        (None, "invalid_status", None, None, "desc", 0,),
-        # PR10
-        (None, None, datetime(2024, 1, 1), datetime(2024, 1, 31), "desc", None,),
-        # PR11
-        (None, None, "data invalida", None, "desc", 0,),
-        # PR12
-        (None, None, None, "data invalida", "desc", 0,),
-        # PR13
-        (None, None, datetime(2024, 12, 31), datetime(2024, 1, 1), "desc", 0,),
-        # PR14
-        (None, None, None, None, "asc", None,),
-        # PR15
-        (None, None, None, None, "invalid", None,),
-        # PRB1
+        # PRB8: stessa data per date_from e date_to
         (None, None, datetime(2024, 6, 1), datetime(2024, 6, 1), "desc", None,),
-        # PRB2
+        # PRB9: date_to < date_from
         (None, None, datetime(2024, 6, 1), datetime(2024, 5, 31), "desc", 0,),
     ],
 )

@@ -574,56 +574,75 @@ Il sistema solleva: ValidationError se si mette stato "Rejected" senza 'note'.
 **Equivalence classes**     
 - EC1: report_id esistente
 - EC2: report_id non esistente
-- EC3: operator esistente
-- EC4: operator citizen
-- EC5: operator non esistente
-- EC6: next_status_value valido
-- EC7: next_status_value invalido
-- EC8: note presente (per Rejected)
-- EC9: note assente
+- EC3: operator con ruolo admin (può aggiornare qualsiasi report)
+- EC4: operator con ruolo operator, stessa categoria del report
+- EC5: operator con ruolo operator, categoria diversa dal report
+- EC6: operator citizen (non autorizzato)
+- EC7: operator non esistente/non valido
+- EC8: next_status_value valido (in ReportStatus)
+- EC9: next_status_value invalido (non in ReportStatus)
+- EC10: next_status_value ≠ "Rejected" (note non rilevante)
+- EC11: next_status_value == "Rejected" e note presente (non vuota)
+- EC12: next_status_value == "Rejected" e note assente o vuota
+- EC13: transizione consentita dal workflow (ensure_transition_allowed = True)
+- EC14: transizione non consentita dal workflow (ensure_transition_allowed = False)
 
 **Combinations of equivalence classes**     
-Transizioni consentite:         
-- EC1 x EC3 x EC6 x EC9 (se next_status_value non 'Rejected')
-- EC1 x EC3 x EC6 x EC8 (sopratutto se next_status_value e 'Rejected')
+Transizioni consentite:   
+- EC1 × EC3 × EC8 × EC10 × EC13 (report esistente, admin, status valido, transizione valida, note N/A)
+- EC1 × EC4 × EC8 × EC10 × EC13 (report esistente, operator stessa categoria, status valido, note non rilevante, transizione valida)
+- EC1 × EC3 × EC8 × EC11 × EC13 (report esistente, admin, status valido, Rejected con note, transizione valida)
+- EC1 × EC4 × EC8 × EC11 × EC13 (report esistente, operator stessa categoria, status valido, Rejected con note, transizione valida)    
 
 Transizioni negate:
-- EC2 x EC3 x EC6 x EC9 (report non esistente NotFoundError)
-- EC1 x EC4 x EC6 x EC9 (operatore non ha permessi AuthorizationError)
-- EC1 x EC5 x EC6 x EC9 (operatore non esistente AuthorizationError)
-- EC1 x EC3 x EC7 x EC9 (next_status_value non ammesso ValidationError)
-- EC1 x EC3 x EC6 x EC8 (next_status_value = 'Rejected' necessita di note, ValidationError)
-- EC1 x EC3 x EC6 x EC8 (next_status_value = 'Rejected' necessita di note, ValidationError)
+- EC2 × EC3 × EC8 × EC10 × EC13 (NotFoundError)
+- EC1 × EC5 × EC8 × EC10 × EC13 (AuthorizationError: categoria diversa)
+- EC1 × EC6 × EC8 × EC10 × EC13 (AuthorizationError: citizen)
+- EC1 × EC7 × EC8 × EC10 × EC13 (AuthorizationError: operator non valido)
+- EC1 × EC3 × EC9 × EC10 × EC13 (ValidationError: status invalido)
+- EC1 × EC3 × EC8 × EC12 × EC13 (ValidationError: Rejected senza note)
+- EC1 × EC3 × EC8 × EC10 × EC14 (ValidationError: transizione non consentita)
 
 | TC-ID | report_id | operator | next_status_value | note | Expected | Fixture | EC covered |
-| :---- | :-------- | :------- | :---------------- | :--- | :------- | :------ | ------- |
-| US1 | 1(esistente) | operatore comunale | `"Assigned"` | `None` | Report con stato aggiornato | Report esistente ed in stato di `'Pending Approval'` e operatore esistente | EC1 x EC3 x EC6 x EC9 |
-| US2 | 1(esiste) | operatore comunale | `"Rejected"` | `"Motivo del rifiuto"` | Report rifiutato, aggiornamento stato e rimozione dalla mappa | Report esistente in stato `"Pending Approval"` e operatore esistente | EC1 x EC3 x EC6 x EC8 |
-| US3 | 99(non esiste) | operatore comunale | `"Assigned"` | `None` | `NotFoundError` | Report non esistente ma operatore esistente | EC2 x EC3 x EC6 x EC9 |
-| US4 | 1(esiste) | cittadino | `"Assigned"` | `None` | `AuthorizationError` | Report esistente in stato `"Pending Approval"` e cittadino esistente| EC1 x EC4 x EC6 x EC9 |
-| US5 |	1(esiste) |	operatore comunale | `"statoInvalido"` |	`None` | 	`ValidationError` |	Report esistente e operatore esistente | EC1 x EC3 x EC7 x EC9 |
-| US6 |	1(esiste) |	operatore no valido |	`"Accepted"` | `None` | `AuthorizationError` | Reoport esistente in `"Pending Approval"` e operatore non esistente | EC1 x EC5 x EC6 x EC9 |
+| :---- | :-------- | :------- | :---------------- | :--- | :------- | :------ | :--------- |
+| US1 | 1 (esiste) | admin | `"Assigned"` | `None` | `Report` aggiornato | report in `Pending Approval`, admin autorizzato, transizione valida | EC1 × EC3 × EC8 × EC10 × EC13 |
+| US2 | 1 (esiste) | operator (stessa cat.) | `"Assigned"` | `None` | `Report` aggiornato | report in `Pending Approval`, operator stessa categoria, transizione valida | EC1 × EC4 × EC8 × EC10 × EC13 |
+| US3 | 1 (esiste) | admin | `"Rejected"` | `"Motivo rifiuto"` | `Report` rifiutato | report in `Pending Approval`, admin, Rejected con note | EC1 × EC3 × EC8 × EC11 × EC13 |
+| US4 | 1 (esiste) | operator (stessa cat.) | `"Rejected"` | `"Motivo"` | `Report` rifiutato | report in `Pending Approval`, operator stessa cat., Rejected con note | EC1 × EC4 × EC8 × EC11 × EC13 |
+| US5 | 99 (non esiste) | admin | `"Assigned"` | `None` | `NotFoundError` | report non esiste | EC2 × EC3 × EC8 × EC10 × EC13 |
+| US6 | 1 (esiste) | operator (cat. diversa) | `"Assigned"` | `None` | `AuthorizationError` | report esiste, operator categoria diversa | EC1 × EC5 × EC8 × EC10 × EC13 |
+| US7 | 1 (esiste) | citizen | `"Assigned"` | `None` | `AuthorizationError` | report esiste, operator citizen non autorizzato | EC1 × EC6 × EC8 × EC10 × EC13 |
+| US8 | 1 (esiste) | operatore non valido | `"Assigned"` | `None` | `AuthorizationError` | report esiste, operator inesistente | EC1 × EC7 × EC8 × EC10 × EC13 |
+| US9 | 1 (esiste) | admin | `"STATO_INVALIDO"` | `None` | `ValidationError` | report esiste, admin, status non in ReportStatus | EC1 × EC3 × EC9 × EC10 × EC13 |
+| US10 | 1 (esiste) | admin | `"Rejected"` | `None` | `ValidationError` | report esiste, admin, Rejected senza note | EC1 × EC3 × EC8 × EC12 × EC13 |
+| US11 | 1 (esiste) | admin | `"Rejected"` | `""` | `ValidationError` | report esiste, admin, Rejected con note vuota | EC1 × EC3 × EC8 × EC12 × EC13 |
+| US12 | 1 (esiste, `Assigned`) | admin | `"Pending Approval"` | `None` | `ValidationError` | report in Assigned, transizione a Pending Approval non consentita | EC1 × EC3 × EC8 × EC10 × EC14 |
+| US13 | 1 (esiste) | admin | `" Assigned "` | `None` | `ValidationError` | status invalido (spazi attorno) | EC1 × EC3 × EC9 × EC10 × EC13 |
+| US14 | 1 (esiste) | admin | `""` | `None` | `ValidationError` | status vuoto | EC1 × EC3 × EC9 × EC10 × EC13 |
+
+
+
 
 **Boundary : validità del next_status_value**
 Test sulla validità della str next_status_value. La validità delle transizioni segue il TC-3 (ensure_transition_allowed)
 
 | TC-ID | report_id | operator | next_status_value | note | Expected | Fixture | EC covered |
 | :---- | :-------- | :------- | :---------------- | :--- | :------- | :------ | ------- | 
-| US7 | 1(esiste) | 1(esiste) |`"ASSIGNED"`  | `None` | ValidationError | Reoport esistente in `"Pending Approval"` e operatore esistente | EC1 x EC3 x EC7 x EC9|
-| US8 | 1(esiste) | 1(esiste) |`" Assigned"`  | `None` | ValidationError | Reoport esistente in `"Pending Approval"` e operatore esistente | EC1 x EC3 x EC7 x EC9|
-| US9 | 1(esiste) | 1(esiste) |`"assigned "`  | `None` | ValidationError | Reoport esistente in `"Pending Approval"` e operatore esistente | EC1 x EC3 x EC7 x EC9|
-| US10 | 1(esiste) | 1(esiste) |`""`  | `None` | ValidationError | Reoport esistente in `"Pending Approval"` e operatore esistente | EC1 x EC3 x EC7 x EC9|
-| US11 | 1(esiste) | 1(esiste) |`"Assigned"`  | `Qualsiasi` | Report cambia stato | Reoport esistente in `"Pending Approval"` e operatore esistente | EC1 x EC3 x EC7 x EC9|
+| US15 | 1(esiste) | operator (stessa cat.) |`"ASSIGNED"`  | `None` | ValidationError | Reoport esistente in `"Pending Approval"` e operatore esistente | EC1 x EC4 x EC9 x EC10 x EC13|
+| US16 | 1(esiste) | operator (stessa cat.) |`" Assigned"`  | `None` | ValidationError | Reoport esistente in `"Pending Approval"` e operatore esistente | EC1 x EC4 x EC9 x EC10 x EC13|
+| US17 | 1(esiste) | operator (stessa cat.) |`"assigned "`  | `None` | ValidationError | Reoport esistente in `"Pending Approval"` e operatore esistente | EC1 x EC4 x EC9 x EC10 x EC13|
+| US18 | 1(esiste) | operator (stessa cat.) |`""`  | `None` | ValidationError | Reoport esistente in `"Pending Approval"` e operatore esistente | EC1 x EC4 x EC9 x EC10 x EC13|
+| US11 | 1(esiste) | operator (stessa cat.) |`"Assigned"`  | `Qualsiasi` | Report cambia stato | Reoport esistente in `"Pending Approval"` e operatore esistente | EC1 x EC4 x EC9 x EC10 x EC13|
 
 **Boundary : note**   
 Test sui possibili valori del note.
 
 | TC-ID | report_id | operator | next_status_value | note | Expected | Fixture | EC covered |
 | :---- | :-------- | :------- | :---------------- | :--- | :------- | :------ | ------- | 
-| US12 | 1(esiste) | operatore comunale |`"Rejected"`  | `None` | ValidationError | Reoport esistente in `"Pending Approval"` e operatore esistente | EC1 x EC3 x EC6 x EC9|
-| US13 | 1(esiste) | operatore comunale |`"Rejected"`  | `""` | ValidationError | Reoport esistente in `"Pending Approval"` e operatore esistente | EC1 x EC3 x EC6 x EC9|
-| US14 | 1(esiste) | operatore comunale |`"Assigned"`  | `""` | Report cambia stato | Reoport esistente in `"Pending Approval"` e operatore esistente | EC1 x EC3 x EC6 x EC9|
-| US15 | 1(esiste) | operatore comunale |`"Rejected"`  | `"motivo"` | Report rifiutato | Reoport esistente in `"Pending Approval"` e operatore esistente | EC1 x EC3 x EC6 x EC9|
+| US19 | 1(esiste) | operatore comunale |`"Rejected"`  | `None` | ValidationError | Reoport esistente in `"Pending Approval"` e operatore esistente | EC1 x EC3 x EC6 x EC9|
+| US20 | 1(esiste) | operatore comunale |`"Rejected"`  | `""` | ValidationError | Reoport esistente in `"Pending Approval"` e operatore esistente | EC1 x EC3 x EC6 x EC9|
+| US21 | 1(esiste) | operatore comunale |`"Assigned"`  | `""` | Report cambia stato | Reoport esistente in `"Pending Approval"` e operatore esistente | EC1 x EC3 x EC6 x EC9|
+| US22 | 1(esiste) | operatore comunale |`"Rejected"`  | `"motivo"` | Report rifiutato | Reoport esistente in `"Pending Approval"` e operatore esistente | EC1 x EC3 x EC6 x EC9|
 
 
 ## 6 `participium.services.report_service.ReportService.list_public_reports`
@@ -640,7 +659,11 @@ Tali filtri stanno a delle condizioni:
 - date_from, date_to sono datetime e la date_from deve essere antecedente al date_to
 - sort metodo di ordinamento: "asc" o "desc" sulla data. Se None o invalido non viene considerato
 
+la validità per la stringa status viene effettuato nel Test Case 3. Analogamente per l'int category_id viene effettuato nel Test Case 4
+
 Se i filtri risultano invalidi non si ha nessuna eccezione bensì verra tornata una lista di report vuota.
+
+
 
 **Criterion:**
 - category_id   
@@ -690,14 +713,15 @@ Se i filtri risultano invalidi non si ha nessuna eccezione bensì verra tornata 
 - EC7: date_to invalido
 - EC8: date_to valido o None
 - EC9: date_to antecedente a date_from
-- EC10: sort valido o None
-- EC11: sort invalido
+- EC10: sort valido
+- EC11: sort invalido o None
 
 **Combinations of equivalence classes**
 
 Transizioni consentite con risultato atteso: list[Report] filtrata e ordinata:
 
 - EC2 × EC4 × EC6 × EC8 × EC10 (filtri validi o None, lista popolata)
+- EC1 x EC3 x EC5 x EC7 x EC11 (lista di tutti i Report, nessun filtro è valido) 
 
 Transizioni consentite ma con risultato atteso: [] lista vuota:
 
@@ -711,29 +735,20 @@ Transizioni consentite ma con risultato atteso: [] lista vuota:
 | TC-ID | category_id | status | date_from | date_to | sort | Expected | Fixture | EC covered |
 | :---- | :---------- | :----- | :-------- | :------ | :--- | :------- | :------ | :--------- |
 | PR1 | `None` | `None` | `None` | `None` | `"desc"` | `list[Report]` (tutti report pubblici, ordinati desc) | report pubblici esistenti con date varie | EC2 × EC4 × EC6 × EC8 × EC10 |
-| PR2 | `999` (invalido) | `None` | `None` | `None` | `"desc"` | `[]` (lista vuota) | nessun report in categoria 999 | EC1 × EC4 × EC6 × EC8 × EC10 |
+| PR2 | `9999` (invalido) | `None` | `None` | `None` | `"desc"` | `[]` (lista vuota) | nessun report in categoria 999 | EC1 × EC4 × EC6 × EC8 × EC10 |
 | PR3 | `None` | `"Stato invalido"` | `None` | `None` | `"desc"` | `[]` (lista vuota) | report pubblici esistenti, ma status invalido | EC2 × EC3 × EC6 × EC8 × EC10 |
 | PR4 | `None` | `None` | `"data invalida"` | `None` | `"desc"` | `[]` (lista vuota) | report pubblici esistenti, ma date_from invalido | EC2 × EC4 × EC5 × EC8 × EC10 |
 | PR5 | `None` | `None` | `None` | `"data invalida"` | `"desc"` | `[]` (lista vuota) | report pubblici esistenti, ma date_to invalido | EC2 × EC4 × EC6 × EC7 × EC10 |
-| PR6 | `None` | `None` | `2024/1/31` | `2024/1/1` | `"desc"` | `[]` (lista vuota, date_to < date_from) | report pubblici esistenti | EC2 × EC4 × EC6 × EC9 × EC10 |
-| PR7 | `None` | `None` | `None` | `None` | `"invalid"` | `list[Report]` (ordinati desc per default) | report pubblici esistenti | EC2 × EC4 × EC6 × EC8 × EC11 |
-| PR8 | `None` | `Assigned` | `None` | `None` | `"desc"` | `list[Report]` (report pubblici con status Assigned) | report pubblici con status Assigned e altri | EC1 × EC6 × EC7 × EC10 × EC14 |
-| PR9 | `None` | `"invalid_status"` | `None` | `None` | `"desc"` | `[]` (lista vuota) | report pubblici esistenti, ma status invalido | EC1 × EC5 × EC7 × EC10 × EC14 |
-| PR10 | `None` | `None` | `2024/1/1` | `2024/1/31` | `"desc"` | `list[Report]` (report pubblici nel range date) | report pubblici con created_at nel range 2024 | EC1 × EC4 × EC9 × EC12 × EC14 |
-| PR11 | `None` | `None` | `"data invalida"` | `None` | `"desc"` | `[]` (lista vuota) | report pubblici esistenti, ma date_from invalido | EC1 × EC4 × EC8 × EC10 × EC14 |
-| PR12 | `None` | `None` | `None` | `"data invalida"` | `"desc"` | `[]` (lista vuota) | report pubblici esistenti, ma date_to invalido | EC1 × EC4 × EC7 × EC11 × EC14 |
-| PR13 | `None` | `None` | `2024/12/31` | `2024/1/1` | `"desc"` | `[]` (lista vuota, date_to < date_from) | report pubblici esistenti | EC1 × EC4 × EC9 × EC13 × EC14 |
-| PR14 | `None` | `None` | `None` | `None` | `"asc"` | `list[Report]` (tutti report pubblici, ordinati asc per created_at) | report pubblici esistenti | EC1 × EC4 × EC7 × EC10 × EC14 |
-| PR15 | `None` | `None` | `None` | `None` | `"invalid"` | `list[Report]` (ordinati desc per default) | report pubblici esistenti | EC1 × EC4 × EC7 × EC10 × EC15 |
-
+| PR6 | `None` | `None` | `None` | `None` | `"invalid"` | `list[Report]` (ordinati desc per default) | report pubblici esistenti | EC2 × EC4 × EC6 × EC8 × EC11 |
+| PR7 | `None` | `Assigned` | `None` | `None` | `"desc"` | `list[Report]` (report pubblici con status Assigned) | report pubblici con status Assigned e altri | EC2 × EC4 x EC6 × EC8 × EC10 |
 
 **Boundary: ordine date**
 Test del confine logico tra date_from e date_to (date_to deve essere successiva a date_from per filtri validi).
 
 | TC-ID | category_id | status | date_from | date_to | sort | Expected | Fixture | EC covered |
 | :---- | :---------- | :----- | :-------- | :------ | :--- | :------- | :------ | :--------- |
-| PRB1 | `None` | `None` | `2024/6/1` | `2024/6/1` | `"desc"` | `list[Report]` (stessa data, valido) | report pubblici con created_at = 2024-06-01 | EC2 × EC4 × EC6 × EC8 × EC10 |
-| PRB2 | `None` | `None` | `2024/6/1` | `2024/5/31` | `"desc"` | `[]` (date_to < date_from) | report pubblici esistenti | EC2 × EC4 × EC6 × EC9 × EC10 |
+| PRB8 | `None` | `None` | `2024/6/1` | `2024/6/1` | `"desc"` | `list[Report]` (stessa data, valido) | report pubblici con created_at = 2024-06-01 | EC2 × EC4 × EC6 × EC8 × EC10 |
+| PRB9 | `None` | `None` | `2024/6/1` | `2024/5/31` | `"desc"` | `[]` (date_to < date_from) | report pubblici esistenti | EC2 × EC4 × EC6 × EC9 × EC10 |
 
 
 ## 7 `participium.services.messaging_service.MessagingService.send_message`

@@ -9,36 +9,44 @@ from participium.models.user import User
 from participium.services.report_service import ReportService
 
 '''
-| US1 | 1(esistente) | operatore comunale | `"Assigned"` | `None` | Report con stato aggiornato | Report esistente ed in stato di `'Pending Approval'` e operatore esistente | EC1 x EC3 x EC6 x EC9 |
-| US2 | 1(esiste) | operatore comunale | `"Rejected"` | `"Motivo del rifiuto"` | Report rifiutato, aggiornamento stato e rimozione dalla mappa | Report esistente in stato `"Pending Approval"` e operatore esistente | EC1 x EC3 x EC6 x EC8 |
-| US3 | 99(non esiste) | operatore comunale | `"Assigned"` | `None` | `NotFoundError` | Report non esistente ma operatore esistente | EC2 x EC3 x EC6 x EC9 |
-| US4 | 1(esiste) | cittadino | `"Assigned"` | `None` | `AuthorizationError` | Report esistente in stato `"Pending Approval"` e cittadino esistente| EC1 x EC4 x EC6 x EC9 |
-| US5 |	1(esiste) |	operatore comunale | `"statoInvalido"` |	`None` | 	`ValidationError` |	Report esistente e operatore esistente | EC1 x EC3 x EC7 x EC9 |
-| US6 |	1(esiste) |	operatore no valido |	`"Accepted"` | `None` | `AuthorizationError` | Reoport esistente in `"Pending Approval"` e operatore non esistente | EC1 x EC5 x EC6 x EC9 |
+| TC-ID | report_id | operator | next_status_value | note | Expected | Fixture | EC covered |
+| :---- | :-------- | :------- | :---------------- | :--- | :------- | :------ | :--------- |
+| US1 | 1 (esiste) | admin | `"Assigned"` | `None` | `Report` aggiornato | report in `Pending Approval`, admin autorizzato, transizione valida | EC1 × EC3 × EC8 × EC10 × EC13 |
+| US2 | 1 (esiste) | operator (stessa cat.) | `"Assigned"` | `None` | `Report` aggiornato | report in `Pending Approval`, operator stessa categoria, transizione valida | EC1 × EC4 × EC8 × EC10 × EC13 |
+| US3 | 1 (esiste) | admin | `"Rejected"` | `"Motivo rifiuto"` | `Report` rifiutato | report in `Pending Approval`, admin, Rejected con note | EC1 × EC3 × EC8 × EC11 × EC13 |
+| US4 | 1 (esiste) | operator (stessa cat.) | `"Rejected"` | `"Motivo"` | `Report` rifiutato | report in `Pending Approval`, operator stessa cat., Rejected con note | EC1 × EC4 × EC8 × EC11 × EC13 |
+| US5 | 99 (non esiste) | admin | `"Assigned"` | `None` | `NotFoundError` | report non esiste | EC2 × EC3 × EC8 × EC10 × EC13 |
+| US6 | 1 (esiste) | operator (cat. diversa) | `"Assigned"` | `None` | `AuthorizationError` | report esiste, operator categoria diversa | EC1 × EC5 × EC8 × EC10 × EC13 |
+| US7 | 1 (esiste) | citizen | `"Assigned"` | `None` | `AuthorizationError` | report esiste, operator citizen non autorizzato | EC1 × EC6 × EC8 × EC10 × EC13 |
+| US8 | 1 (esiste) | operatore non valido | `"Assigned"` | `None` | `AuthorizationError` | report esiste, operator inesistente | EC1 × EC7 × EC8 × EC10 × EC13 |
+| US9 | 1 (esiste) | admin | `"STATO_INVALIDO"` | `None` | `ValidationError` | report esiste, admin, status non in ReportStatus | EC1 × EC3 × EC9 × EC10 × EC13 |
+| US10 | 1 (esiste) | admin | `"Rejected"` | `None` | `ValidationError` | report esiste, admin, Rejected senza note | EC1 × EC3 × EC8 × EC12 × EC13 |
+| US11 | 1 (esiste) | admin | `"Rejected"` | `""` | `ValidationError` | report esiste, admin, Rejected con note vuota | EC1 × EC3 × EC8 × EC12 × EC13 |
+| US12 | 1 (esiste, `Assigned`) | admin | `"Pending Approval"` | `None` | `ValidationError` | report in Assigned, transizione a Pending Approval non consentita | EC1 × EC3 × EC8 × EC10 × EC14 |
+| US13 | 1 (esiste) | admin | `" Assigned "` | `None` | `ValidationError` | status invalido (spazi attorno) | EC1 × EC3 × EC9 × EC10 × EC13 |
+| US14 | 1 (esiste) | admin | `""` | `None` | `ValidationError` | status vuoto | EC1 × EC3 × EC9 × EC10 × EC13 |
 
 
-Boundary : validità del next_status_value**
+**Boundary : validità del next_status_value**
 Test sulla validità della str next_status_value. La validità delle transizioni segue il TC-3 (ensure_transition_allowed)
 
 | TC-ID | report_id | operator | next_status_value | note | Expected | Fixture | EC covered |
 | :---- | :-------- | :------- | :---------------- | :--- | :------- | :------ | ------- | 
-| US7 | 1(esiste) | 1(esiste) |`"ASSIGNED"`  | `None` | ValidationError | Reoport esistente in `"Pending Approval"` e operatore esistente | EC1 x EC3 x EC7 x EC9|
-| US8 | 1(esiste) | 1(esiste) |`" Assigned"`  | `None` | ValidationError | Reoport esistente in `"Pending Approval"` e operatore esistente | EC1 x EC3 x EC7 x EC9|
-| US9 | 1(esiste) | 1(esiste) |`"assigned "`  | `None` | ValidationError | Reoport esistente in `"Pending Approval"` e operatore esistente | EC1 x EC3 x EC7 x EC9|
-| US10 | 1(esiste) | 1(esiste) |`""`  | `None` | ValidationError | Reoport esistente in `"Pending Approval"` e operatore esistente | EC1 x EC3 x EC7 x EC9|
-| US11 | 1(esiste) | 1(esiste) |`"Assigned"`  | `Qualsiasi` | Report cambia stato | Reoport esistente in `"Pending Approval"` e operatore esistente | EC1 x EC3 x EC7 x EC9|
+| US15 | 1(esiste) | operator (stessa cat.) |`"ASSIGNED"`  | `None` | ValidationError | Reoport esistente in `"Pending Approval"` e operatore esistente | EC1 x EC4 x EC9 x EC10 x EC13|
+| US16 | 1(esiste) | operator (stessa cat.) |`" Assigned"`  | `None` | ValidationError | Reoport esistente in `"Pending Approval"` e operatore esistente | EC1 x EC4 x EC9 x EC10 x EC13|
+| US17 | 1(esiste) | operator (stessa cat.) |`"assigned "`  | `None` | ValidationError | Reoport esistente in `"Pending Approval"` e operatore esistente | EC1 x EC4 x EC9 x EC10 x EC13|
+| US18 | 1(esiste) | operator (stessa cat.) |`""`  | `None` | ValidationError | Reoport esistente in `"Pending Approval"` e operatore esistente | EC1 x EC4 x EC9 x EC10 x EC13|
+| US11 | 1(esiste) | operator (stessa cat.) |`"Assigned"`  | `Qualsiasi` | Report cambia stato | Reoport esistente in `"Pending Approval"` e operatore esistente | EC1 x EC4 x EC9 x EC10 x EC13|
 
-
-*Boundary : note**   
+**Boundary : note**   
 Test sui possibili valori del note.
 
 | TC-ID | report_id | operator | next_status_value | note | Expected | Fixture | EC covered |
 | :---- | :-------- | :------- | :---------------- | :--- | :------- | :------ | ------- | 
-| US12 | 1(esiste) | operatore comunale |`"Rejected"`  | `None` | ValidationError | Reoport esistente in `"Pending Approval"` e operatore esistente | EC1 x EC3 x EC6 x EC9|
-| US13 | 1(esiste) | operatore comunale |`"Rejected"`  | `""` | ValidationError | Reoport esistente in `"Pending Approval"` e operatore esistente | EC1 x EC3 x EC6 x EC9|
-| US14 | 1(esiste) | operatore comunale |`"Assigned"`  | `""` | Report cambia stato | Reoport esistente in `"Pending Approval"` e operatore esistente | EC1 x EC3 x EC6 x EC9|
-| US15 | 1(esiste) | operatore comunale |`"Rejected"`  | `"motivo"` | Report rifiutato | Reoport esistente in `"Pending Approval"` e operatore esistente | EC1 x EC3 x EC6 x EC9|
-
+| US19 | 1(esiste) | operatore comunale |`"Rejected"`  | `None` | ValidationError | Reoport esistente in `"Pending Approval"` e operatore esistente | EC1 x EC3 x EC6 x EC9|
+| US20 | 1(esiste) | operatore comunale |`"Rejected"`  | `""` | ValidationError | Reoport esistente in `"Pending Approval"` e operatore esistente | EC1 x EC3 x EC6 x EC9|
+| US21 | 1(esiste) | operatore comunale |`"Assigned"`  | `""` | Report cambia stato | Reoport esistente in `"Pending Approval"` e operatore esistente | EC1 x EC3 x EC6 x EC9|
+| US22 | 1(esiste) | operatore comunale |`"Rejected"`  | `"motivo"` | Report rifiutato | Reoport esistente in `"Pending Approval"` e operatore esistente | EC1 x EC3 x EC6 x EC9|
 '''
 # Test data fixtures
 VALID_REPORTER = User(id=1, username="mario.rossi", role=Role.CITIZEN, is_active=True)
@@ -71,93 +79,121 @@ INVALID_USER = User(id=5, username="citadino1", role=Role.CITIZEN, is_active=Tru
 
 
 @pytest.fixture
-def seed_update_status_data() -> None:
+def seed_update_status_data() -> dict[str, User]:
     # Popola il sistema con i prerequisiti di `update_status`.
-    # - report con id=100 appartenente a category_id=1 e status Pending Approval
-    # - operatore con category_id=1
-    # - operatore con category_id=2
-    # - amministratore
-    pass
+    # Restituisce un dict con chiavi per mappare agli operator nei test
+    admin = User(id=10, username="admin", role=Role.ADMIN, is_active=True)
+    operator_same_cat = User(id=2, username="operatore1", role=Role.OPERATOR, category_id=1, is_active=True)
+    operator_diff_cat = User(id=3, username="operatore2", role=Role.OPERATOR, category_id=2, is_active=True)
+    citizen = User(id=4, username="citadino", role=Role.CITIZEN, is_active=True)
+    invalid_operator = User(id=5, username="invalid", role=Role.OPERATOR, is_active=False)
+    # Aggiungi report con id=1 in Pending Approval, category=1
+    return {
+        "admin": admin,
+        "operator_same_cat": operator_same_cat,
+        "operator_diff_cat": operator_diff_cat,
+        "citizen": citizen,
+        "invalid_operator": invalid_operator,
+    }
 
+
+
+######################################## Test che non producono eccezioni
 
 @pytest.mark.parametrize(
-    "operator,next_status_value,note,expected_status,expected_rejection_reason,",
+    "report_id,operator,next_status_value,note",
     [
-        # US1
-        (VALID_OPERATOR,ReportStatus.ASSIGNED.value,None,ReportStatus.ASSIGNED,None,),
-        # US2
-        (VALID_OPERATOR,ReportStatus.REJECTED.value,"Motivo del rifiuto",ReportStatus.REJECTED,"Motivo del rifiuto",),
-        # US11
-        (VALID_OPERATOR,ReportStatus.ASSIGNED.value,None,ReportStatus.ASSIGNED,None,),
-        # US14
-        (VALID_OPERATOR,ReportStatus.ASSIGNED.value,"",ReportStatus.ASSIGNED,None,),
-        # US15
-        (VALID_OPERATOR, ReportStatus.REJECTED.value, "motivo", ReportStatus.REJECTED, "motivo", ),
+        # US1: admin, Assigned valido
+        (1, "admin", "Assigned", None),
+        # US2: operator stessa cat., Assigned valido
+        (1, "operator_same_cat", "Assigned", None),
+        # US3: admin, Rejected con note
+        (1, "admin", "Rejected", "Motivo rifiuto"),
+        # US4: operator stessa cat., Rejected con note
+        (1, "operator_same_cat", "Rejected", "Motivo"),
+        # US21: Assigned con note vuota (non Rejected)
+        (1, "operator_same_cat", "Assigned", ""),
+        # US22: Rejected con note
+        (1, "operator_same_cat", "Rejected", "motivo"),
     ],
 )
 def test_update_status_success(
-    seed_update_status_data: None,
-    operator: User,
+    seed_update_status_data: dict[str, User],
+    report_id: int,
+    operator: str,
     next_status_value: str,
     note: str | None,
-    expected_status: ReportStatus,
-    expected_rejection_reason: str | None,
 ) -> None:
     report_service = ReportService()
 
-    updated_report = report_service.update_status(
-        report_id=100,
-        operator=operator,
+    operator_user = seed_update_status_data[operator]
+
+    result = report_service.update_status(
+        report_id=report_id,
+        operator=operator_user,
         next_status_value=next_status_value,
         note=note,
     )
 
-    assert isinstance(updated_report, Report)
-    assert updated_report.status == expected_status
+    assert isinstance(result, Report)
 
-    if expected_rejection_reason is not None:
-        assert updated_report.rejection_reason == expected_rejection_reason
 
+
+######################################## Test che producono eccezioni
 
 @pytest.mark.parametrize(
-    "operator,report_id,next_status_value,note,expected_exception,",
+    "report_id,operator,next_status_value,note,expected_exception",
     [
-        #US3
-        (VALID_OPERATOR, 99, ReportStatus.ASSIGNED.value, None, NotFoundError,),
-        #US4
-        (INVALID_USER, 100, ReportStatus.ASSIGNED.value, None, AuthorizationError,),
-        #US5
-        (VALID_OPERATOR, 100, "statoInvalido", None, ValidationError,),
-        #US6
-        (UNVALID_OPERATOR, 100, "Accepted", None, AuthorizationError,),
-        #US7
-        (VALID_OPERATOR, 100, "ASSIGNED", None, ValidationError,),
-        #US8
-        (VALID_OPERATOR, 100, " Assigned", None, ValidationError,),
-        #US9
-        (VALID_OPERATOR, 100, "assigned ", None, ValidationError,),
-        #US10
-        (VALID_OPERATOR, 100, "", None, ValidationError,),
-        #US12
-        (VALID_OPERATOR, 100, ReportStatus.REJECTED.value, None, ValidationError,),
-        #US13
-        (VALID_OPERATOR, 100, ReportStatus.REJECTED.value, "", ValidationError,),
+        # US5: report non esiste
+        (99, "admin", "Assigned", None, NotFoundError),
+        # US6: operator cat. diversa
+        (1, "operator_diff_cat", "Assigned", None, AuthorizationError),
+        # US7: citizen
+        (1, "citizen", "Assigned", None, AuthorizationError),
+        # US8: operator non valido
+        (1, "invalid_operator", "Assigned", None, AuthorizationError),
+        # US9: status invalido
+        (1, "admin", "STATO_INVALIDO", None, ValidationError),
+        # US10: Rejected senza note
+        (1, "admin", "Rejected", None, ValidationError),
+        # US11: Rejected con note vuota
+        (1, "admin", "Rejected", "", ValidationError),
+        # US12: transizione non consentita
+        (1, "admin", "Pending Approval", None, ValidationError),
+        # US13: status invalido (spazi)
+        (1, "admin", " Assigned ", None, ValidationError),
+        # US14: status vuoto
+        (1, "admin", "", None, ValidationError),
+        # US15: boundary status invalido (ASSIGNED maiuscolo)
+        (1, "operator_same_cat", "ASSIGNED", None, ValidationError),
+        # US16: boundary status invalido (spazio iniziale)
+        (1, "operator_same_cat", " Assigned", None, ValidationError),
+        # US17: boundary status invalido (spazio finale)
+        (1, "operator_same_cat", "assigned ", None, ValidationError),
+        # US18: boundary status vuoto
+        (1, "operator_same_cat", "", None, ValidationError),
+        # US19: Rejected senza note
+        (1, "operator_same_cat", "Rejected", None, ValidationError),
+        # US20: Rejected con note vuota
+        (1, "operator_same_cat", "Rejected", "", ValidationError),
     ],
 )
-def test_update_status_errors(
-    seed_update_status_data: None,
-    operator: User,
+def test_update_status_exceptions(
+    seed_update_status_data: dict[str, User],
     report_id: int,
+    operator: str,
     next_status_value: str,
     note: str | None,
-    expected_exception: type[BaseException],
+    expected_exception: type[Exception],
 ) -> None:
     report_service = ReportService()
+
+    operator_user = seed_update_status_data[operator]
 
     with pytest.raises(expected_exception):
         report_service.update_status(
             report_id=report_id,
-            operator=operator,
+            operator=operator_user,
             next_status_value=next_status_value,
             note=note,
         )

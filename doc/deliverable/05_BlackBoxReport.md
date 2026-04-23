@@ -872,9 +872,89 @@ Suggested test file: `test_create_notification.py`
 
 Prototype: `create_notification(user: User | None, notification_type: NotificationType, title: str, body: str, report: Report | None = None) -> Notification | None`
 
-| TC-ID | user | notification_type | title | body | report | Expected | Fixture |
-| :---- | :--- | :---------------- | :---- | :--- | :----- | :------- | :------ |
-|  |  |  |  |  |  |  |  |
+**Requirements**:
+
+Il sistema deve creare una notifica, opzionalmente associata a un report.
+
+Se `user` è `None`, il sistema deve restituire `None`.
+
+Altrimenti il sistema deve restituire una `Notification` persistita.
+
+Non sono documentate eccezioni di dominio dal contratto del metodo. Eventuali errori nell'invio email vengono gestiti internamente.
+
+**Criterion**:
+- user
+
+**Predicates**:
+- user non è `None` → valido (`Notification` restituita)
+- user è `None` → `None` restituito
+
+**Criterion**:
+- notification_type
+
+**Predicates**:
+- `STATUS_CHANGE` → valido
+- `MESSAGE` → valido
+- `SYSTEM` → valido
+
+**Criterion**:
+- report
+
+**Predicates**:
+- report non è `None` → `Notification` con `report_id` valorizzato
+- report è `None` → `Notification` con `report_id = None`
+
+**Equivalence Classes**
+
+Per user:
+
+- EC1: user non è `None`
+- EC2: user è `None`
+
+Per notification_type:
+
+- EC3: `STATUS_CHANGE`
+- EC4: `MESSAGE`
+- EC5: `SYSTEM`
+
+Per report:
+
+- EC6: report non è `None`
+- EC7: report è `None`
+
+**Combinations of equivalence classes**
+
+    EC1 × EC3 × EC6
+    EC1 × EC4 × EC6
+    EC1 × EC5 × EC6
+    EC1 × EC3 × EC7
+    EC1 × EC4 × EC7
+    EC1 × EC5 × EC7
+    EC2 × EC3 × EC6
+    EC2 × EC4 × EC6
+    EC2 × EC5 × EC7
+
+| TC-ID | user | notification_type | title | body | report | Expected | Fixture | EC covered |
+| :---- | :--- | :---------------- | :---- | :--- | :----- | :------- | :------ | :--------- |
+| CN1 | utente valido | `STATUS_CHANGE` | `"Stato aggiornato"` | `"Il report è stato assegnato"` | report valido | `Notification` con `user_id`, `report_id`, `type=STATUS_CHANGE`, `title`, `body` corretti | utente attivo, report esistente | EC1 × EC3 × EC6 |
+| CN2 | utente valido | `MESSAGE` | `"Nuovo messaggio"` | `"Hai ricevuto un messaggio"` | report valido | `Notification` con `type=MESSAGE` e `report_id` valorizzato | utente attivo, report esistente | EC1 × EC4 × EC6 |
+| CN3 | utente valido | `SYSTEM` | `"Avviso di sistema"` | `"Manutenzione programmata"` | report valido | `Notification` con `type=SYSTEM` e `report_id` valorizzato | utente attivo, report esistente | EC1 × EC5 × EC6 |
+| CN4 | utente valido | `STATUS_CHANGE` | `"Stato aggiornato"` | `"Il report è stato risolto"` | `None` | `Notification` con `type=STATUS_CHANGE` e `report_id=None` | utente attivo | EC1 × EC3 × EC7 |
+| CN5 | utente valido | `MESSAGE` | `"Nuovo messaggio"` | `"Contenuto del messaggio"` | `None` | `Notification` con `type=MESSAGE` e `report_id=None` | utente attivo | EC1 × EC4 × EC7 |
+| CN6 | utente valido | `SYSTEM` | `"Avviso di sistema"` | `"Manutenzione programmata"` | `None` | `Notification` con `type=SYSTEM` e `report_id=None` | utente attivo | EC1 × EC5 × EC7 |
+| CN7 | `None` | `STATUS_CHANGE` | `"Stato aggiornato"` | `"Il report è stato assegnato"` | report valido | `None` | report esistente | EC2 × EC3 × EC6 |
+| CN8 | `None` | `MESSAGE` | `"Nuovo messaggio"` | `"Hai ricevuto un messaggio"` | report valido | `None` | report esistente | EC2 × EC4 × EC6 |
+| CN9 | `None` | `SYSTEM` | `"Avviso di sistema"` | `"Manutenzione programmata"` | `None` | `None` | — | EC2 × EC5 × EC7 |
+
+**Boundary: stringhe vuote per titolo e corpo**
+
+Il contratto non documenta eccezioni per stringhe vuote; il comportamento atteso è la creazione della notifica anche con stringhe vuote.
+
+| TC-ID | user | notification_type | title | body | report | Expected | Fixture | EC covered |
+| :---- | :--- | :---------------- | :---- | :--- | :----- | :------- | :------ | :--------- |
+| CNB1 | utente valido | `SYSTEM` | `""` (stringa vuota) | `"Corpo valido"` | `None` | `Notification` con `title=""` | utente attivo | EC1 × EC5 × EC7 |
+| CNB2 | utente valido | `SYSTEM` | `"Titolo valido"` | `""` (stringa vuota) | `None` | `Notification` con `body=""` | utente attivo | EC1 × EC5 × EC7 |
+| CNB3 | utente valido | `SYSTEM` | `""` (stringa vuota) | `""` (stringa vuota) | `None` | `Notification` con `title=""` e `body=""` | utente attivo | EC1 × EC5 × EC7 |
 
 ## 10 `participium.services.user_service.UserService.update_profile`
 
@@ -882,6 +962,127 @@ Suggested test file: `test_update_profile.py`
 
 Prototype: `update_profile(user: User, username: str | None = None, first_name: str | None = None, last_name: str | None = None, email_notifications_enabled: bool | None = None, profile_picture: FileStorage | None = None) -> User`
 
-| TC-ID | user | username | first_name | last_name | email_notifications_enabled | profile_picture | Expected | Fixture |
-| :---- | :--- | :------- | :--------- | :-------- | :-------------------------- | :-------------- | :------- | :------ |
-|  |  |  |  |  |  |  |  |  |
+**Requirements**:
+
+Il sistema deve aggiornare i campi modificabili di un profilo utente.
+
+Se `username` è già utilizzato da un altro account, il sistema deve sollevare `ValidationError`.
+
+Altrimenti il sistema deve restituire l'`User` aggiornato.
+
+**Criterion**:
+- username
+
+**Predicates**:
+- username è `None` (non fornito) → nessuna modifica
+- username fornito, disponibile → `User` aggiornato
+- username fornito, uguale all'username corrente → nessun conflitto, `User` invariato
+- username fornito, già in uso da un altro account → `ValidationError`
+
+**Criterion**:
+- first_name
+
+**Predicates**:
+- first_name è `None` (non fornito) → nessuna modifica
+- first_name fornito → `User` aggiornato
+
+**Criterion**:
+- last_name
+
+**Predicates**:
+- last_name è `None` (non fornito) → nessuna modifica
+- last_name fornito → `User` aggiornato
+
+**Criterion**:
+- email_notifications_enabled
+
+**Predicates**:
+- `None` (non fornito) → nessuna modifica
+- `False` → `User` aggiornato
+- `True` → `User` aggiornato
+
+**Criterion**:
+- profile_picture
+
+**Predicates**:
+- `None` (non fornita) → nessuna modifica
+- `FileStorage` con filename valido → `User` aggiornato
+
+**Equivalence Classes**
+
+Per username:
+
+- EC1: username è `None`
+- EC2: username fornito, disponibile
+- EC3: username fornito, già in uso da un altro account
+- EC4: username fornito, uguale all'username corrente
+
+Per first_name:
+
+- EC5: first_name è `None`
+- EC6: first_name fornito
+
+Per last_name:
+
+- EC7: last_name è `None`
+- EC8: last_name fornito
+
+Per email_notifications_enabled:
+
+- EC9: `None`
+- EC10: `False`
+- EC11: `True`
+
+Per profile_picture:
+
+- EC12: `None`
+- EC13: `FileStorage` con filename valido
+
+**Combinations of equivalence classes**
+
+    EC2 × EC5 × EC7 × EC9 × EC12
+    EC1 × EC6 × EC7 × EC9 × EC12
+    EC1 × EC5 × EC8 × EC9 × EC12
+    EC1 × EC5 × EC7 × EC10 × EC12
+    EC1 × EC5 × EC7 × EC11 × EC12
+    EC1 × EC5 × EC7 × EC9 × EC13
+    EC2 × EC6 × EC8 × EC11 × EC13
+    EC1 × EC5 × EC7 × EC9 × EC12
+    EC4 × EC5 × EC7 × EC9 × EC12
+    EC3 × EC5 × EC7 × EC9 × EC12
+
+| TC-ID | user | username | first_name | last_name | email_notifications_enabled | profile_picture | Expected | Fixture | EC covered |
+| :---- | :--- | :------- | :--------- | :-------- | :-------------------------- | :-------------- | :------- | :------ | :--------- |
+| UP1 | utente valido | `"nuovo.username"` | `None` | `None` | `None` | `None` | `User` con `username="nuovo.username"`, altri campi invariati | utente attivo, username `"nuovo.username"` non già in uso | EC2 × EC5 × EC7 × EC9 × EC12 |
+| UP2 | utente valido | `None` | `"NuovoNome"` | `None` | `None` | `None` | `User` con `first_name="NuovoNome"` | utente attivo | EC1 × EC6 × EC7 × EC9 × EC12 |
+| UP3 | utente valido | `None` | `None` | `"NuovoCognome"` | `None` | `None` | `User` con `last_name="NuovoCognome"` | utente attivo | EC1 × EC5 × EC8 × EC9 × EC12 |
+| UP4 | utente valido | `None` | `None` | `None` | `False` | `None` | `User` con `email_notifications_enabled=False` | utente attivo con `email_notifications_enabled=True` | EC1 × EC5 × EC7 × EC10 × EC12 |
+| UP5 | utente valido | `None` | `None` | `None` | `True` | `None` | `User` con `email_notifications_enabled=True` | utente attivo con `email_notifications_enabled=False` | EC1 × EC5 × EC7 × EC11 × EC12 |
+| UP6 | utente valido | `None` | `None` | `None` | `None` | `FileStorage(filename="avatar.png")` | `User` con `profile_picture_path` aggiornato | utente attivo | EC1 × EC5 × EC7 × EC9 × EC13 |
+| UP7 | utente valido | `"altro.username"` | `"Mario"` | `"Verdi"` | `True` | `FileStorage(filename="pic.jpg")` | `User` con tutti i campi aggiornati | utente attivo, username `"altro.username"` non già in uso | EC2 × EC6 × EC8 × EC11 × EC13 |
+| UP8 | utente valido | `None` | `None` | `None` | `None` | `None` | `User` invariato (nessuna modifica) | utente attivo | EC1 × EC5 × EC7 × EC9 × EC12 |
+| UP9 | utente valido | `"mario.rossi"` (proprio username corrente) | `None` | `None` | `None` | `None` | `User` invariato (nessun conflitto) | utente attivo con `username="mario.rossi"` | EC4 × EC5 × EC7 × EC9 × EC12 |
+| UP10 | utente valido | `"username.esistente"` | `None` | `None` | `None` | `None` | `ValidationError` | utente attivo, altro utente con `username="username.esistente"` già presente | EC3 × EC5 × EC7 × EC9 × EC12 |
+
+**Boundary: campi vuoti**
+
+Il contratto non documenta eccezioni per stringhe vuote su nessuno di questi campi; il risultato atteso è `User`.
+
+| TC-ID | user | username | first_name | last_name | email_notifications_enabled | profile_picture | Expected | Fixture | EC covered |
+| :---- | :--- | :------- | :--------- | :-------- | :-------------------------- | :-------------- | :------- | :------ | :--------- |
+| UPB1 | utente valido | `""` (stringa vuota) | `None` | `None` | `None` | `None` | `User` con `username=""` (\*) | utente attivo | EC2 × EC5 × EC7 × EC9 × EC12 |
+| UPB2 | utente valido | `None` | `""` (stringa vuota) | `None` | `None` | `None` | `User` con `first_name=""` | utente attivo | EC1 × EC6 × EC7 × EC9 × EC12 |
+| UPB3 | utente valido | `None` | `None` | `""` (stringa vuota) | `None` | `None` | `User` con `last_name=""` | utente attivo | EC1 × EC5 × EC8 × EC9 × EC12 |
+
+(\*) Il contratto documenta `ValidationError` solo per username già in uso da un altro account, non per username vuoto. L'implementazione potrebbe ragionevolmente rifiutare anche questo caso; da verificare alla consegna del codice.
+
+**Boundary: immagine profilo**
+
+Il contratto di `update_profile` non documenta eccezioni per `profile_picture` con filename assente o vuoto; in `create_report` un vincolo analogo è invece documentato. L'implementazione potrebbe applicare lo stesso vincolo; da verificare alla consegna del codice.
+
+| TC-ID | user | username | first_name | last_name | email_notifications_enabled | profile_picture | Expected | Fixture | EC covered |
+| :---- | :--- | :------- | :--------- | :-------- | :-------------------------- | :-------------- | :------- | :------ | :--------- |
+| UPB4 | utente valido | `None` | `None` | `None` | `None` | `FileStorage(filename=None)` | `User` (\*\*) | utente attivo | EC1 × EC5 × EC7 × EC9 × EC13 |
+| UPB5 | utente valido | `None` | `None` | `None` | `None` | `FileStorage(filename="")` | `User` (\*\*) | utente attivo | EC1 × EC5 × EC7 × EC9 × EC13 |
+
+(\*\*) Vedi nota sopra.

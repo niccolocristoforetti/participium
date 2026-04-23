@@ -542,9 +542,75 @@ Suggested test file: `test_send_message.py`
 
 Prototype: `send_message(report: Report, sender: User, body: str) -> Message`
 
-| TC-ID | report | sender | body | Expected | Fixture |
-| :---- | :----- | :----- | :--- | :------- | :------ |
-|  |  |  |  |  |  |
+**Requirements**:
+
+Il sistema deve permettere l'invio di messaggi all'interno di una conversazione legata a una segnalazione.
+
+Deve sollevare `AuthorizationError` se il mittente non ha accesso alla conversazione.
+
+Deve sollevare `ValidationError` se il corpo del messaggio è vuoto o composto solo da spazi dopo il trimming.
+
+Deve sollevare `ValidationError` se non è possibile individuare un destinatario valido per la conversazione.
+
+**Criterion**:
+- sender access
+
+**Predicates**:
+- sender è l'autore del report (`reporter_id == sender.id`) → valido (continua)
+- sender ha ruolo `OPERATOR` o `ADMIN` → valido (continua)
+- sender non è l'autore del report né ha ruolo `OPERATOR`/`ADMIN` → non valido (`AuthorizationError`)
+
+**Criterion**:
+- body content (quando sender è autorizzato)
+
+**Predicates**:
+- body non vuoto dopo `strip()` → valido (continua)
+- body vuoto (`""`) o composto solo da whitespace → non valido (`ValidationError`)
+
+**Criterion**:
+- recipient resolution (quando sender è autorizzato e body è valido)
+
+**Predicates**:
+- sender ha ruolo `OPERATOR`/`ADMIN` → destinatario è `report.reporter` → risolvibile (continua)
+- sender è `CITIZEN` e almeno un messaggio precedente nella thread è stato inviato da un `OPERATOR`/`ADMIN` → risolvibile (continua)
+- sender è `CITIZEN` e almeno un evento in `report.status_history` ha `changed_by.role` in `{OPERATOR, ADMIN}` → risolvibile (continua)
+- sender ha ruolo `OPERATOR`/`ADMIN` ma `report.reporter` è `None` → non risolvibile (`ValidationError`)
+
+**Equivalence Classes**
+
+- EC1: Mittente autorizzato (autore del report oppure ruolo `OPERATOR`/`ADMIN`)
+- EC2: Mittente non autorizzato (ruolo `CITIZEN` estraneo al report)
+- EC3: Body valido (non vuoto dopo `strip()`)
+- EC4: Body non valido (vuoto o solo whitespace dopo `strip()`)
+- EC5: Destinatario risolvibile
+- EC6: Destinatario non risolvibile (`_resolve_recipient` restituisce `None`)
+
+Nota: la combinazione EC2 × EC6 non è testabile in isolamento perché un mittente non autorizzato (EC2) causa `AuthorizationError` prima che venga tentata la risoluzione del destinatario.
+
+**Combinations of equivalence classes**
+
+    EC1 × EC3 × EC5
+    EC2 × EC3 × EC5
+    EC1 × EC4 × EC5
+    EC1 × EC3 × EC6
+
+| TC-ID | report | sender | body | Expected | Fixture | EC covered |
+| :---- | :----- | :----- | :--- | :------- | :------ | :--------- |
+| MSG1 | `Report(id=1, reporter_id=10, reporter=REPORTER)` | `User(id=10, role=CITIZEN)` | `"Ciao, il problema persiste."` | `Message` | Report persistito, mittente è l'autore, operatore risolvibile via `status_history`. | EC1 × EC3 × EC5 |
+| MSG2 | `Report(id=1, reporter_id=10, reporter=REPORTER)` | `User(id=99, role=CITIZEN)` | `"Ciao"` | `AuthorizationError` | Utente id=99 estraneo al report (reporter_id=10), nessun ruolo privilegiato. | EC2 × EC3 × EC5 |
+| MSG3 | `Report(id=1, reporter_id=10, reporter=REPORTER)` | `User(id=10, role=CITIZEN)` | `"   "` | `ValidationError` | Body composto solo da spazi, blank dopo `strip()`. | EC1 × EC4 × EC5 |
+| MSG4 | `Report(id=1, reporter_id=10, reporter=REPORTER)` | `User(id=10, role=CITIZEN)` | `""` | `ValidationError` | Body stringa vuota. | EC1 × EC4 × EC5 |
+| MSG5 | `Report(id=2, reporter_id=None, reporter=None, status_history=[])` | `User(id=20, role=OPERATOR)` | `"Aggiornamento."` | `ValidationError` | Mittente operatore autorizzato, ma `report.reporter` è `None`: `_resolve_recipient` restituisce `None`. | EC1 × EC3 × EC6 |
+| MSG6 | `Report(id=1, reporter_id=10, reporter=REPORTER)` | `User(id=20, role=OPERATOR)` | `"Abbiamo preso in carico la segnalazione."` | `Message` | Mittente operatore; il destinatario è sempre `report.reporter`. | EC1 × EC3 × EC5 |
+
+**Boundary: body dopo trimming**
+
+| TC-ID | report | sender | body | Expected | Fixture | EC covered |
+| :---- | :----- | :----- | :--- | :------- | :------ | :--------- |
+| MSGB1 | `Report(id=1, reporter_id=10, reporter=REPORTER)` | `User(id=10, role=CITIZEN)` | `" "` (singolo spazio) | `ValidationError` | Body non vuoto ma blank dopo `strip()`. | EC1 × EC4 × EC5 |
+| MSGB2 | `Report(id=1, reporter_id=10, reporter=REPORTER)` | `User(id=10, role=CITIZEN)` | `"\t\n"` (tab e newline) | `ValidationError` | Body con soli caratteri whitespace, blank dopo `strip()`. | EC1 × EC4 × EC5 |
+
+---
 
 ## 8 `participium.core.security.verify_password`
 
@@ -552,9 +618,38 @@ Suggested test file: `test_verify_password.py`
 
 Prototype: `verify_password(password: str, password_hash: str) -> bool`
 
-| TC-ID | password | password_hash | Expected | Fixture |
-| :---- | :------- | :------------ | :------- | :------ |
-|  |  |  |  |  |
+**Requirements**:
+
+Il sistema deve verificare la corrispondenza tra una password in chiaro e un hash memorizzato, restituendo un booleano.
+
+Non sono documentate eccezioni di dominio.
+
+**Criterion**:
+- password match
+
+**Predicates**:
+- `password` corrisponde all'`password_hash` → `True`
+- `password` non corrisponde all'`password_hash` → `False`
+
+**Equivalence Classes**
+
+- EC1: Match (`password` corrisponde all'hash → `True`)
+- EC2: Mismatch (`password` non corrisponde all'hash → `False`)
+
+| TC-ID | password | password_hash | Expected | Fixture | EC covered |
+| :---- | :------- | :------------ | :------- | :------ | :--------- |
+| PWD1 | `"secure123"` | `"hash_di_secure123"` | `True` | Password e hash corrispondono. | EC1 |
+| PWD2 | `"wrong_pass"` | `"hash_di_secure123"` | `False` | Password errata, hash invariato. | EC2 |
+
+**Boundary: input strutturalmente vuoti**
+
+Il contratto non documenta il comportamento su stringhe vuote; i test seguenti verificano l'ipotesi ragionevole che nessuna password corrisponda a un hash vuoto e viceversa.
+
+| TC-ID | password | password_hash | Expected | Fixture | EC covered |
+| :---- | :------- | :------------ | :------- | :------ | :--------- |
+| PWDB1 | `""` | `"hash_di_secure123"` | `False` | Password vuota: per nessun algoritmo di hashing standard `""` produce `hash_di_secure123`. | EC2 |
+| PWDB2 | `"secure123"` | `""` | `False` | Hash vuoto: nessuna password in chiaro produce una stringa vuota come hash. | EC2 |
+| PWDB3 | `""` | `""` | `False` | Entrambi vuoti: una stringa vuota non è un hash valido di alcuna password. | EC2 |
 
 ## 9 `participium.services.notification_service.NotificationService.create_notification`
 

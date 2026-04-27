@@ -141,7 +141,7 @@ La presenza dei loop rende i percorsi teoricamente infiniti; considerando ogni l
 
 ### Control Flow Graph
 
-- ![](../data/img/xxx.xxx)
+- ![](../../data/img/notify_status_change.png)
 
 ### Atomic Conditions
 

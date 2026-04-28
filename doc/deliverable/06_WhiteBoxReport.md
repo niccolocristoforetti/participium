@@ -159,18 +159,53 @@ La presenza dei loop rende i percorsi teoricamente infiniti; considerando ogni l
 ### Node Coverage
 | Test | `recipients` | `report` | `body` | Outcome |
 |------|----------|------------|------------------|--------------------------|
-| T1 |  |  |  |  |
+| T1 | `[CITIZEN1]` | `REPORT1` | - | `None` |
 
 ### Edge Coverage
+| Test | `recipients` | `report` | `body` | Outcome |
+|------|----------|------------|------------------|--------------------------|
+| T1 | `[CITIZEN1]` | `REPORT1` | - | `None` |
+| T2 | `[None]` | `REPORT1` | - | `None` |
 
 ### Condition Coverage
+| Test | `recipients` | `report` | `body` | Outcome |
+|------|----------|------------|------------------|--------------------------|
+| T1 | `[CITIZEN1]` | `REPORT1` | - | `None` |
+| T2 | `[None]` | `REPORT1` | - | `None` |
+
+| Condizione | Testimone True | Testimone False |
+|------------|----------------|-----------------|
+| C1 | T2 | T1 |
 
 ### Loop Coverage
+| Test | `recipients` | `report` | `body` | Outcome |
+|------|----------|------------|------------------|--------------------------|
+| T1 | `[CITIZEN1]` | `REPORT1` | - | `None` |
+| T3 | `[]` | `REPORT1` | - | `None` |
+| T4 | `[CITIZEN1, CITIZEN2]` | `REPORT2` | - | `None` |
 
 ### Path Coverage
+| ID | Percorso | Outcome |
+|----|----------|---------|
+| P1 | Loop1 = 0 | `None` |
+| P2 | Loop1 = trova match, C1 = false | `None` |
+| P3 | Loop1 = trova match, C1 = true | `None` |
+
+| Test | `recipients` | `report` | `body` | Percorso coperto |
+|------|----------|------------|------------------|--------------------------|
+| T1 | `[CITIZEN]` | `REPORT1` | - | P1 |
+| T2 | `[]` | `REPORT1` | - | P1 |
+| T5 | `[CITIZEN1, CITIZEN1]` | `REPORT1` | - | P3 |
 
 ### Minimal Suite Test
-
+| Test | `recipients` | `report` | `body` | Outcome | Criteri coperti |
+|------|-------|------------|------------------|-------|-------|
+|  |  |  |  |  |  |
+| T1 | `[CITIZEN1]` | `REPORT1` | - | `None` |  |
+| T2 | `[None]` | `REPORT1` | - | `None` |  |
+| T3 | `[]` | `REPORT1` | - | `None` |  |
+| T4 | `[CITIZEN1, CITIZEN2]` | `REPORT2` | - | `None` |  |
+| T5 | `[CITIZEN1, CITIZEN1]` | `REPORT1` | - | P3 |  |
 
 ## 4 `NotificationService.count_unread_message_notifications_by_report`
 

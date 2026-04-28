@@ -145,6 +145,7 @@ La presenza dei loop rende i percorsi teoricamente infiniti; considerando ogni l
 
 ### Atomic Conditions
 
+
 ### Structural Lower Bound
 
 ### Node Coverage
@@ -164,23 +165,112 @@ La presenza dei loop rende i percorsi teoricamente infiniti; considerando ogni l
 
 ### Control Flow Graph
 
-- ![](../data/img/xxx.xxx)
+- ![](../../data/img/count_unread_message_notifications_by_report.png)
 
 ### Atomic Conditions
+- **C1**: `notification in notifications` - guardia del ciclo for
+- **C2**: `notification.report_id is None ` - condizione dell'if interno
+
+
 
 ### Structural Lower Bound
 
+- **Nodi**: 8
+- **Archi**: 9
+- **Complessità ciclomatica**: V(G) = E − N + 2 = 9 − 8 + 2 = **3**
+- **Nodi terminali distinti**: 1 (`return counts`)
+- **Loop**: 1 ( su `notifications`)
+
 ### Node Coverage
+
+Tutti i nodi del CFG (nodo di ingresso, intestazione del loop, if interno, ramo continue, aggiornamento del dizionario counts, e il nodo finale di return) vengono visitati dalla singola traccia di una lista contenente due notifiche miste. Basta un elemento per innescare il salto (continue) e un elemento per innescare l'assegnazione. 
+
+| Test | `Input (notifications)` | `Nodi attraversati` | `Outcome` |
+|------|----------|------------------|--------------------------|
+| N1 | [Mock(report_id=None), Mock(report_id=1)] | Ingresso, check ciclo, check if (T → continue), check ciclo, check if (F → aggiornamento counts), check ciclo (F → uscita), return counts. | return {1: 1} |
+
 
 ### Edge Coverage
 
+**1 test**
+
+Tutti e 7 gli archi rilevanti del Control Flow Graph:
+
+- ingresso → ciclo
+
+- ciclo → if (ci sono elementi da iterare)
+
+- ciclo → return counts (elementi finiti, uscita dal ciclo)
+
+- if → continue (condizione report_id is None = True)
+
+- if → counts[...] = ... (condizione report_id is None = False)
+
+- continue → ciclo (back-edge, torna su)
+
+- counts[...] = ... → ciclo (back-edge, torna su)
+
+sono tutti attraversati dalla stessa traccia usata per la Node Coverage.
+
+| Test | `Input (notifications) ` | `Archi coperti` | 
+|------|----------|------------------|
+| E1 | [Mock(report_id=None), Mock(report_id=1)] | Tutti i 7 archi elencati sopra |
+
 ### Condition Coverage
+
+**1 test**
+
+Ci sono due condizioni atomiche nel Control Flow Graph di questa funzione:
+
+C1: Guardia del ciclo (notification in notifications, per verificare se ci sono ancora elementi da iterare).
+
+C2: Condizione dell'if interno (notification.report_id is None).
+
+La traccia della lista [Mock(report_id=None), Mock(report_id=1)] fa in modo che la condizione C1 assuma il valore True (due volte, per i due elementi) e False (una volta, quando la lista finisce). La condizione C2 assume il valore True (sul primo elemento) e False (sul secondo). Quindi, un solo test è sufficiente.
+
+| Test | `Input (notifications) ` | `C1( Guardia ciclo )` | `C2 (report_id is None)` |
+|------|----------|------------|------------------|
+| C1t | [Mock(report_id=None), Mock(report_id=1)] | T, T, F | T, F |
 
 ### Loop Coverage
 
+**3 test (0, 1, 2+)**
+
+| Test | `Input (notifications)` | `Iterazioni` | Note |
+|------|------------|------------------|---------------------|
+| L0 | `[]` | 0 | Uscita immediata dal ciclo (lista vuota) |
+| L1 | [Mock(report_id=1)] | 1 | Il corpo del ciclo viene eseguito una sola volta (copre l'aggiornamento del dizionario) |
+| L2+ | `[Mock(report_id=None), Mock(report_id=1)]` | 2 | Due iterazioni, in cui vengono esercitati entrambi i rami interni all'if (sia il continue che l'aggiornamento) |
+
 ### Path Coverage
 
+**Infinito**
+
+Il numero di iterazioni è pari alla lunghezza della lista notifications, che è illimitata.
+Ad ogni iterazione, il corpo del ciclo presenta 2 rami (il ramo True con continue e il ramo False con l'aggiornamento del dizionario). 
+Di conseguenza, con $n$  iterazioni si generano $2^n$  percorsi distinti. Il numero totale è numerabilmente infinito.
+
+**Approssimazione**
+Quando il CFG contiene almeno un ciclo il cui numero di iterazioni dipende da un input, la path coverage stretta è irraggiungibile.
+Si procede quindi scegliendo un sottoinsieme rappresentativo basato sul principio dell'equivalenza comportamentale: due percorsi sono equivalenti se inducono la stessa traiettoria sullo stato rilevante per l'oracolo (in questo caso, l'evoluzione del dizionario counts).
+I tre test della Loop Coverage (0 iterazioni, 1 iterazione, 2+ iterazioni combinando i rami interni) catturano ogni transizione di stato qualitativamente distinta che il ciclo può produrre. Pertanto, i tre test definiti per la Loop Coverage sono considerati una solida approssimazione della Path Coverage per questa funzione.
 ### Minimal Suite Test
+
+| Test | `Input (notifications) ` | Outcome | Criteri coperti |
+|------|----------|------------| -----------------|
+| T1 | [] | {} | Loop (L0: 0 iterazioni) |
+| T2 | [Mock(report_id=1)] | {1: 1} | Loop (L1: 1 iterazione) |
+| T3 | [Mock(report_id=None), Mock(report_id=1)] | {1: 1} | Node, Edge, Condition (C1=T/F, C2=T/F), Path (Approssimato), Loop (L2+: 2+ iterazioni) |
+
+
+| Criterio | Test minimi | Test utilizzati |
+|----------|:-----------:|-----------------|
+| Node coverage | 1 | T3 |
+| Edge coverage | 1 | T3 |
+| Condition coverage | 1 | T3 |
+| Path coverage | ∞ (approssimato) | T1, T2, T3 |
+| Loop coverage | 3 | T1, T2, T3 |
+| **Suite completa** | **3** | **T1, T2, T3** |
 
 
 ## 5 `UserService.update_user`

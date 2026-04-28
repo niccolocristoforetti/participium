@@ -144,11 +144,22 @@ La presenza dei loop rende i percorsi teoricamente infiniti; considerando ogni l
 - ![](../../data/img/notify_status_change.png)
 
 ### Atomic Conditions
+- **C1a:** `recipient` is `None` primo operando dell' `and`
+- **C1b:** `recipient.id` in `seen`
 
 
 ### Structural Lower Bound
 
+- **Nodi**: 7
+- **Archi**: 8
+- **Complessità ciclomatica**: V(G) = E − N + 2 = 9 − 7 + 2 = **3**
+- **Nodi terminali distinti**: 1 (`recipient in recipients`)
+- **Loop**: 1 (Loop 1 su `recipients`)
+
 ### Node Coverage
+| Test | `recipients` | `report` | `body` | Outcome |
+|------|----------|------------|------------------|--------------------------|
+| T1 |  |  |  |  |
 
 ### Edge Coverage
 

@@ -145,7 +145,7 @@ La presenza dei loop rende i percorsi teoricamente infiniti; considerando ogni l
 
 ### Atomic Conditions
 - **C1a:** `recipient` is `None` primo operando dell' `and`
-- **C1b:** `recipient.id` in `seen`
+- **C1b:** `recipient.id` in `seen`     
 
 
 ### Structural Lower Bound
@@ -154,12 +154,14 @@ La presenza dei loop rende i percorsi teoricamente infiniti; considerando ogni l
 - **Archi**: 8
 - **Complessità ciclomatica**: V(G) = E − N + 2 = 9 − 7 + 2 = **3**
 - **Nodi terminali distinti**: 1 (`recipient in recipients`)
-- **Loop**: 1 (Loop 1 su `recipients`)
+- **Loop**: 1 (Loop 1 su `recipients`)      
 
 ### Node Coverage
 | Test | `recipients` | `report` | `body` | Outcome |
 |------|----------|------------|------------------|--------------------------|
 | T1 | `[CITIZEN1]` | `REPORT1` | - | `None` |
+
+Il nodo terminale è raggiungibile tramite singolo arco per cui il lower bound è **1 test**.     
 
 ### Edge Coverage
 | Test | `recipients` | `report` | `body` | Outcome |
@@ -167,22 +169,29 @@ La presenza dei loop rende i percorsi teoricamente infiniti; considerando ogni l
 | T1 | `[CITIZEN1]` | `REPORT1` | - | `None` |
 | T2 | `[None]` | `REPORT1` | - | `None` |
 
+L'arco di loop-back non viene esplorato dal T1 per cui è necessario un ulteriore test.Il lower bound rimane **2 test**.         
+
 ### Condition Coverage
 | Test | `recipients` | `report` | `body` | Outcome |
 |------|----------|------------|------------------|--------------------------|
-| T1 | `[CITIZEN1]` | `REPORT1` | - | `None` |
 | T2 | `[None]` | `REPORT1` | - | `None` |
+| T3 | `[CITIZEN1, CITIZEN1]` | `REPORT1` | - | `None` |
 
 | Condizione | Testimone True | Testimone False |
 |------------|----------------|-----------------|
-| C1 | T2 | T1 |
+| C1a | T2 | T1 |
+| C1b | T1 | T2 |
+
+C1 contiene un `and` rendendo attivo lo short-circuit. Ne segue che per valutare C1b necessariamente serve C1a = true, ciò comporta un test aggiuntivo T3. Il lower bound è **2 test**.      
 
 ### Loop Coverage
 | Test | `recipients` | `report` | `body` | Outcome |
 |------|----------|------------|------------------|--------------------------|
 | T1 | `[CITIZEN1]` | `REPORT1` | - | `None` |
-| T3 | `[]` | `REPORT1` | - | `None` |
-| T4 | `[CITIZEN1, CITIZEN2]` | `REPORT2` | - | `None` |
+| T4 | `[]` | `REPORT1` | - | `None` |
+| T5 | `[CITIZEN1, CITIZEN2]` | `REPORT2` | - | `None` |
+
+Il loop1 si raggiunge sempre. per cui il lower bound è **3 test**.          
 
 ### Path Coverage
 | ID | Percorso | Outcome |
@@ -193,19 +202,31 @@ La presenza dei loop rende i percorsi teoricamente infiniti; considerando ogni l
 
 | Test | `recipients` | `report` | `body` | Percorso coperto |
 |------|----------|------------|------------------|--------------------------|
-| T1 | `[CITIZEN]` | `REPORT1` | - | P1 |
+| T1 | `[CITIZEN]` | `REPORT1` | - | P2 |
 | T2 | `[]` | `REPORT1` | - | P1 |
-| T5 | `[CITIZEN1, CITIZEN1]` | `REPORT1` | - | P3 |
+| T3 | `[CITIZEN1, CITIZEN1]` | `REPORT1` | - | P3 |
+
+La presenza del loop1 porta i percorsi teorici a diventare infiniti. tuttavia quelli strutturalmente uguali sono 3. Segue che il lower bound sia **3test**.     
 
 ### Minimal Suite Test
 | Test | `recipients` | `report` | `body` | Outcome | Criteri coperti |
 |------|-------|------------|------------------|-------|-------|
-|  |  |  |  |  |  |
-| T1 | `[CITIZEN1]` | `REPORT1` | - | `None` |  |
-| T2 | `[None]` | `REPORT1` | - | `None` |  |
-| T3 | `[]` | `REPORT1` | - | `None` |  |
-| T4 | `[CITIZEN1, CITIZEN2]` | `REPORT2` | - | `None` |  |
-| T5 | `[CITIZEN1, CITIZEN1]` | `REPORT1` | - | P3 |  |
+| T1 | `[CITIZEN1]` | `REPORT1` | - | `None` | Node, Edge, Loop (loop1 = 1), Path (path2) |
+| T2 | `[None]` | `REPORT1` | - | `None` | Edge, Condition(C1a = true), Path (path1) |
+| T3 | `[CITIZEN1, CITIZEN1]` | `REPORT1` | - | P3 | Condition(C1b = true), Path (path3) |
+| T4 | `[]` | `REPORT1` | - | `None` | Loop (loop1 = 0) |
+| T5 | `[CITIZEN1, CITIZEN2]` | `REPORT2` | - | `None` | Loop (loop1 = 2) |
+
+| Criterio | Test minimi | Test utilizzati |
+|----------|:-----------:|-----------------|
+| Node coverage | 1 | T1|
+| Edge coverage | 2 | T1, T2 |
+| Condition coverage | 2 | T2, T3 |
+| Loop coverage | 3 | T1, T4, T5 |
+| Path coverage | 3 | T1, T2, T3|
+| **Suite completa** | **5** | **T1–T5** |
+
+
 
 ## 4 `NotificationService.count_unread_message_notifications_by_report`
 

@@ -1,6 +1,12 @@
 from __future__ import annotations
 
+import csv
+import io
 from datetime import datetime
+
+
+def utcnow() -> datetime:
+    return datetime.utcnow()
 
 
 def parse_date(value: str | None) -> datetime | None:
@@ -15,4 +21,14 @@ def parse_date(value: str | None) -> datetime | None:
     Raises:
         ValueError: if `value` is non-empty but not a valid ISO-8601 datetime.
     """
-    raise NotImplementedError
+    if not value:
+        return None
+    return datetime.fromisoformat(value)
+
+
+def build_csv(rows: list[dict], fieldnames: list[str]) -> str:
+    buffer = io.StringIO()
+    writer = csv.DictWriter(buffer, fieldnames=fieldnames)
+    writer.writeheader()
+    writer.writerows(rows)
+    return buffer.getvalue()

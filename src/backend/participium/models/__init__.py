@@ -1,4 +1,4 @@
-from participium.models.base import Base, TimestampMixin
+from participium.models.base import Base
 from participium.models.category import Category
 from participium.models.message import Message
 from participium.models.notification import Notification
@@ -16,6 +16,5 @@ __all__ = [
     "ReportFollower",
     "ReportPhoto",
     "ReportStatusHistory",
-    "TimestampMixin",
     "User",
 ]

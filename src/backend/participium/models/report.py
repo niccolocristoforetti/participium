@@ -1,60 +1,72 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from datetime import datetime
+from sqlalchemy import DateTime, Enum, Float, ForeignKey, String, Text, func
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from participium.models.base import Base, TimestampMixin
 from participium.models.enums import ReportStatus
 
 
-@dataclass
 class Report(TimestampMixin, Base):
-    id: int | None = None
-    title: str = ""
-    description: str = ""
-    latitude: float = 0.0
-    longitude: float = 0.0
-    is_anonymous: bool = False
-    status: ReportStatus = ReportStatus.PENDING_APPROVAL
-    rejection_reason: str | None = None
-    reporter_id: int | None = None
-    category_id: int | None = None
-    reporter: "User | None" = None
-    category: "Category | None" = None
-    photos: list["ReportPhoto"] = field(default_factory=list)
-    status_history: list["ReportStatusHistory"] = field(default_factory=list)
-    followers: list["ReportFollower"] = field(default_factory=list)
-    messages: list["Message"] = field(default_factory=list)
+    __tablename__ = "reports"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    title: Mapped[str] = mapped_column(String(160), nullable=False)
+    description: Mapped[str] = mapped_column(Text, nullable=False)
+    latitude: Mapped[float] = mapped_column(Float, nullable=False)
+    longitude: Mapped[float] = mapped_column(Float, nullable=False)
+    is_anonymous: Mapped[bool] = mapped_column(nullable=False, default=False)
+    status: Mapped[ReportStatus] = mapped_column(
+        Enum(ReportStatus), nullable=False, default=ReportStatus.PENDING_APPROVAL
+    )
+    rejection_reason: Mapped[str | None] = mapped_column(Text, nullable=True)
+    reporter_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True)
+    category_id: Mapped[int] = mapped_column(ForeignKey("categories.id"), nullable=False)
+
+    reporter = relationship("User", back_populates="reports")
+    category = relationship("Category")
+    photos = relationship("ReportPhoto", back_populates="report", cascade="all, delete-orphan")
+    status_history = relationship(
+        "ReportStatusHistory", back_populates="report", cascade="all, delete-orphan"
+    )
+    followers = relationship("ReportFollower", back_populates="report", cascade="all, delete-orphan")
+    messages = relationship("Message", back_populates="report", cascade="all, delete-orphan")
 
 
-@dataclass
 class ReportPhoto(TimestampMixin, Base):
-    id: int | None = None
-    report_id: int | None = None
-    file_path: str = ""
-    original_filename: str = ""
-    content_type: str | None = None
-    report: Report | None = None
+    __tablename__ = "report_photos"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    report_id: Mapped[int] = mapped_column(ForeignKey("reports.id"), nullable=False)
+    file_path: Mapped[str] = mapped_column(String(255), nullable=False)
+    original_filename: Mapped[str] = mapped_column(String(255), nullable=False)
+    content_type: Mapped[str | None] = mapped_column(String(120), nullable=True)
+
+    report = relationship("Report", back_populates="photos")
 
 
-@dataclass
 class ReportStatusHistory(Base):
-    id: int | None = None
-    report_id: int | None = None
-    previous_status: ReportStatus | None = None
-    new_status: ReportStatus = ReportStatus.PENDING_APPROVAL
-    note: str | None = None
-    changed_by_id: int | None = None
-    created_at: datetime | None = None
-    report: Report | None = None
-    changed_by: "User | None" = None
+    __tablename__ = "report_status_history"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    report_id: Mapped[int] = mapped_column(ForeignKey("reports.id"), nullable=False)
+    previous_status: Mapped[ReportStatus | None] = mapped_column(Enum(ReportStatus), nullable=True)
+    new_status: Mapped[ReportStatus] = mapped_column(Enum(ReportStatus), nullable=False)
+    note: Mapped[str | None] = mapped_column(Text, nullable=True)
+    changed_by_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True)
+    created_at: Mapped[str] = mapped_column(DateTime, nullable=False, server_default=func.now())
+
+    report = relationship("Report", back_populates="status_history")
+    changed_by = relationship("User")
 
 
-@dataclass
 class ReportFollower(Base):
-    id: int | None = None
-    report_id: int | None = None
-    user_id: int | None = None
-    created_at: datetime | None = None
-    report: Report | None = None
-    user: "User | None" = None
+    __tablename__ = "report_followers"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    report_id: Mapped[int] = mapped_column(ForeignKey("reports.id"), nullable=False)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    created_at: Mapped[str] = mapped_column(DateTime, nullable=False, server_default=func.now())
+
+    report = relationship("Report", back_populates="followers")
+    user = relationship("User")

@@ -1,19 +1,22 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from sqlalchemy import Boolean, Enum, ForeignKey, String, Text
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from participium.models.base import Base, TimestampMixin
 from participium.models.enums import NotificationType
 
 
-@dataclass
 class Notification(TimestampMixin, Base):
-    id: int | None = None
-    user_id: int | None = None
-    report_id: int | None = None
-    type: NotificationType = NotificationType.SYSTEM
-    title: str = ""
-    body: str = ""
-    is_read: bool = False
-    user: "User | None" = None
-    report: "Report | None" = None
+    __tablename__ = "notifications"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    report_id: Mapped[int | None] = mapped_column(ForeignKey("reports.id"), nullable=True)
+    type: Mapped[NotificationType] = mapped_column(Enum(NotificationType), nullable=False)
+    title: Mapped[str] = mapped_column(String(160), nullable=False)
+    body: Mapped[str] = mapped_column(Text, nullable=False)
+    is_read: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+
+    user = relationship("User", back_populates="notifications")
+    report = relationship("Report")

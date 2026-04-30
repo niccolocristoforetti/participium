@@ -1,14 +1,15 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-from datetime import datetime
+from sqlalchemy import DateTime, func
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
-class Base:
+class Base(DeclarativeBase):
     pass
 
 
-@dataclass
 class TimestampMixin:
-    created_at: datetime | None = None
-    updated_at: datetime | None = None
+    created_at: Mapped[str] = mapped_column(DateTime, nullable=False, server_default=func.now())
+    updated_at: Mapped[str] = mapped_column(
+        DateTime, nullable=False, server_default=func.now(), onupdate=func.now()
+    )

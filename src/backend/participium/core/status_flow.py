@@ -1,5 +1,5 @@
-from __future__ import annotations
-
+from participium.config.constants import DEFAULT_STATUS_TRANSITIONS
+from participium.core.exceptions import ValidationError
 from participium.models.enums import ReportStatus
 
 
@@ -24,4 +24,11 @@ def ensure_transition_allowed(current_status: ReportStatus, next_status: ReportS
         Rejected -> Rejected
         Resolved -> Resolved
     """
-    raise NotImplementedError
+    if current_status == next_status:
+        return True
+    allowed = DEFAULT_STATUS_TRANSITIONS.get(current_status, set())
+    if next_status not in allowed:
+        raise ValidationError(
+            f"Transition from '{current_status.value}' to '{next_status.value}' is not allowed."
+        )
+    return True

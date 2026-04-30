@@ -1,27 +1,25 @@
 from __future__ import annotations
 
+from sqlalchemy import or_, select
 from werkzeug.datastructures import FileStorage
 
-from participium.core.exceptions import ValidationError
-from participium.database.session import Session
+from participium.core.exceptions import NotFoundError, ValidationError
+from participium.core.security import hash_password
 from participium.models.enums import Role
+from participium.models.message import Message
+from participium.models.report import Report, ReportFollower, ReportStatusHistory
 from participium.models.user import User
-from participium.repositories.category_repository import CategoryRepository
-from participium.repositories.notification_repository import NotificationRepository
-from participium.repositories.token_repository import TokenRepository
-from participium.repositories.user_repository import UserRepository
-from participium.services.storage_service import StorageService
 
 
 class UserService:
     def __init__(
         self,
-        session: Session | None = None,
-        user_repository: UserRepository | None = None,
-        category_repository: CategoryRepository | None = None,
-        token_repository: TokenRepository | None = None,
-        notification_repository: NotificationRepository | None = None,
-        storage_service: StorageService | None = None,
+        session=None,
+        user_repository=None,
+        category_repository=None,
+        token_repository=None,
+        notification_repository=None,
+        storage_service=None,
     ):
         self.session = session
         self.user_repository = user_repository
@@ -29,9 +27,6 @@ class UserService:
         self.token_repository = token_repository
         self.notification_repository = notification_repository
         self.storage_service = storage_service
-
-    def get_user(self, user_id: int) -> User:
-        raise NotImplementedError
 
     def update_profile(
         self,
@@ -58,7 +53,91 @@ class UserService:
         Raises:
             ValidationError: if `username` is already used by another account.
         """
-        raise NotImplementedError
+        if username and username != user.username and self.user_repository.get_by_username(username):
+            raise ValidationError("Username already in use.")
+        if username:
+            user.username = username.strip()
+        if first_name:
+            user.first_name = first_name.strip()
+        if last_name:
+            user.last_name = last_name.strip()
+        if email_notifications_enabled is not None:
+            user.email_notifications_enabled = bool(email_notifications_enabled)
+        if profile_picture and profile_picture.filename:
+            user.profile_picture_path = self.storage_service.save(profile_picture)
+        self.session.commit()
+        return user
+
+    def delete_account(self, user: User) -> None:
+        reports = list(self.session.scalars(select(Report).where(Report.reporter_id == user.id)))
+        for report in reports:
+            report.reporter_id = None
+            report.is_anonymous = True
+
+        followers = list(self.session.scalars(select(ReportFollower).where(ReportFollower.user_id == user.id)))
+        for follower in followers:
+            self.session.delete(follower)
+
+        messages = list(
+            self.session.scalars(
+                select(Message).where(or_(Message.sender_id == user.id, Message.recipient_id == user.id))
+            )
+        )
+        for message in messages:
+            if message.sender_id == user.id:
+                message.sender_id = None
+            if message.recipient_id == user.id:
+                message.recipient_id = None
+
+        histories = list(
+            self.session.scalars(select(ReportStatusHistory).where(ReportStatusHistory.changed_by_id == user.id))
+        )
+        for history in histories:
+            history.changed_by_id = None
+
+        for notification in self.notification_repository.list_for_user(user.id):
+            self.session.delete(notification)
+        for token in self.token_repository.list_for_user(user.id):
+            self.session.delete(token)
+
+        self.user_repository.delete(user)
+        self.session.commit()
+
+    def list_users(self) -> list[User]:
+        return self.user_repository.list_all()
+
+    def get_user(self, user_id: int) -> User:
+        user = self.user_repository.get_by_id(user_id)
+        if not user:
+            raise NotFoundError("User not found.")
+        return user
+
+    def create_user(self, payload: dict) -> User:
+        required = ["username", "first_name", "last_name", "email", "password", "role"]
+        missing = [field for field in required if not payload.get(field)]
+        if missing:
+            raise ValidationError(f"Missing required fields: {', '.join(missing)}")
+        if self.user_repository.get_by_username(payload["username"]):
+            raise ValidationError("Username already in use.")
+        if self.user_repository.get_by_email(payload["email"]):
+            raise ValidationError("Email already in use.")
+        role = self._parse_role(payload["role"])
+        category = self._resolve_operator_category(role, payload.get("category_id"))
+        user = User(
+            username=payload["username"].strip(),
+            first_name=payload["first_name"].strip(),
+            last_name=payload["last_name"].strip(),
+            email=payload["email"].strip().lower(),
+            password_hash=hash_password(payload["password"]),
+            role=role,
+            category_id=category.id if category else None,
+            is_active=bool(payload.get("is_active", True)),
+            is_email_verified=True,
+            email_notifications_enabled=bool(payload.get("email_notifications_enabled", True)),
+        )
+        self.user_repository.add(user)
+        self.session.commit()
+        return user
 
     def update_user(self, user_id: int, payload: dict) -> User:
         user = self.get_user(user_id)
@@ -87,7 +166,21 @@ class UserService:
 
     @staticmethod
     def _parse_role(role_value: str) -> Role:
-        raise NotImplementedError
+        try:
+            return Role(role_value)
+        except ValueError as exc:
+            raise ValidationError("Invalid user role.") from exc
 
     def _resolve_operator_category(self, role: Role, category_id_value) -> object | None:
-        raise NotImplementedError
+        if role != Role.OPERATOR:
+            return None
+        if category_id_value in {None, ""}:
+            raise ValidationError("Operator category is required.")
+        try:
+            category_id = int(category_id_value)
+        except (TypeError, ValueError) as exc:
+            raise ValidationError("A valid active category is required for operators.") from exc
+        category = self.category_repository.get_by_id(category_id)
+        if not category or not category.is_active:
+            raise ValidationError("A valid active category is required for operators.")
+        return category

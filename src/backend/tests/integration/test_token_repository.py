@@ -4,7 +4,7 @@ Test di integrazione per TokenRepository.
 Copertura al 100% dei metodi pubblici e dei campi del modello:
   - add()
   - get_by_token()   — trovato, non trovato
-  - list_for_user()  — utente con token, utente senza token
+  - list_for_user()  — utente con token, utente senza token, isolamento cross-user
 
 Campi del modello EmailVerificationToken verificati:
   - is_used    — default False, modificabile a True (caso d'uso reale: verifica email)
@@ -39,24 +39,60 @@ def _make_token(user_id: int, token_str: str, **kwargs) -> EmailVerificationToke
 
 
 # ---------------------------------------------------------------------------
-# ADD / GET_BY_TOKEN
+# add()
 # ---------------------------------------------------------------------------
 
 @pytest.mark.integration
-def test_add_and_get_by_token_found(token_repository, db_session):
-    """add() persiste il token; get_by_token() lo recupera per stringa."""
-    # Arrange
-    new_token = _make_token(user_id=1, token_str="secret-abc-123")
+def test_add_assigns_primary_key(token_repository, db_session):
+    """add() persiste il token: dopo il commit l'id è valorizzato."""
+    t = _make_token(user_id=1, token_str="token-pk-check")
 
-    # Act
-    token_repository.add(new_token)
+    token_repository.add(t)
     db_session.commit()
 
-    # Assert
+    assert t.id is not None
+
+
+@pytest.mark.integration
+def test_add_returns_the_token_object(token_repository, db_session):
+    """add() restituisce l'oggetto token passato (il type hint dice None, ma il codice fa return)."""
+    t = _make_token(user_id=1, token_str="token-return-check")
+
+    result = token_repository.add(t)
+    db_session.commit()
+
+    assert result is t
+
+
+@pytest.mark.integration
+def test_add_default_is_used_is_false(token_repository, db_session):
+    """Il valore di default di is_used è False al momento della creazione."""
+    t = _make_token(user_id=2, token_str="token-default-unused")
+
+    token_repository.add(t)
+    db_session.commit()
+    db_session.expire(t)
+
+    assert t.is_used is False
+
+
+# ---------------------------------------------------------------------------
+# get_by_token()
+# ---------------------------------------------------------------------------
+
+@pytest.mark.integration
+def test_get_by_token_returns_correct_token(token_repository, db_session):
+    """get_by_token() recupera il token tramite la stringa token."""
+    t = _make_token(user_id=1, token_str="secret-abc-123")
+
+    token_repository.add(t)
+    db_session.commit()
+
     fetched = token_repository.get_by_token("secret-abc-123")
+
     assert fetched is not None
     assert fetched.user_id == 1
-    assert fetched.is_used is False  # valore di default
+    assert fetched.is_used is False
 
 
 @pytest.mark.integration
@@ -66,19 +102,8 @@ def test_get_by_token_returns_none_when_not_found(token_repository):
 
 
 # ---------------------------------------------------------------------------
-# CAMPO is_used
+# Campo is_used — comportamento reale del service
 # ---------------------------------------------------------------------------
-
-@pytest.mark.integration
-def test_is_used_default_is_false(token_repository, db_session):
-    """Il valore di default di is_used è False al momento della creazione."""
-    token = _make_token(user_id=2, token_str="token-default-unused")
-    token_repository.add(token)
-    db_session.commit()
-
-    fetched = token_repository.get_by_token("token-default-unused")
-    assert fetched.is_used is False
-
 
 @pytest.mark.integration
 def test_is_used_can_be_set_to_true(token_repository, db_session):
@@ -87,43 +112,42 @@ def test_is_used_can_be_set_to_true(token_repository, db_session):
     Questo è il caso d'uso reale: dopo la verifica email il token viene
     marcato usato per impedirne il riutilizzo.
     """
-    # Arrange
-    token = _make_token(user_id=3, token_str="token-to-consume")
-    token_repository.add(token)
+    t = _make_token(user_id=3, token_str="token-to-consume")
+    token_repository.add(t)
     db_session.commit()
 
-    # Act — simula la logica del service che consuma il token
     fetched = token_repository.get_by_token("token-to-consume")
     fetched.is_used = True
     db_session.commit()
 
-    # Assert — la modifica è stata persistita
     updated = token_repository.get_by_token("token-to-consume")
     assert updated.is_used is True
 
 
 # ---------------------------------------------------------------------------
-# CAMPO expires_at
+# Campo expires_at
 # ---------------------------------------------------------------------------
 
 @pytest.mark.integration
 def test_expires_at_is_persisted_correctly(token_repository, db_session):
     """expires_at viene persistito e recuperato con il valore corretto.
 
-    Il confronto tollera meno di 1 secondo di scarto perché SQLite può
-    arrotondare i microsecondi in modo diverso da Python.
+    Il confronto ignora i microsecondi perché SQLite li arrotonda
+    alla precisione del secondo quando il campo usa DateTime.
     """
-    expiry = datetime.now() + timedelta(hours=48)
-    token = _make_token(user_id=4, token_str="token-expiry-check", expires_at=expiry)
-    token_repository.add(token)
+    expiry = (datetime.now() + timedelta(hours=48)).replace(microsecond=0)
+    t = _make_token(user_id=4, token_str="token-expiry-check", expires_at=expiry)
+
+    token_repository.add(t)
     db_session.commit()
 
     fetched = token_repository.get_by_token("token-expiry-check")
-    assert abs((fetched.expires_at - expiry).total_seconds()) < 1
+    fetched_expiry = fetched.expires_at.replace(microsecond=0) if hasattr(fetched.expires_at, "replace") else fetched.expires_at
+    assert fetched_expiry == expiry
 
 
 # ---------------------------------------------------------------------------
-# VINCOLO UNIQUE su token
+# Vincolo UNIQUE su token
 # ---------------------------------------------------------------------------
 
 @pytest.mark.integration
@@ -142,29 +166,32 @@ def test_add_duplicate_token_string_raises_integrity_error(token_repository, db_
 
 
 # ---------------------------------------------------------------------------
-# LIST_FOR_USER
+# list_for_user()
 # ---------------------------------------------------------------------------
 
 @pytest.mark.integration
 def test_list_for_user_returns_only_that_users_tokens(token_repository, db_session):
     """list_for_user() filtra correttamente per user_id."""
-    t1 = _make_token(user_id=5, token_str="token-user5-A")
-    t2 = _make_token(user_id=5, token_str="token-user5-B")
-    t3 = _make_token(user_id=9, token_str="token-user9-A")
-
-    token_repository.add(t1)
-    token_repository.add(t2)
-    token_repository.add(t3)
+    token_repository.add(_make_token(user_id=5, token_str="token-user5-A"))
+    token_repository.add(_make_token(user_id=5, token_str="token-user5-B"))
     db_session.commit()
 
-    user5_tokens = token_repository.list_for_user(5)
-    user9_tokens = token_repository.list_for_user(9)
+    results = token_repository.list_for_user(5)
 
-    assert len(user5_tokens) == 2
-    assert {t.token for t in user5_tokens} == {"token-user5-A", "token-user5-B"}
+    assert len(results) == 2
+    assert {t.token for t in results} == {"token-user5-A", "token-user5-B"}
 
-    assert len(user9_tokens) == 1
-    assert user9_tokens[0].token == "token-user9-A"
+
+@pytest.mark.integration
+def test_list_for_user_does_not_return_other_users_tokens(token_repository, db_session):
+    """list_for_user() non restituisce token appartenenti ad altri utenti."""
+    token_repository.add(_make_token(user_id=5, token_str="token-user5"))
+    token_repository.add(_make_token(user_id=9, token_str="token-user9"))
+    db_session.commit()
+
+    results = token_repository.list_for_user(5)
+
+    assert all(t.user_id == 5 for t in results)
 
 
 @pytest.mark.integration

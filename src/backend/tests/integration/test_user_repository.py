@@ -19,12 +19,19 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from participium.models.enums import Role
+
 from participium.models.user import User
+from participium.models.notification import Notification
+from participium.models.enums import NotificationType, Role
+from participium.models.token import EmailVerificationToken
 
 
-# Helper per costruire un utente con i campi obbligatori
+# ---------------------------------------------------------------------------
+# Helper
+# ---------------------------------------------------------------------------
+
 def _make_user(username: str, email: str, **kwargs) -> User:
+    """Costruisce un User con i campi obbligatori e valori di default sensati."""
     return User(
         username=username,
         first_name=kwargs.pop("first_name", "Nome"),
@@ -36,30 +43,76 @@ def _make_user(username: str, email: str, **kwargs) -> User:
 
 
 # ---------------------------------------------------------------------------
-# ADD / GET_BY_ID
+# add()
 # ---------------------------------------------------------------------------
 
 @pytest.mark.integration
-def test_add_user_and_get_by_id(user_repository, db_session):
-    """add() persiste l'utente; get_by_id() lo recupera correttamente."""
-    # Arrange
-    user = _make_user(
-        username="mario.rossi",
-        email="mario@example.com",
-        first_name="Mario",
-        last_name="Rossi",
-        role=Role.CITIZEN,
-    )
+def test_add_assigns_primary_key(user_repository, db_session):
+    """add() persiste l'utente: dopo il commit l'id è valorizzato."""
+    user = _make_user(username="user.pk", email="pk@test.com")
 
-    # Act
-    added = user_repository.add(user)
+    user_repository.add(user)
     db_session.commit()
 
-    # Assert
-    assert added.id is not None
-    fetched = user_repository.get_by_id(added.id)
+    assert user.id is not None
+
+
+@pytest.mark.integration
+def test_add_returns_the_same_object(user_repository, db_session):
+    """add() restituisce l'oggetto passato (identità, non copia)."""
+    user = _make_user(username="user.ret", email="ret@test.com")
+
+    result = user_repository.add(user)
+    db_session.commit()
+
+    assert result is user
+
+
+@pytest.mark.integration
+def test_add_default_role_is_citizen(user_repository, db_session):
+    """Il ruolo di default per un nuovo utente è Role.CITIZEN."""
+    user = _make_user(username="user.default", email="default@test.com")
+
+    user_repository.add(user)
+    db_session.commit()
+    db_session.expire(user)
+
+    assert user.role == Role.CITIZEN
+
+
+@pytest.mark.integration
+def test_add_default_flags(user_repository, db_session):
+    """I flag booleani di default sono: is_active=True, is_email_verified=False,
+    email_notifications_enabled=True."""
+    user = _make_user(username="user.flags", email="flags@test.com")
+
+    user_repository.add(user)
+    db_session.commit()
+    db_session.expire(user)
+
+    assert user.is_active is True
+    assert user.is_email_verified is False
+    assert user.email_notifications_enabled is True
+
+
+# ---------------------------------------------------------------------------
+# get_by_id()
+# ---------------------------------------------------------------------------
+
+@pytest.mark.integration
+def test_get_by_id_returns_correct_user(user_repository, db_session):
+    """get_by_id() recupera l'utente con l'id corretto."""
+    user = _make_user(username="mario.rossi", email="mario@example.com",
+                      first_name="Mario", last_name="Rossi")
+
+    user_repository.add(user)
+    db_session.commit()
+
+    fetched = user_repository.get_by_id(user.id)
+
     assert fetched is not None
     assert fetched.username == "mario.rossi"
+    assert fetched.first_name == "Mario"
 
 
 @pytest.mark.integration
@@ -69,17 +122,19 @@ def test_get_by_id_returns_none_for_missing_user(user_repository):
 
 
 # ---------------------------------------------------------------------------
-# GET_BY_EMAIL
+# get_by_email()
 # ---------------------------------------------------------------------------
 
 @pytest.mark.integration
-def test_get_by_email_found(user_repository, db_session):
+def test_get_by_email_returns_correct_user(user_repository, db_session):
     """get_by_email() restituisce l'utente con quell'indirizzo email."""
     user = _make_user(username="luigi.verdi", email="luigi@example.com")
+
     user_repository.add(user)
     db_session.commit()
 
     result = user_repository.get_by_email("luigi@example.com")
+
     assert result is not None
     assert result.username == "luigi.verdi"
 
@@ -91,17 +146,19 @@ def test_get_by_email_returns_none_when_not_found(user_repository):
 
 
 # ---------------------------------------------------------------------------
-# GET_BY_USERNAME
+# get_by_username()
 # ---------------------------------------------------------------------------
 
 @pytest.mark.integration
-def test_get_by_username_found(user_repository, db_session):
+def test_get_by_username_returns_correct_user(user_repository, db_session):
     """get_by_username() restituisce l'utente con quel nome utente."""
     user = _make_user(username="giulia.bianchi", email="giulia@example.com")
+
     user_repository.add(user)
     db_session.commit()
 
     result = user_repository.get_by_username("giulia.bianchi")
+
     assert result is not None
     assert result.email == "giulia@example.com"
 
@@ -113,29 +170,33 @@ def test_get_by_username_returns_none_when_not_found(user_repository):
 
 
 # ---------------------------------------------------------------------------
-# GET_BY_USERNAME_OR_EMAIL
+# get_by_username_or_email()
 # ---------------------------------------------------------------------------
 
 @pytest.mark.integration
-def test_get_by_username_or_email_by_username(user_repository, db_session):
+def test_get_by_username_or_email_found_by_username(user_repository, db_session):
     """get_by_username_or_email() trova l'utente cercando per username."""
     user = _make_user(username="utente1", email="utente1@example.com")
+
     user_repository.add(user)
     db_session.commit()
 
     result = user_repository.get_by_username_or_email("utente1")
+
     assert result is not None
     assert result.email == "utente1@example.com"
 
 
 @pytest.mark.integration
-def test_get_by_username_or_email_by_email(user_repository, db_session):
+def test_get_by_username_or_email_found_by_email(user_repository, db_session):
     """get_by_username_or_email() trova l'utente cercando per email."""
     user = _make_user(username="utente2", email="utente2@example.com")
+
     user_repository.add(user)
     db_session.commit()
 
     result = user_repository.get_by_username_or_email("utente2@example.com")
+
     assert result is not None
     assert result.username == "utente2"
 
@@ -147,21 +208,36 @@ def test_get_by_username_or_email_returns_none_when_not_found(user_repository):
 
 
 # ---------------------------------------------------------------------------
-# LIST_ALL — ordine DESC per created_at
+# list_all() — ordinamento DESC per created_at
 # ---------------------------------------------------------------------------
 
 @pytest.mark.integration
-def test_list_all_returns_all_users_sorted_by_created_at_desc(user_repository, db_session):
-    """list_all() restituisce tutti gli utenti ordinati dal più recente al più vecchio.
+def test_list_all_returns_all_users(user_repository, db_session):
+    """list_all() include tutti gli utenti presenti nel database."""
+    user_repository.add(_make_user(username="u1", email="u1@test.com"))
+    user_repository.add(_make_user(username="u2", email="u2@test.com"))
+    db_session.commit()
 
-    I created_at vengono impostati esplicitamente per garantire un ordine
-    deterministico indipendente dalla velocità di SQLite in memoria.
+    results = user_repository.list_all()
+
+    assert len(results) == 2
+
+
+@pytest.mark.integration
+def test_list_all_orders_by_created_at_desc(user_repository, db_session):
+    """list_all() restituisce gli utenti dal più recente al più vecchio.
+
+    I created_at vengono impostati sull'istanza dopo la costruzione per evitare
+    di passare argomenti non dichiarati nel costruttore di User.
     """
     now = datetime.now()
-    u_old = _make_user(username="user_old", email="old@test.com",
-                       created_at=now - timedelta(seconds=2))
-    u_new = _make_user(username="user_new", email="new@test.com",
-                       created_at=now)
+
+    u_old = _make_user(username="user_old", email="old@test.com")
+    u_new = _make_user(username="user_new", email="new@test.com")
+
+    # Imposta created_at dopo la costruzione (attributo mappato da TimestampMixin)
+    u_old.created_at = now - timedelta(seconds=2)
+    u_new.created_at = now
 
     user_repository.add(u_old)
     user_repository.add(u_new)
@@ -169,13 +245,18 @@ def test_list_all_returns_all_users_sorted_by_created_at_desc(user_repository, d
 
     results = user_repository.list_all()
 
-    assert len(results) == 2
-    assert results[0].username == "user_new"  # più recente per primo (DESC)
+    assert results[0].username == "user_new"
     assert results[1].username == "user_old"
 
 
+@pytest.mark.integration
+def test_list_all_returns_empty_list_when_no_users(user_repository):
+    """list_all() restituisce una lista vuota quando non ci sono utenti."""
+    assert user_repository.list_all() == []
+
+
 # ---------------------------------------------------------------------------
-# DELETE
+# delete()
 # ---------------------------------------------------------------------------
 
 @pytest.mark.integration
@@ -183,16 +264,68 @@ def test_delete_removes_user_from_database(user_repository, db_session):
     """delete() rimuove l'utente: non è più recuperabile dopo il commit."""
     u1 = _make_user(username="user_a", email="a@test.com")
     u2 = _make_user(username="user_b", email="b@test.com")
+
     user_repository.add(u1)
     user_repository.add(u2)
     db_session.commit()
 
-    # Act
-    target = user_repository.get_by_username("user_a")
-    user_repository.delete(target)
+    user_repository.delete(u1)
     db_session.commit()
 
-    # Assert: user_a sparisce, user_b rimane
     assert user_repository.get_by_username("user_a") is None
+
+# ---------------------------------------------------------------------------
+# Comportamento del Modello: Cascade Delete
+# ---------------------------------------------------------------------------
+
+@pytest.mark.integration
+def test_delete_user_cascades_to_notifications(user_repository, notification_repository, db_session):
+    """Verifica che eliminando un utente vengano eliminate anche le sue notifiche in cascata."""
+    user = _make_user(username="cascade_notif", email="notif@test.com")
+    user_repository.add(user)
+    db_session.commit()
+
+    notification = Notification(user_id=user.id, type=NotificationType.SYSTEM, title="Sys", body="Body")
+    db_session.add(notification)
+    db_session.commit()
+
+    user_repository.delete(user)
+    db_session.commit()
+
+    assert len(notification_repository.list_for_user(user.id)) == 0
+
+
+@pytest.mark.integration
+def test_delete_user_cascades_to_tokens(user_repository, token_repository, db_session):
+    """Verifica che eliminando un utente vengano eliminati anche i suoi token di verifica in cascata."""
+    user = _make_user(username="cascade_token", email="token@test.com")
+    user_repository.add(user)
+    db_session.commit()
+
+    token = EmailVerificationToken(user_id=user.id, token="tok-456", expires_at=datetime.now() + timedelta(days=1))
+    db_session.add(token)
+    db_session.commit()
+
+    user_repository.delete(user)
+    db_session.commit()
+
+    assert len(token_repository.list_for_user(user.id)) == 0
+
+@pytest.mark.integration
+def test_delete_does_not_affect_other_users(user_repository, db_session):
+    """delete() non rimuove gli altri utenti presenti nel database."""
+    u1 = _make_user(username="user_a", email="a@test.com")
+    u2 = _make_user(username="user_b", email="b@test.com")
+
+    user_repository.add(u1)
+    user_repository.add(u2)
+    db_session.commit()
+
+    user_repository.delete(u1)
+    db_session.commit()
+
     assert user_repository.get_by_username("user_b") is not None
     assert len(user_repository.list_all()) == 1
+
+
+    

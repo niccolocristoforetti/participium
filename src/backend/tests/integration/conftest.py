@@ -1,5 +1,6 @@
 import pytest
 from participium.database import close_connection, create_all, get_session, open_connection
+from participium.repositories.category_repository import CategoryRepository
 from participium.repositories.message_repository import MessageRepository
 from participium.repositories.notification_repository import NotificationRepository
 from participium.repositories.report_repository import ReportRepository
@@ -30,6 +31,11 @@ def db_session(monkeypatch):
 # di test. Ogni file di test può ricevere direttamente il repository di cui ha
 # bisogno senza ridefinire la stessa fixture locale.
 # ---------------------------------------------------------------------------
+
+@pytest.fixture
+def category_repository(db_session):
+    return CategoryRepository(db_session)
+
 
 @pytest.fixture
 def message_repository(db_session):

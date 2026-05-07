@@ -8,15 +8,18 @@ Copertura al 100% dei metodi pubblici:
   - remove_follower()
   - list_followers()
   - list_reports()              — tutti i branch: public_only, category_id, status,
-                                  date_from, date_to, sort asc/desc
+                                  date_from, date_to, sort asc/desc, tutti i filtri combinati
   - list_all()
   - list_user_reports()         — filtro reporter_id, ordinamento DESC, lista vuota
   - list_pending()              — branch: base, category_id, date_from, date_to, combinati
   - list_for_category()         — branch: con category_id e senza (None)
-  - list_operator_reports()     — branch OPERATOR e non-OPERATOR
+  - list_operator_reports()     — branch OPERATOR con category_id, OPERATOR senza category_id,
+                                  non-OPERATOR (ADMIN)
 
 Le fixture report_repository e db_session sono definite in conftest.py.
 La fixture base_report è locale a questo file perché dipende da Report.
+
+
 """
 
 from __future__ import annotations
@@ -26,9 +29,9 @@ from datetime import datetime, timedelta
 import pytest
 
 from participium.models.enums import ReportStatus, Role
+from participium.models.message import Message
 from participium.models.report import Report, ReportFollower, ReportPhoto, ReportStatusHistory
 from sqlalchemy import select
-from participium.models.message import Message
 
 
 # ---------------------------------------------------------------------------
@@ -51,7 +54,7 @@ def _make_report(title: str = "Test Report", category_id: int = 1, **kwargs) -> 
 # FIXTURE LOCALE
 # ---------------------------------------------------------------------------
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def base_report(db_session):
     """Report base già persistito, usato come precondizione nei test sui follower."""
     report = _make_report(title="Base Report", status=ReportStatus.PENDING_APPROVAL)
@@ -189,7 +192,6 @@ def test_get_by_id_returns_none_for_missing_report(report_repository):
 
 # ---------------------------------------------------------------------------
 # get_follower() / remove_follower() / list_followers()
-# (ogni comportamento in un test separato)
 # ---------------------------------------------------------------------------
 
 @pytest.mark.integration
@@ -240,7 +242,6 @@ def test_remove_follower_deletes_follower_from_database(report_repository, base_
     db_session.commit()
 
     assert report_repository.get_follower(base_report.id, 5) is None
-    assert report_repository.list_followers(base_report.id) == []
 
 
 # ---------------------------------------------------------------------------
@@ -279,11 +280,14 @@ def test_list_reports_sort_asc(report_repository, db_session):
 
 
 @pytest.mark.integration
-def test_list_reports_public_only_includes_only_public_statuses(report_repository, db_session, monkeypatch):
-    """list_reports(public_only=True) include solo i report con status in PUBLIC_VISIBLE_STATUSES.
+def test_list_reports_public_only_filters_by_public_statuses(
+    report_repository, db_session, monkeypatch
+):
+    """list_reports(public_only=True/False) filtra correttamente in base a PUBLIC_VISIBLE_STATUSES.
 
-    Patchiamo la costante nel modulo che la importa per isolare il branch
-    senza dipendere dai valori reali della costante di produzione.
+    Patchando la costante nel modulo che la importa, il test è indipendente
+    dai valori reali di produzione e verifica entrambi i branch dello stesso flag
+    senza duplicare il setup.
     """
     monkeypatch.setattr(
         "participium.repositories.report_repository.PUBLIC_VISIBLE_STATUSES",
@@ -295,73 +299,100 @@ def test_list_reports_public_only_includes_only_public_statuses(report_repositor
     db_session.add_all([r_public, r_private])
     db_session.commit()
 
-    results = report_repository.list_reports(public_only=True)
+    # public_only=True: solo i report con status in PUBLIC_VISIBLE_STATUSES
+    public_results = report_repository.list_reports(public_only=True)
+    assert len(public_results) == 1
+    assert public_results[0].status == ReportStatus.IN_PROGRESS
 
-    assert len(results) == 1
-    assert results[0].status == ReportStatus.IN_PROGRESS
+    # public_only=False: tutti i report indipendentemente dallo status
+    all_results = report_repository.list_reports(public_only=False)
+    assert len(all_results) == 2
 
-
-@pytest.mark.integration
-def test_list_reports_public_only_false_returns_all(report_repository, db_session, monkeypatch):
-    """list_reports(public_only=False) include report di qualsiasi status."""
-    monkeypatch.setattr(
-        "participium.repositories.report_repository.PUBLIC_VISIBLE_STATUSES",
-        [ReportStatus.IN_PROGRESS],
-    )
-
-    r_public  = _make_report(title="Public",  status=ReportStatus.IN_PROGRESS)
-    r_private = _make_report(title="Private", status=ReportStatus.PENDING_APPROVAL)
-    db_session.add_all([r_public, r_private])
-    db_session.commit()
-
-    results = report_repository.list_reports(public_only=False)
-
-    assert len(results) == 2
 
 @pytest.mark.integration
 @pytest.mark.parametrize(
     "filter_params, expected_indexes",
     [
-        # Testa il filtro category_id
-        ({"category_id": 2}, [1]), 
-        # Testa il filtro status
+        # Filtro category_id
+        ({"category_id": 2}, [1]),
+        # Filtro status
         ({"status": ReportStatus.ASSIGNED}, [1]),
-        # Testa il filtro date_from
-        ({"date_from_offset": -1}, [1, 2]), 
-        # Testa il filtro date_to
+        # Filtro date_from
+        ({"date_from_offset": -1}, [1, 2]),
+        # Filtro date_to
         ({"date_to_offset": -1}, [0]),
-        # Testa il range combinato (date_from e date_to insieme)
+        # Filtro range combinato date_from + date_to
         ({"date_from_offset": -6, "date_to_offset": 6}, [0, 1, 2]),
     ]
 )
 def test_list_reports_filters_parameterized(
     report_repository, db_session, filter_params, expected_indexes
 ):
-    """Unico test parametrizzato per verificare tutte le combinazioni di filtri base in list_reports()."""
+    """Verifica ogni filtro di list_reports() in isolamento e la combinazione dei filtri di data."""
     now = datetime.now()
     reports = [
-        _make_report(title="R1", category_id=1, status=ReportStatus.PENDING_APPROVAL, created_at=now - timedelta(days=5)),
-        _make_report(title="R2", category_id=2, status=ReportStatus.ASSIGNED, created_at=now),
-        _make_report(title="R3", category_id=1, status=ReportStatus.IN_PROGRESS, created_at=now + timedelta(days=5)),
+        _make_report(title="R1", category_id=1, status=ReportStatus.PENDING_APPROVAL,
+                     created_at=now - timedelta(days=5)),
+        _make_report(title="R2", category_id=2, status=ReportStatus.ASSIGNED,
+                     created_at=now),
+        _make_report(title="R3", category_id=1, status=ReportStatus.IN_PROGRESS,
+                     created_at=now + timedelta(days=5)),
     ]
     db_session.add_all(reports)
     db_session.commit()
 
-    # Costruiamo i parametri dinamici basati sugli offset per raggirare il problema dei datetime in parametri statici
     kwargs = {}
-    if "category_id" in filter_params: kwargs["category_id"] = filter_params["category_id"]
-    if "status" in filter_params: kwargs["status"] = filter_params["status"]
-    if "date_from_offset" in filter_params: kwargs["date_from"] = now + timedelta(days=filter_params["date_from_offset"])
-    if "date_to_offset" in filter_params: kwargs["date_to"] = now + timedelta(days=filter_params["date_to_offset"])
+    if "category_id" in filter_params:
+        kwargs["category_id"] = filter_params["category_id"]
+    if "status" in filter_params:
+        kwargs["status"] = filter_params["status"]
+    if "date_from_offset" in filter_params:
+        kwargs["date_from"] = now + timedelta(days=filter_params["date_from_offset"])
+    if "date_to_offset" in filter_params:
+        kwargs["date_to"] = now + timedelta(days=filter_params["date_to_offset"])
 
     results = report_repository.list_reports(**kwargs)
-    
-    expected_titles = [reports[i].title for i in expected_indexes]
-    result_titles = [r.title for r in results]
-    
-    assert len(results) == len(expected_titles)
-    for t in expected_titles:
-        assert t in result_titles
+
+    expected_titles = {reports[i].title for i in expected_indexes}
+    result_titles   = {r.title for r in results}
+    assert result_titles == expected_titles
+
+
+@pytest.mark.integration
+def test_list_reports_all_filters_combined(report_repository, db_session, monkeypatch):
+    """list_reports() con tutti e cinque i filtri attivi contemporaneamente."""
+    monkeypatch.setattr(
+        "participium.repositories.report_repository.PUBLIC_VISIBLE_STATUSES",
+        [ReportStatus.IN_PROGRESS],
+    )
+    now = datetime.now()
+    r_match      = _make_report(title="Match",    category_id=1,
+                                 status=ReportStatus.IN_PROGRESS, created_at=now)
+    r_wrong_cat  = _make_report(title="WrongCat", category_id=2,
+                                 status=ReportStatus.IN_PROGRESS, created_at=now)
+    r_wrong_stat = _make_report(title="WrongStat", category_id=1,
+                                 status=ReportStatus.ASSIGNED, created_at=now)
+    r_too_old    = _make_report(title="TooOld",   category_id=1,
+                                 status=ReportStatus.IN_PROGRESS,
+                                 created_at=now - timedelta(days=10))
+    r_too_new    = _make_report(title="TooNew",   category_id=1,
+                                 status=ReportStatus.IN_PROGRESS,
+                                 created_at=now + timedelta(days=10))
+    db_session.add_all([r_match, r_wrong_cat, r_wrong_stat, r_too_old, r_too_new])
+    db_session.commit()
+
+    results = report_repository.list_reports(
+        public_only=True,
+        category_id=1,
+        status=ReportStatus.IN_PROGRESS,
+        date_from=now - timedelta(hours=1),
+        date_to=now + timedelta(hours=1),
+    )
+
+    assert len(results) == 1
+    assert results[0].title == "Match"
+
+
 # ---------------------------------------------------------------------------
 # list_all()
 # ---------------------------------------------------------------------------
@@ -546,7 +577,7 @@ def test_list_for_category_with_none_returns_all_non_pending(report_repository, 
     db_session.commit()
 
     results = report_repository.list_for_category(None)
-    titles = [r.title for r in results]
+    titles = {r.title for r in results}
 
     assert len(results) == 2
     assert "C1" in titles
@@ -555,12 +586,12 @@ def test_list_for_category_with_none_returns_all_non_pending(report_repository, 
 
 
 # ---------------------------------------------------------------------------
-# list_operator_reports() — branch OPERATOR e non-OPERATOR
+# list_operator_reports() — tutti e tre i branch
 # ---------------------------------------------------------------------------
 
 @pytest.mark.integration
-def test_list_operator_reports_operator_filters_by_category(report_repository, db_session):
-    """Con Role.OPERATOR, list_operator_reports() usa il category_id passato."""
+def test_list_operator_reports_operator_with_category_id(report_repository, db_session):
+    """Con Role.OPERATOR e category_id valorizzato, filtra per quella categoria."""
     r_cat1 = _make_report(title="C1_A", category_id=1, status=ReportStatus.ASSIGNED)
     r_cat2 = _make_report(title="C2_A", category_id=2, status=ReportStatus.ASSIGNED)
     db_session.add_all([r_cat1, r_cat2])
@@ -572,10 +603,27 @@ def test_list_operator_reports_operator_filters_by_category(report_repository, d
     assert results[0].title == "C1_A"
 
 
+@pytest.mark.integration
+def test_list_operator_reports_operator_without_category_id(report_repository, db_session):
+    """Con Role.OPERATOR e category_id=None, restituisce tutti i non-PENDING (nessun filtro categoria)."""
+    r_cat1 = _make_report(title="C1_A", category_id=1, status=ReportStatus.ASSIGNED)
+    r_cat2 = _make_report(title="C2_A", category_id=2, status=ReportStatus.ASSIGNED)
+    r_pend = _make_report(title="C1_P", category_id=1, status=ReportStatus.PENDING_APPROVAL)
+    db_session.add_all([r_cat1, r_cat2, r_pend])
+    db_session.commit()
+
+    results = report_repository.list_operator_reports(role=Role.OPERATOR, category_id=None)
+    titles = {r.title for r in results}
+
+    assert len(results) == 2
+    assert "C1_A" in titles
+    assert "C2_A" in titles
+    assert "C1_P" not in titles  # PENDING sempre esclusi da list_for_category
+
 
 @pytest.mark.integration
 def test_list_operator_reports_admin_ignores_category(report_repository, db_session):
-    """Con Role.ADMIN (non-OPERATOR), il category_id viene ignorato e vede tutto."""
+    """Con Role.ADMIN (non-OPERATOR), il category_id viene ignorato e vede tutto il non-PENDING."""
     r_cat1 = _make_report(title="C1_A", category_id=1, status=ReportStatus.ASSIGNED)
     r_cat2 = _make_report(title="C2_A", category_id=2, status=ReportStatus.ASSIGNED)
     r_pend = _make_report(title="C1_P", category_id=1, status=ReportStatus.PENDING_APPROVAL)
@@ -583,12 +631,13 @@ def test_list_operator_reports_admin_ignores_category(report_repository, db_sess
     db_session.commit()
 
     results = report_repository.list_operator_reports(role=Role.ADMIN, category_id=1)
-    titles = [r.title for r in results]
+    titles = {r.title for r in results}
 
     assert len(results) == 2
     assert "C1_A" in titles
     assert "C2_A" in titles
-    assert "C1_P" not in titles  # PENDING sempre esclusi da list_for_category
+    assert "C1_P" not in titles
+
 
 # ---------------------------------------------------------------------------
 # Comportamento del Modello: Cascade Delete
@@ -596,22 +645,37 @@ def test_list_operator_reports_admin_ignores_category(report_repository, db_sess
 
 @pytest.mark.integration
 def test_delete_report_cascades_to_children(report_repository, base_report, db_session):
-    """Verifica che l'eliminazione di un report distrugga anche foto, storico, follower e messaggi in cascata."""
+    """Eliminando un report vengono rimossi in cascata foto, storico, follower e messaggi.
+
+    Le asserzioni usano i metodi del repository dove disponibili per non
+    accoppiare il test allo schema interno del DB.
+    """
     report_id = base_report.id
-    
-    # Aggiungiamo dipendenze
-    report_repository.add_photo(ReportPhoto(report_id=report_id, file_path="p.jpg", original_filename="p.jpg"))
-    report_repository.add_status_entry(ReportStatusHistory(report_id=report_id, new_status=ReportStatus.ASSIGNED))
+
+    report_repository.add_photo(ReportPhoto(
+        report_id=report_id, file_path="p.jpg", original_filename="p.jpg",
+    ))
+    report_repository.add_status_entry(ReportStatusHistory(
+        report_id=report_id, new_status=ReportStatus.ASSIGNED,
+    ))
     report_repository.add_follower(ReportFollower(report_id=report_id, user_id=10))
     db_session.add(Message(report_id=report_id, body="test cascade msg"))
     db_session.commit()
-    
-    # Eliminiamo il report usando direttamente la sessione (dato che ReportRepository non espone un metodo delete)
+
+    # ReportRepository non espone delete(): si usa la sessione direttamente.
     db_session.delete(base_report)
     db_session.commit()
-    
-    # Verifichiamo che i figli siano stati eliminati dal database
-    assert len(db_session.scalars(select(ReportPhoto).where(ReportPhoto.report_id == report_id)).all()) == 0
-    assert len(db_session.scalars(select(ReportStatusHistory).where(ReportStatusHistory.report_id == report_id)).all()) == 0
-    assert len(db_session.scalars(select(ReportFollower).where(ReportFollower.report_id == report_id)).all()) == 0
-    assert len(db_session.scalars(select(Message).where(Message.report_id == report_id)).all()) == 0
+
+    assert report_repository.list_followers(report_id) == []
+    assert report_repository.get_by_id(report_id) is None
+    # Foto, storico e messaggi non hanno metodi di query nel repository:
+    # si verifica tramite sessione che sia avvenuta la cascade sul DB.
+    assert db_session.scalars(
+        select(ReportPhoto).where(ReportPhoto.report_id == report_id)
+    ).all() == []
+    assert db_session.scalars(
+        select(ReportStatusHistory).where(ReportStatusHistory.report_id == report_id)
+    ).all() == []
+    assert db_session.scalars(
+        select(Message).where(Message.report_id == report_id)
+    ).all() == []

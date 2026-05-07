@@ -7,8 +7,8 @@ Copertura al 100% dei metodi pubblici:
   - get_by_email()             — trovato, non trovato
   - get_by_username()          — trovato, non trovato
   - get_by_username_or_email() — trovato per username, per email, non trovato
-  - list_all()                 — ordinamento DESC per created_at
-  - delete()
+  - list_all()                 — ordinamento DESC per created_at, lista vuota
+  - delete()                   — rimozione, isolamento da altri utenti
 
 La fixture user_repository è definita in conftest.py.
 """
@@ -18,7 +18,6 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 
 import pytest
-
 
 from participium.models.user import User
 from participium.models.notification import Notification
@@ -69,27 +68,20 @@ def test_add_returns_the_same_object(user_repository, db_session):
 
 
 @pytest.mark.integration
-def test_add_default_role_is_citizen(user_repository, db_session):
-    """Il ruolo di default per un nuovo utente è Role.CITIZEN."""
-    user = _make_user(username="user.default", email="default@test.com")
+def test_add_default_values(user_repository, db_session):
+    """I valori di default per un nuovo utente sono:
+      - role = Role.CITIZEN
+      - is_active = True
+      - is_email_verified = False
+      - email_notifications_enabled = True
+    """
+    user = _make_user(username="user.defaults", email="defaults@test.com")
 
     user_repository.add(user)
     db_session.commit()
     db_session.expire(user)
 
     assert user.role == Role.CITIZEN
-
-
-@pytest.mark.integration
-def test_add_default_flags(user_repository, db_session):
-    """I flag booleani di default sono: is_active=True, is_email_verified=False,
-    email_notifications_enabled=True."""
-    user = _make_user(username="user.flags", email="flags@test.com")
-
-    user_repository.add(user)
-    db_session.commit()
-    db_session.expire(user)
-
     assert user.is_active is True
     assert user.is_email_verified is False
     assert user.email_notifications_enabled is True
@@ -208,46 +200,8 @@ def test_get_by_username_or_email_returns_none_when_not_found(user_repository):
 
 
 # ---------------------------------------------------------------------------
-# list_all() — ordinamento DESC per created_at
+# list_all()
 # ---------------------------------------------------------------------------
-
-@pytest.mark.integration
-def test_list_all_returns_all_users(user_repository, db_session):
-    """list_all() include tutti gli utenti presenti nel database."""
-    user_repository.add(_make_user(username="u1", email="u1@test.com"))
-    user_repository.add(_make_user(username="u2", email="u2@test.com"))
-    db_session.commit()
-
-    results = user_repository.list_all()
-
-    assert len(results) == 2
-
-
-@pytest.mark.integration
-def test_list_all_orders_by_created_at_desc(user_repository, db_session):
-    """list_all() restituisce gli utenti dal più recente al più vecchio.
-
-    I created_at vengono impostati sull'istanza dopo la costruzione per evitare
-    di passare argomenti non dichiarati nel costruttore di User.
-    """
-    now = datetime.now()
-
-    u_old = _make_user(username="user_old", email="old@test.com")
-    u_new = _make_user(username="user_new", email="new@test.com")
-
-    # Imposta created_at dopo la costruzione (attributo mappato da TimestampMixin)
-    u_old.created_at = now - timedelta(seconds=2)
-    u_new.created_at = now
-
-    user_repository.add(u_old)
-    user_repository.add(u_new)
-    db_session.commit()
-
-    results = user_repository.list_all()
-
-    assert results[0].username == "user_new"
-    assert results[1].username == "user_old"
-
 
 @pytest.mark.integration
 def test_list_all_returns_empty_list_when_no_users(user_repository):
@@ -255,13 +209,45 @@ def test_list_all_returns_empty_list_when_no_users(user_repository):
     assert user_repository.list_all() == []
 
 
+@pytest.mark.integration
+def test_list_all_orders_by_created_at_desc(user_repository, db_session):
+    """list_all() include tutti gli utenti e li ordina dal più recente al più vecchio.
+
+    I created_at vengono impostati sull'istanza dopo la costruzione per evitare
+    di passare argomenti non dichiarati nel costruttore di User.
+    I dati vengono inseriti in ordine inverso rispetto a quello atteso, così
+    l'ordinamento è verificato dalla query e non dall'ordine di inserimento.
+    """
+    now = datetime.now()
+    u_old = _make_user(username="user_old", email="old@test.com")
+    u_new = _make_user(username="user_new", email="new@test.com")
+
+    u_old.created_at = now - timedelta(seconds=2)
+    u_new.created_at = now
+
+    # Inserimento in ordine inverso rispetto all'atteso
+    user_repository.add(u_old)
+    user_repository.add(u_new)
+    db_session.commit()
+
+    results = user_repository.list_all()
+
+    assert len(results) == 2
+    assert results[0].username == "user_new"
+    assert results[1].username == "user_old"
+
+
 # ---------------------------------------------------------------------------
 # delete()
 # ---------------------------------------------------------------------------
 
 @pytest.mark.integration
-def test_delete_removes_user_from_database(user_repository, db_session):
-    """delete() rimuove l'utente: non è più recuperabile dopo il commit."""
+def test_delete_removes_user_and_does_not_affect_others(user_repository, db_session):
+    """delete() rimuove l'utente target mantenendo intatti gli altri.
+
+    Un unico test che verifica sia la rimozione dell'utente eliminato sia
+    l'integrità degli altri, evitando la duplicazione del setup.
+    """
     u1 = _make_user(username="user_a", email="a@test.com")
     u2 = _make_user(username="user_b", email="b@test.com")
 
@@ -273,59 +259,38 @@ def test_delete_removes_user_from_database(user_repository, db_session):
     db_session.commit()
 
     assert user_repository.get_by_username("user_a") is None
+    assert user_repository.get_by_username("user_b") is not None
+    assert len(user_repository.list_all()) == 1
+
 
 # ---------------------------------------------------------------------------
 # Comportamento del Modello: Cascade Delete
 # ---------------------------------------------------------------------------
 
 @pytest.mark.integration
-def test_delete_user_cascades_to_notifications(user_repository, notification_repository, db_session):
-    """Verifica che eliminando un utente vengano eliminate anche le sue notifiche in cascata."""
-    user = _make_user(username="cascade_notif", email="notif@test.com")
+def test_delete_user_cascades_to_notifications_and_tokens(
+    user_repository, notification_repository, token_repository, db_session
+):
+    """Eliminando un utente vengono rimossi in cascata sia le notifiche che i token.
+
+    Le due cascade vengono verificate su un singolo utente eliminato per evitare
+    la duplicazione del setup presente nella versione con test separati.
+    """
+    user = _make_user(username="cascade_user", email="cascade@test.com")
     user_repository.add(user)
     db_session.commit()
 
-    notification = Notification(user_id=user.id, type=NotificationType.SYSTEM, title="Sys", body="Body")
-    db_session.add(notification)
+    db_session.add(Notification(
+        user_id=user.id, type=NotificationType.SYSTEM, title="Sys", body="Body",
+    ))
+    db_session.add(EmailVerificationToken(
+        user_id=user.id, token="tok-cascade", expires_at=datetime.now() + timedelta(days=1),
+    ))
     db_session.commit()
 
     user_repository.delete(user)
+    deleted_user_id = user.id
     db_session.commit()
 
-    assert len(notification_repository.list_for_user(user.id)) == 0
-
-
-@pytest.mark.integration
-def test_delete_user_cascades_to_tokens(user_repository, token_repository, db_session):
-    """Verifica che eliminando un utente vengano eliminati anche i suoi token di verifica in cascata."""
-    user = _make_user(username="cascade_token", email="token@test.com")
-    user_repository.add(user)
-    db_session.commit()
-
-    token = EmailVerificationToken(user_id=user.id, token="tok-456", expires_at=datetime.now() + timedelta(days=1))
-    db_session.add(token)
-    db_session.commit()
-
-    user_repository.delete(user)
-    db_session.commit()
-
-    assert len(token_repository.list_for_user(user.id)) == 0
-
-@pytest.mark.integration
-def test_delete_does_not_affect_other_users(user_repository, db_session):
-    """delete() non rimuove gli altri utenti presenti nel database."""
-    u1 = _make_user(username="user_a", email="a@test.com")
-    u2 = _make_user(username="user_b", email="b@test.com")
-
-    user_repository.add(u1)
-    user_repository.add(u2)
-    db_session.commit()
-
-    user_repository.delete(u1)
-    db_session.commit()
-
-    assert user_repository.get_by_username("user_b") is not None
-    assert len(user_repository.list_all()) == 1
-
-
-    
+    assert notification_repository.list_for_user(deleted_user_id)== []
+    assert token_repository.list_for_user(deleted_user_id) == []

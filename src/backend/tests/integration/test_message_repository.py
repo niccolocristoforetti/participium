@@ -43,7 +43,6 @@ def test_add_persists_all_fields(message_repository, db_session):
     message_repository.add(msg)
     db_session.commit()
 
-    # Verifica persistenza tramite rilettura dalla sessione
     db_session.expire(msg)
     assert msg.body == "Payload"
     assert msg.report_id == 10

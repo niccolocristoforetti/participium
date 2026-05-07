@@ -38,6 +38,13 @@ def _make_token(user_id: int, token_str: str, **kwargs) -> EmailVerificationToke
     )
 
 
+def _truncate_to_second(dt: datetime) -> datetime:
+    """Rimuove i microsecondi per confronti su DB che arrotondano al secondo (es. SQLite).
+
+    """
+    return dt.replace(microsecond=0)
+
+
 # ---------------------------------------------------------------------------
 # add()
 # ---------------------------------------------------------------------------
@@ -132,18 +139,18 @@ def test_is_used_can_be_set_to_true(token_repository, db_session):
 def test_expires_at_is_persisted_correctly(token_repository, db_session):
     """expires_at viene persistito e recuperato con il valore corretto.
 
-    Il confronto ignora i microsecondi perché SQLite li arrotonda
-    alla precisione del secondo quando il campo usa DateTime.
+    Il confronto usa _truncate_to_second() perché SQLite arrotonda DateTime
+    alla precisione del secondo.  Su PostgreSQL il confronto funziona anche
+    senza troncamento; l'helper rende il test portabile tra i due backend.
     """
-    expiry = (datetime.now() + timedelta(hours=48)).replace(microsecond=0)
+    expiry = datetime.now() + timedelta(hours=48)
     t = _make_token(user_id=4, token_str="token-expiry-check", expires_at=expiry)
 
     token_repository.add(t)
     db_session.commit()
 
     fetched = token_repository.get_by_token("token-expiry-check")
-    fetched_expiry = fetched.expires_at.replace(microsecond=0) if hasattr(fetched.expires_at, "replace") else fetched.expires_at
-    assert fetched_expiry == expiry
+    assert _truncate_to_second(fetched.expires_at) == _truncate_to_second(expiry)
 
 
 # ---------------------------------------------------------------------------

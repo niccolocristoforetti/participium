@@ -67,14 +67,24 @@ def test_add_returns_the_notification_object(notification_repository, db_session
 
 
 @pytest.mark.integration
-def test_add_default_is_read_is_false(notification_repository, db_session):
-    """Una notifica appena creata ha is_read=False per default."""
-    n = _make_notification(user_id=1)
+def test_add_persists_all_fields(notification_repository, db_session):
+    """add() salva correttamente type, title, body, report_id e il default is_read=False."""
+    n = _make_notification(
+        user_id=5,
+        type=NotificationType.MESSAGE,
+        title="Titolo specifico",
+        body="Corpo specifico",
+        report_id=99,
+    )
 
     notification_repository.add(n)
     db_session.commit()
     db_session.expire(n)
 
+    assert n.type == NotificationType.MESSAGE
+    assert n.title == "Titolo specifico"
+    assert n.body == "Corpo specifico"
+    assert n.report_id == 99
     assert n.is_read is False
 
 
@@ -192,36 +202,28 @@ def test_list_unread_message_notifications_excludes_non_message_types(notificati
 
 
 @pytest.mark.integration
-def test_list_unread_message_notifications_without_report_id_returns_all_unread(
+def test_list_unread_message_notifications_with_and_without_report_id(
     notification_repository, db_session
 ):
-    """Senza report_id restituisce tutte le notifiche MESSAGE non lette dell'utente."""
+    """Verifica entrambi i branch: senza report_id restituisce tutto, con report_id filtra.
+
+    Un unico test che copre le due varianti mettendo in evidenza la differenza
+    di comportamento senza duplicare il setup.
+    """
     for rid in [10, 20, 30]:
         notification_repository.add(_make_notification(
-            user_id=4, type=NotificationType.MESSAGE, title="T", report_id=rid, is_read=False,
+            user_id=4, type=NotificationType.MESSAGE, title=f"R{rid}", report_id=rid, is_read=False,
         ))
     db_session.commit()
 
-    results = notification_repository.list_unread_message_notifications(user_id=4)
+    # Branch senza report_id: restituisce tutte e 3 le notifiche non lette
+    all_results = notification_repository.list_unread_message_notifications(user_id=4)
+    assert len(all_results) == 3
 
-    assert len(results) == 3
-
-
-@pytest.mark.integration
-def test_list_unread_message_notifications_filters_by_report_id(notification_repository, db_session):
-    """Con report_id valorizzato filtra le notifiche per quel report."""
-    notification_repository.add(_make_notification(
-        user_id=5, type=NotificationType.MESSAGE, title="R10", report_id=10, is_read=False,
-    ))
-    notification_repository.add(_make_notification(
-        user_id=5, type=NotificationType.MESSAGE, title="R20", report_id=20, is_read=False,
-    ))
-    db_session.commit()
-
-    results = notification_repository.list_unread_message_notifications(user_id=5, report_id=10)
-
-    assert len(results) == 1
-    assert results[0].report_id == 10
+    # Branch con report_id: filtra al solo report_id=10
+    filtered = notification_repository.list_unread_message_notifications(user_id=4, report_id=10)
+    assert len(filtered) == 1
+    assert filtered[0].report_id == 10
 
 
 @pytest.mark.integration
@@ -269,6 +271,5 @@ def test_delete_for_user_does_not_affect_other_users(notification_repository, db
 @pytest.mark.integration
 def test_delete_for_user_is_idempotent_on_empty_user(notification_repository, db_session):
     """delete_for_user() su un utente senza notifiche non solleva eccezioni."""
-    # Nessuna notifica per l'utente 99: la chiamata deve completarsi senza errori
     notification_repository.delete_for_user(99)
     db_session.commit()  # nessuna eccezione = test passato

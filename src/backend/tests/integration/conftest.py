@@ -13,7 +13,7 @@ def db_session(monkeypatch):
     """
     Fixture che prepara un database in memoria SQLite per ogni singolo test.
     Ogni test ottiene un database completamente isolato e pulito: nessun dato
-    residuo da altri test può influenzare i risultati (niente >= imprecisi).
+    residuo da altri test può influenzare i risultati.
     """
     monkeypatch.setenv("DATABASE_URL", "sqlite+pysqlite:///:memory:")
 
@@ -28,35 +28,35 @@ def db_session(monkeypatch):
 
 # ---------------------------------------------------------------------------
 # Fixture dei repository centralizzate qui per evitare duplicazione nei file
-# di test. Ogni file di test può ricevere direttamente il repository di cui ha
-# bisogno senza ridefinire la stessa fixture locale.
+# di test. Lo scope è dichiarato esplicitamente per leggibilità e per evitare
+# sorprese in caso di future modifiche allo scope di db_session.
 # ---------------------------------------------------------------------------
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def category_repository(db_session):
     return CategoryRepository(db_session)
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def message_repository(db_session):
     return MessageRepository(db_session)
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def notification_repository(db_session):
     return NotificationRepository(db_session)
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def report_repository(db_session):
     return ReportRepository(db_session)
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def token_repository(db_session):
     return TokenRepository(db_session)
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def user_repository(db_session):
     return UserRepository(db_session)

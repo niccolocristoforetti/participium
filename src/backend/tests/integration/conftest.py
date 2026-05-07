@@ -1,3 +1,4 @@
+#aaaaaaaaaaaaa
 import pytest
 from participium.database import close_connection, create_all, get_session, open_connection
 from participium.repositories.category_repository import CategoryRepository

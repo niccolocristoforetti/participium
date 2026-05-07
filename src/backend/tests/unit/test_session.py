@@ -145,7 +145,7 @@ class TestGetSession:
         """Test che get_session ritorni una sessione da SessionLocal."""
         mock_session = MagicMock()
         
-        with patch.object(session_module.SessionLocal, '__call__', return_value=mock_session):
+        with patch('participium.database.session.SessionLocal', return_value=mock_session):
             result = session_module.get_session()
             
             assert result == mock_session

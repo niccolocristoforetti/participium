@@ -22,7 +22,7 @@ Do not commit generated Newman reports, screenshots, local Postman history, or m
 Work on the implemented backend and its published API contract.
 The Swagger UI is available, when the backend is running with the default configuration, at:
 
-- **`http://localhost:5050/api/docs/`**
+- **`http://localhost:5050/apidocs/`**
 
 
 ## General guidance

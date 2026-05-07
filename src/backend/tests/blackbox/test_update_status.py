@@ -79,15 +79,24 @@ INVALID_USER = User(id=5, username="citadino1", role=Role.CITIZEN, is_active=Tru
 
 
 @pytest.fixture
-def seed_update_status_data() -> dict[str, User]:
-    # Popola il sistema con i prerequisiti di `update_status`.
-    # Restituisce un dict con chiavi per mappare agli operator nei test
+def seed_update_status_data(db_session) -> dict[str, User]:
+    from participium.models.report import Report
+    report = Report(
+        title="Test Report",
+        description="Descrizione",
+        latitude=45.0,
+        longitude=9.0,
+        category_id=1,
+        status=ReportStatus.PENDING_APPROVAL,
+    )
+    db_session.add(report)
+    db_session.commit()
+
     admin = User(id=10, username="admin", role=Role.ADMIN, is_active=True)
     operator_same_cat = User(id=2, username="operatore1", role=Role.OPERATOR, category_id=1, is_active=True)
     operator_diff_cat = User(id=3, username="operatore2", role=Role.OPERATOR, category_id=2, is_active=True)
     citizen = User(id=4, username="citadino", role=Role.CITIZEN, is_active=True)
     invalid_operator = User(id=5, username="invalid", role=Role.OPERATOR, is_active=False)
-    # Aggiungi report con id=1 in Pending Approval, category=1
     return {
         "admin": admin,
         "operator_same_cat": operator_same_cat,
@@ -119,13 +128,12 @@ def seed_update_status_data() -> dict[str, User]:
 )
 def test_update_status_success(
     seed_update_status_data: dict[str, User],
+    report_service: ReportService,
     report_id: int,
     operator: str,
     next_status_value: str,
     note: str | None,
 ) -> None:
-    report_service = ReportService()
-
     operator_user = seed_update_status_data[operator]
 
     result = report_service.update_status(
@@ -158,8 +166,8 @@ def test_update_status_success(
         (1, "admin", "Rejected", None, ValidationError),
         # US11: Rejected con note vuota
         (1, "admin", "Rejected", "", ValidationError),
-        # US12: transizione non consentita
-        (1, "admin", "Pending Approval", None, ValidationError),
+        # US12: transizione non consentita (Pending Approval -> In Progress non è permessa)
+        (1, "admin", "In Progress", None, ValidationError),
         # US13: status invalido (spazi)
         (1, "admin", " Assigned ", None, ValidationError),
         # US14: status vuoto
@@ -180,14 +188,13 @@ def test_update_status_success(
 )
 def test_update_status_exceptions(
     seed_update_status_data: dict[str, User],
+    report_service: ReportService,
     report_id: int,
     operator: str,
     next_status_value: str,
     note: str | None,
     expected_exception: type[Exception],
 ) -> None:
-    report_service = ReportService()
-
     operator_user = seed_update_status_data[operator]
 
     with pytest.raises(expected_exception):

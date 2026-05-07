@@ -2141,7 +2141,7 @@
                   ]
                 },
                 {
-                  "name": "Verify Email - Invalid Token Copy",
+                  "name": "Verify Email - Invalid Token",
                   "event": [
                     {
                       "listen": "test",

@@ -5,7 +5,6 @@ from datetime import datetime
 import pytest
 
 from participium.models.enums import ReportStatus
-from participium.models.report import Report
 from participium.services.report_service import ReportService
 
 '''
@@ -62,6 +61,7 @@ def seed_public_reports_data() -> None:
 )
 def test_list_public_reports(
     seed_public_reports_data: None,
+    report_service: ReportService,
     category_id: int | None,
     status: str | ReportStatus | None,
     date_from: datetime | str | None,
@@ -69,8 +69,6 @@ def test_list_public_reports(
     sort: str,
     expected_length: int | None,
 ) -> None:
-    report_service = ReportService()
-
     result = report_service.list_public_reports(
         category_id=category_id,
         status=status,

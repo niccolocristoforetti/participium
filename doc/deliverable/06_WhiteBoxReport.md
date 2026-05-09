@@ -2,23 +2,146 @@
 
 ### Control Flow Graph
 
-- ![](../data/img/xxx.xxx)
+- ![](../../data/img/create_report.png)
 
 ### Atomic Conditions
 
+- **C1**: `category_id is not None` — guardia del branch di conversione del tipo
+- **C1_err**: `int(category_id)` solleva `TypeError` / `ValueError` — ramo di eccezione nella conversione
+- **C2**: `resolved_category_id` è truthy — guardia della chiamata a `get_by_id`
+- **C3**: `not category or not category.is_active` — validazione categoria (attiva e trovata)
+- **C4**: `not title or not description` — validazione campi testuali obbligatori
+- **C5**: `latitude is None or longitude is None` — guardia coordinate assenti
+- **C5_err**: `float(latitude)` oppure `float(longitude)` solleva `TypeError` / `ValueError`
+- **C6**: `not valid_photos` — nessuna foto con filename valido
+- **C7**: `len(valid_photos) > 3` — numero di foto eccede il limite massimo
+- **C_loop**: `photo in valid_photos` — guardia del ciclo `for` sul salvataggio delle foto
+
 ### Structural Lower Bound
+
+- **Nodi**: 19
+- **Archi**: 26
+- **Complessità ciclomatica**: V(G) = E − N + 2 = 26 − 19 + 2 = **9**
+- **Nodi terminali distinti**: 9 (8 nodi `raise ValidationError` + `return self.get_report(report.id)`)
+- **Loop**: 1 (ciclo `for photo in valid_photos`)
 
 ### Node Coverage
 
+**9 test**
+
+Ogni nodo `raise ValidationError` si trova su un percorso mutualmente esclusivo con gli altri; il nodo terminale del percorso felice copre tutti i nodi comuni. Il lower bound strutturale è **9 test**.
+
+| Test | Scenario | Nodi attraversati | Outcome |
+|------|----------|-------------------|---------|
+| N1 | `category_id=None` | Ingresso → C1 (False) → C2 (False) → C3 (True) → raise | `ValidationError("valid active category")` |
+| N2 | `category_id="bad"` | Ingresso → C1 (True) → conversione → C1_err → raise | `ValidationError("valid active category")` |
+| N3 | categoria non trovata | C1 (True) → conv OK → C2 (True) → get_by_id=None → C3 (True) → raise | `ValidationError("valid active category")` |
+| N4 | categoria inattiva | C3 (True, secondo operando) → raise | `ValidationError("valid active category")` |
+| N5 | `title=""` | C4 (True) → raise | `ValidationError("Title and description")` |
+| N6 | `description=""` | C4 (True, secondo operando) → raise | `ValidationError("Title and description")` |
+| N7 | `latitude=None` | C5 (True) → raise | `ValidationError("Latitude and longitude are required")` |
+| N8 | `latitude="bad"` | C5 (False) → conversione → C5_err → raise | `ValidationError("valid numbers")` |
+| N9 | `photos=[]` | C6 (True) → raise | `ValidationError("At least one photo")` |
+| N10 | 4 foto valide | C7 (True) → raise | `ValidationError("at most 3 photos")` |
+| N11 | percorso felice, 1 foto | tutti i nodi di validazione (False) → costruzione report → loop (1×) → commit → return | `Report` persistito |
+
 ### Edge Coverage
+
+**11 test**
+
+Rispetto alla Node Coverage, i back-edge del loop (foto multiple) e gli archi False dei rami `or` composti (C3 secondo operando, C4 secondo operando, C5 secondo operando) richiedono test dedicati. Il lower bound è **11 test**.
+
+| Test | Scenario | Archi coperti chiave |
+|------|----------|----------------------|
+| E1 | `category_id=None` | C1 (False) → C2 (False) → C3 (True) |
+| E2 | `category_id="bad"` | C1 (True) → conv → C1_err (True) |
+| E3 | categoria non trovata | C2 (True) → get_by_id → C3 (primo operando True) |
+| E4 | categoria inattiva | C3 (primo operando False → secondo operando True) |
+| E5 | `title=""` | C4 (primo operando True) |
+| E6 | `description=""` | C4 (primo operando False → secondo operando True) |
+| E7 | `latitude=None` | C5 (primo operando True) |
+| E8 | `longitude=None` | C5 (primo operando False → secondo operando True) |
+| E9 | `latitude="bad"` | C5 (False) → conv → C5_err (True) |
+| E10 | `photos=[]` | C6 (True) |
+| E11 | 4 foto valide | C6 (False) → C7 (True) |
+| E12 | 3 foto valide | C7 (False) → loop → back-edge (3×) → commit → return |
+| E13 | `category_id="10"` (stringa numerica) | C1 (True) → conv OK → C1_err (False) → C2 (True) |
 
 ### Condition Coverage
 
+**12 test**
+
+Ogni condizione atomica deve assumere sia valore True sia False almeno una volta. Le condizioni composte con `or` richiedono test dedicati per forzare la valutazione del secondo operando (short-circuit). Il lower bound è **12 test**.
+
+| Test | C1 | C1_err | C2 | C3 | C4 | C5 | C5_err | C6 | C7 | C_loop |
+|------|----|--------|----|----|----|----|--------|----|----|--------|
+| C1t  | F  | —      | F  | T  | —  | —  | —      | —  | —  | —      |
+| C2t  | T  | T      | —  | —  | —  | —  | —      | —  | —  | —      |
+| C3t  | T  | F      | T  | T (primo op.) | —  | —  | —      | —  | —  | —      |
+| C4t  | T  | F      | T  | T (secondo op.) | —  | —  | —      | —  | —  | —      |
+| C5t  | T  | F      | T  | F  | T (primo op.) | —  | —      | —  | —  | —      |
+| C6t  | T  | F      | T  | F  | T (secondo op.) | —  | —      | —  | —  | —      |
+| C7t  | T  | F      | T  | F  | F  | T (primo op.) | —      | —  | —  | —      |
+| C8t  | T  | F      | T  | F  | F  | T (secondo op.) | —      | —  | —  | —      |
+| C9t  | T  | F      | T  | F  | F  | F  | T      | —  | —  | —      |
+| C10t | T  | F      | T  | F  | F  | F  | F      | T  | —  | —      |
+| C11t | T  | F      | T  | F  | F  | F  | F      | F  | T  | —      |
+| C12t | T  | F      | T  | F  | F  | F  | F      | F  | F  | T/F    |
+
 ### Loop Coverage
+
+**3 test (0, 1, 2+)**
+
+| Test | `photos` valide | Iterazioni | Note |
+|------|-----------------|------------|------|
+| L0 | `[]` | 0 | Il ciclo non entra (lista vuota); ValidationError su C6 |
+| L1 | 1 foto valida | 1 | Corpo del loop eseguito esattamente una volta |
+| L2+ | 3 foto valide | 3 | Corpo del loop eseguito 3 volte; copre il back-edge ripetuto |
+
+Loop 2+ è il solo test aggiuntivo rispetto alle suite precedenti. Il lower bound è **3 test**.
 
 ### Path Coverage
 
+**Infinito**
+
+Il ciclo `for photo in valid_photos` itera su una lista di lunghezza arbitraria. Il numero di percorsi distinti cresce linearmente con il numero di foto valide, rendendo la path coverage stretta irraggiungibile.
+
+**Approssimazione**
+Quando il CFG contiene un ciclo il cui numero di iterazioni dipende dall'input, la path coverage stretta è irraggiungibile. Si procede trattando il loop come blocco 0/1/2+ iterazioni e le 8 guardie di validazione come punti di uscita anticipata distinti, ottenendo 11 percorsi strutturalmente distinti. I test della suite (T1–T20) catturano ogni transizione di stato qualitativamente distinta e costituiscono una solida approssimazione della path coverage.
+
 ### Minimal Suite Test
+
+| Test | Input (scenario) | Outcome | Criteri coperti |
+|------|------------------|---------|-----------------|
+| T1 | `category_id=None`, resto valido | `ValidationError("valid active category")` | Node (N1), Edge (C1=F), Condition (C1=F), Path (Approssimato) |
+| T2 | `category_id="bad"` | `ValidationError("valid active category")` | Node (N2), Edge (C1_err=T), Condition (C1=T, C1_err=T), Path (Approssimato) |
+| T3 | `category_id=10`, categoria non trovata | `ValidationError("valid active category")` | Node (N3), Edge (C2=T, C3 primo op.=T), Condition (C3 primo op.=T), Path (Approssimato) |
+| T4 | categoria inattiva | `ValidationError("valid active category")` | Node (N4), Edge (C3 secondo op.=T), Condition (C3 secondo op.=T), Path (Approssimato) |
+| T5 | `title=""` | `ValidationError("Title and description")` | Node (N5), Edge (C4 primo op.=T), Condition (C4 primo op.=T), Path (Approssimato) |
+| T6 | `description=""` | `ValidationError("Title and description")` | Node (N6), Edge (C4 secondo op.=T), Condition (C4 secondo op.=T), Path (Approssimato) |
+| T7 | `latitude=None` | `ValidationError("Latitude and longitude are required")` | Node (N7), Edge (C5 primo op.=T), Condition (C5 primo op.=T), Path (Approssimato) |
+| T8 | `longitude=None` | `ValidationError("Latitude and longitude are required")` | Edge (C5 secondo op.=T), Condition (C5 secondo op.=T), Path (Approssimato) |
+| T9 | `latitude="bad"` | `ValidationError("valid numbers")` | Node (N8), Edge (C5_err=T), Condition (C5_err=T), Path (Approssimato) |
+| T10 | `longitude="bad"` | `ValidationError("valid numbers")` | Condition (C5_err su longitude), Path (Approssimato) |
+| T11 | `photos=[]` | `ValidationError("At least one photo")` | Node (N9), Edge (C6=T), Condition (C6=T), Path (Approssimato), Loop (L0=0) |
+| T12 | tutte le foto senza filename | `ValidationError("At least one photo")` | Condition (filtro filename=None), Path (Approssimato) |
+| T13 | 4 foto valide | `ValidationError("at most 3 photos")` | Node (N10), Edge (C7=T), Condition (C6=F, C7=T), Path (Approssimato) |
+| T14 | percorso felice, 1 foto | `Report` persistito, `session.commit()` chiamato | Node (N11), Edge (C7=F, C_loop=T/F), Condition (C7=F, C_loop=T), Path (Approssimato), Loop (L1=1) |
+| T15 | percorso felice, 3 foto | `Report` persistito, `storage.save` ×3 | Edge (back-edge loop ×3), Path (Approssimato), Loop (L2+=3) |
+| T16 | 1 foto valida + 2 senza filename | `Report` persistito, `storage.save` ×1 | Condition (filtro misto), Path (Approssimato) |
+| T17 | titolo con spazi | `added_report.title == "spaced title"` | Verifica side-effect `strip()` |
+| T18 | `is_anonymous=True` | `added_report.is_anonymous is True` | Verifica propagazione flag |
+| T19 | percorso felice standard | `added_report.status == PENDING_APPROVAL` | Verifica stato iniziale |
+| T20 | `category_id="10"` (stringa numerica) | `get_by_id` chiamato con `int(10)` | Edge (C1=T, C1_err=F, C2=T) |
+
+| Criterio | Test minimi | Test utilizzati |
+|----------|:-----------:|-----------------|
+| Node coverage | 11 | T1–T11, T13, T14 |
+| Edge coverage | 13 | T1–T15, T20 |
+| Condition coverage | 12 | T1–T14 |
+| Path coverage | ∞ (approssimato) | T1–T16 |
+| Loop coverage | 3 | T11, T14, T15 |
+| **Suite completa** | **20** | **T1–T20** |
 
 ## 2 `MessagingService._resolve_recipient`
 

@@ -332,21 +332,153 @@ I tre test della Loop Coverage (0 iterazioni, 1 iterazione, 2+ iterazioni combin
 
 ### Control Flow Graph
 
-- ![](../data/img/xxx.xxx)
+![](../../data/img/update_user.png)
 
 ### Atomic Conditions
 
+- **C1a**: `username` (truthy) — primo operando di `and`, linea 67
+- **C1b**: `username != user.username` — secondo operando di `and`, linea 67
+- **C1c**: `self.user_repository.get_by_username(username)` (truthy) — terzo operando di `and`, linea 67
+- **C2a**: `email` (truthy) — primo operando di `and`, linea 69
+- **C2b**: `email != user.email` — secondo operando di `and`, linea 69
+- **C2c**: `self.user_repository.get_by_email(email)` (truthy) — terzo operando di `and`, linea 69
+- **C3**: `payload.get(field) is not None` — condizione dell'if interno al loop, linea 72
+- **C4**: `payload.get("role") is not None` — condizione del ternario a N9 (linea 75); la stessa espressione è rivalutata all'if di N10 (linea 76), con valore di verità sempre identico
+- **C5a**: `"category_id" in payload` — primo operando di `or`, linea 78 (N12)
+- **C5b**: `payload.get("role") is not None` — secondo operando di `or`, linea 78 (N12); stessa espressione di C4, valutata solo se C5a=False (short-circuit)
+- **C6**: `category` (truthy) — condizione del ternario a N13a (linea 80); determina se `user.category_id` riceve `category.id` oppure `None`
+- **C7**: `payload.get("is_active") is not None` — linea 81
+- **C8**: `payload.get("email_notifications_enabled") is not None` — linea 83
+
+### Decisions
+
+Ogni decisione è l'espressione booleana complessiva valutata a un nodo diamante. Una decisione può contenere una o più condizioni atomiche.
+
+| Decisione | Nodo | Espressione | Condizioni atomiche | Operatore |
+|-----------|------|-------------|---------------------|-----------|
+| D1 | N2 | `username and username != user.username and self.user_repository.get_by_username(username)` | C1a, C1b, C1c | `and` (short-circuit) |
+| D2 | N4 | `email and email != user.email and self.user_repository.get_by_email(email)` | C2a, C2b, C2c | `and` (short-circuit) |
+| D3 | N6 | `for field in [...]` — ha un prossimo elemento? | — (loop) | — |
+| D4 | N7 | `payload.get(field) is not None` | C3 | singola |
+| D5 | N9 | `payload.get("role") is not None` (ternario) | C4 | singola |
+| D6 | N10 | `payload.get("role") is not None` (if) | C4 | singola (= D5) |
+| D7 | N12 | `"category_id" in payload or payload.get("role") is not None` | C5a, C5b | `or` (short-circuit) |
+| D8 | N13a | `category` (truthy, ternario) | C6 | singola |
+| D9 | N14 | `payload.get("is_active") is not None` | C7 | singola |
+| D10 | N16 | `payload.get("email_notifications_enabled") is not None` | C8 | singola |
+
+**Note**: D5 e D6 valutano la stessa espressione sullo stesso payload — sono sempre entrambe True o entrambe False. Non esistono percorsi con D5=True e D6=False o viceversa.
+
 ### Structural Lower Bound
+
+- **Nodi**: 23 (N1–N9, N9a, N9b, N10–N13, N13a, N13b, N13c, N14–N18)
+- **Archi**: 30
+- **Complessità ciclomatica**: V(G) = E − N + 2 = 30 − 23 + 2 = **9**
+- **Nodi terminali distinti**: 3 (`raise ValidationError` username, `raise ValidationError` email, `return user`)
+- **Loop**: 1 (su lista fissa `["username", "first_name", "last_name", "email"]`, sempre 4 iterazioni)
 
 ### Node Coverage
 
+I 3 nodi terminali si trovano su percorsi mutualmente esclusivi (i due `raise` interrompono l'esecuzione). Per visitare tutti i 23 nodi servono almeno i due percorsi di eccezione più un percorso che attraversa tutti i rami True della catena di if (inclusi N9a per il ternario del ruolo e N13b per il ternario della categoria). Il lower bound è **3 test**.
+
+| Test | `payload` | Outcome |
+|------|-----------|---------|
+| T1 | `{"username": "taken"}`, `get_by_username` → truthy | `raise ValidationError` (username) |
+| T2 | `{"email": "taken@ex.com"}`, `get_by_email` → truthy | `raise ValidationError` (email) |
+| T4 | Payload completo con tutti i campi, username/email disponibili | `return user` (tutti i rami True) |
+
 ### Edge Coverage
+
+Per coprire tutti i 30 archi, servono anche i rami False di ogni decisione (inclusi N9→N9b per il ternario del ruolo e N13a→N13c per il ternario della categoria). T3 (payload vuoto) forza tutte le decisioni a False. T7 copre il ramo N13a→N13c (category=None). Il lower bound è **4 test**.
+
+| Test | `payload` | Outcome |
+|------|-----------|---------|
+| T1 | `{"username": "taken"}`, `get_by_username` → truthy | `raise ValidationError` (username) |
+| T2 | `{"email": "taken@ex.com"}`, `get_by_email` → truthy | `raise ValidationError` (email) |
+| T3 | `{}` (payload vuoto) | `return user` (tutti i rami False) |
+| T4 | Payload completo, username/email disponibili | `return user` (tutti i rami True) |
 
 ### Condition Coverage
 
+Le condizioni composte D1 e D2 contengono ciascuna tre operandi collegati da `and` (short-circuit): C1c e C2c sono valutate solo se i rispettivi operandi precedenti sono True. La condizione D7 contiene un `or` (short-circuit): C5b è valutata solo se C5a=False. Il ternario della categoria (C6) è valutato solo quando D7=True.
+
+Per coprire C1b=False e C2b=False servono test con username/email uguali all'attuale (T5 e T6). Per coprire C5a=False con C5b=True serve un test con solo `role` nel payload (T8). Per coprire C6=False serve un test dove `_resolve_operator_category` restituisce `None` (T7). Il lower bound è **8 test**.
+
+| Condizione | Testimone True | Testimone False |
+|------------|----------------|-----------------|
+| C1a | T1, T4, T5 | T2, T3 |
+| C1b | T1, T4 | T5 |
+| C1c | T1 | T4 |
+| C2a | T2, T4, T6 | T1, T3 |
+| C2b | T2, T4 | T6 |
+| C2c | T2 | T4 |
+| C3 | T4, T5, T6, T7, T8 | T3 |
+| C4 | T4, T8 | T3, T5, T6, T7 |
+| C5a | T4, T7 | T3, T8 |
+| C5b | T8 | T3 |
+| C6 | T4, T8 | T7 |
+| C7 | T4 | T3 |
+| C8 | T4 | T3 |
+
 ### Loop Coverage
+
+Il loop itera su una lista fissa di 4 elementi (`["username", "first_name", "last_name", "email"]`): il numero di iterazioni è sempre 4, indipendentemente dall'input. Non è possibile ottenere 0 o 1 iterazione. La variazione strutturale rilevante è nel ramo interno C3 (payload contiene il campo o no):
+
+| Test | Iterazioni | Ramo interno C3 | Note |
+|------|:----------:|-----------------|------|
+| T3 | 4 | False × 4 | Payload vuoto: nessun campo aggiornato |
+| T4 | 4 | True × 4 | Payload completo: tutti i campi aggiornati |
+| T5 | 4 | True × 1 (username), False × 3 | Un solo campo aggiornato (mix True/False) |
 
 ### Path Coverage
 
+I due `raise` producono 2 percorsi di eccezione (P1, P2). Dopo il loop, la catena di 7 decisioni (N9 ternario ruolo, N10, N12, N13a ternario categoria, N14, N16 — N9 e N10 sono correlate) genera un numero elevato di sotto-percorsi, ridotto dalla correlazione N9/N10. Combinandoli con le varianti di D1 e D2, il numero di percorsi totali è nell'ordine delle centinaia. La path coverage stretta è pertanto **infeasible**.
+
+**Approssimazione**: si selezionano i percorsi strutturalmente distinti per le ramificazioni principali:
+
+| ID | Percorso | Outcome |
+|----|----------|---------|
+| P1 | D1=True | `raise ValidationError` (username) |
+| P2 | D1=False, D2=True | `raise ValidationError` (email) |
+| P3 | D1=False, D2=False, tutti i rami False (incluso N9→N9b) | `return user` (nessuna modifica) |
+| P4 | D1=False, D2=False, tutti i rami True (incluso N9→N9a) | `return user` (tutte le modifiche) |
+| P5 | D1=False (C1b=F), D2=False, rami misti | `return user` (username immutato) |
+| P6 | D1=False, D2=False (C2b=F), rami misti | `return user` (email immutata) |
+| P7 | D1=False, D2=False, N9→N9b (no role), D7=True (solo C5a) | `return user` (category senza role) |
+| P8 | D1=False, D2=False, N9→N9a (role), D7=True (solo C5b) | `return user` (role senza category_id) |
+
+| Test | Percorso coperto |
+|------|:-----------------|
+| T1 | P1 |
+| T2 | P2 |
+| T3 | P3 |
+| T4 | P4 |
+| T5 | P5 |
+| T6 | P6 |
+| T7 | P7 |
+| T8 | P8 |
+
 ### Minimal Suite Test
+
+| Test | `payload` | Mock setup | Outcome | Criteri coperti |
+|------|-----------|------------|---------|-----------------|
+| T1 | `{"username": "taken"}` | `get_by_username("taken")` → `User` | `raise ValidationError` | Node (N3), Edge (N2→N3), Condition (C1a=T, C1b=T, C1c=T), Path (P1) |
+| T2 | `{"email": "taken@ex.com"}` | `get_by_email("taken@ex.com")` → `User` | `raise ValidationError` | Node (N5), Edge (N4→N5), Condition (C2a=T, C2b=T, C2c=T), Path (P2) |
+| T3 | `{}` | — | `return user` (invariato) | Edge (tutti i rami False, incluso N9→N9b), Condition (C1a=F, C2a=F, C3=F, C4=F, C5a=F, C5b=F, C7=F, C8=F), Path (P3), Loop (C3=F×4) |
+| T4 | Tutti i campi (username/email nuovi e disponibili, role, category_id, is_active, email_notifications_enabled) | `get_by_username` → `None`, `get_by_email` → `None`, `_parse_role` → `OPERATOR`, `_resolve_operator_category` → `Mock(id=5)` | `return user` (tutti aggiornati) | Node (tutti, inclusi N9a, N13b), Edge (tutti i rami True, incluso N9→N9a, N13a→N13b), Condition (C1c=F, C2c=F, C3=T, C4=T, C5a=T, C6=T, C7=T, C8=T), Path (P4), Loop (C3=T×4) |
+| T5 | `{"username": "mario.rossi"}` (uguale all'attuale) | — | `return user` | Condition (C1a=T, C1b=F), Path (P5), Loop (C3 mix) |
+| T6 | `{"email": "mario@ex.com"}` (uguale all'attuale) | — | `return user` | Condition (C2a=T, C2b=F), Path (P6) |
+| T7 | `{"category_id": 3}` | `_resolve_operator_category` → `None` | `return user` (`category_id=None`) | Condition (C5a=T alone, short-circuit), Edge (N13a→N13c, C6=F), Path (P7) |
+| T8 | `{"role": "admin"}` | `_parse_role` → `ADMIN`, `_resolve_operator_category` → `Mock(id=5)` | `return user` (`role=ADMIN`) | Condition (C5a=F, C5b=T, C6=T), Path (P8) |
+
+| Criterio | Test minimi | Test utilizzati |
+|----------|:-----------:|-----------------|
+| Node coverage | 3 | T1, T2, T4 |
+| Edge coverage | 4 | T1, T2, T3, T4 |
+| Condition coverage | 8 | T1, T2, T3, T4, T5, T6, T7, T8 |
+| Path coverage | ∞ (approssimato) | T1, T2, T3, T4, T5, T6, T7, T8 |
+| Loop coverage | 3 | T3, T4, T5 |
+| **Suite completa** | **8** | **T1–T8** |
+
+
 

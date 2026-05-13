@@ -1,11 +1,11 @@
 {
   "info": {
-    "_postman_id": "547a5b7b-a630-4361-8521-3f81add53419",
+    "_postman_id": "051ace9b-869c-4d06-a8e6-dbd35bb13f2c",
     "name": "Participium API",
     "description": "REST API for the Participium civic issue reporting platform.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "54713013",
-    "_collection_link": "https://go.postman.co/collection/54713013-547a5b7b-a630-4361-8521-3f81add53419?source=collection_link"
+    "_collection_link": "https://go.postman.co/collection/54713013-051ace9b-869c-4d06-a8e6-dbd35bb13f2c?source=collection_link"
   },
   "item": [
     {
@@ -702,490 +702,8 @@
       "name": "admin",
       "item": [
         {
-          "name": "admin_setup",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('status 200 - admin login ok', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "pm.test('logged-in role is admin', function () {",
-                  "    var json = pm.response.json();",
-                  "    pm.expect(json.user.role).to.equal('admin');",
-                  "});"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Accept",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"identifier\": \"{{admin_email}}\",\n  \"password\": \"{{admin_password}}\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/auth/login",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "login"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
           "name": "categories",
           "item": [
-            {
-              "name": "List all categories, including inactive ones.",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test('status 200', function () {",
-                      "    pm.response.to.have.status(200);",
-                      "});",
-                      "",
-                      "pm.test('response is an array', function () {",
-                      "    pm.response.to.be.json;",
-                      "    pm.expect(pm.response.json()).to.be.an('array');",
-                      "});",
-                      "",
-                      "pm.test('each category has id, name, is_active, created_at', function () {",
-                      "    var json = pm.response.json();",
-                      "    pm.expect(json.length).to.be.above(0);",
-                      "    json.forEach(function (cat) {",
-                      "        pm.expect(cat.id).to.be.a('number');",
-                      "        pm.expect(cat.name).to.be.a('string');",
-                      "        pm.expect(cat.is_active).to.be.a('boolean');",
-                      "        pm.expect(cat.created_at).to.be.a('string');",
-                      "    });",
-                      "});",
-                      "",
-                      "pm.test('admin list includes inactive categories', function () {",
-                      "    pm.expect(pm.response.json().length).to.be.above(0);",
-                      "});"
-                    ],
-                    "type": "text/javascript",
-                    "packages": {},
-                    "requests": {}
-                  }
-                }
-              ],
-              "request": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{baseUrl}}/admin/categories",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "admin",
-                    "categories"
-                  ]
-                }
-              },
-              "response": [
-                {
-                  "name": "Category list.",
-                  "originalRequest": {
-                    "method": "GET",
-                    "header": [
-                      {
-                        "key": "Accept",
-                        "value": "application/json"
-                      }
-                    ],
-                    "url": {
-                      "raw": "{{baseUrl}}/admin/categories",
-                      "host": [
-                        "{{baseUrl}}"
-                      ],
-                      "path": [
-                        "admin",
-                        "categories"
-                      ]
-                    }
-                  },
-                  "status": "OK",
-                  "code": 200,
-                  "_postman_previewlanguage": "json",
-                  "header": [
-                    {
-                      "key": "Content-Type",
-                      "value": "application/json"
-                    }
-                  ],
-                  "cookie": [],
-                  "body": "[\n  {\n    \"id\": 1,\n    \"name\": \"Roads and Urban Furniture\",\n    \"is_active\": true,\n    \"created_at\": \"2025-01-27T21:35:07.820Z\"\n  },\n  {\n    \"id\": 1,\n    \"name\": \"Roads and Urban Furniture\",\n    \"is_active\": true,\n    \"created_at\": \"1977-10-31T17:37:03.556Z\"\n  }\n]"
-                },
-                {
-                  "name": "Authentication required.",
-                  "originalRequest": {
-                    "method": "GET",
-                    "header": [
-                      {
-                        "key": "Accept",
-                        "value": "application/json"
-                      }
-                    ],
-                    "url": {
-                      "raw": "{{baseUrl}}/admin/categories",
-                      "host": [
-                        "{{baseUrl}}"
-                      ],
-                      "path": [
-                        "admin",
-                        "categories"
-                      ]
-                    }
-                  },
-                  "status": "Unauthorized",
-                  "code": 401,
-                  "_postman_previewlanguage": "json",
-                  "header": [
-                    {
-                      "key": "Content-Type",
-                      "value": "application/json"
-                    }
-                  ],
-                  "cookie": [],
-                  "body": "{\n  \"error\": \"string\"\n}"
-                },
-                {
-                  "name": "Admin role required.",
-                  "originalRequest": {
-                    "method": "GET",
-                    "header": [
-                      {
-                        "key": "Accept",
-                        "value": "application/json"
-                      }
-                    ],
-                    "url": {
-                      "raw": "{{baseUrl}}/admin/categories",
-                      "host": [
-                        "{{baseUrl}}"
-                      ],
-                      "path": [
-                        "admin",
-                        "categories"
-                      ]
-                    }
-                  },
-                  "status": "Forbidden",
-                  "code": 403,
-                  "_postman_previewlanguage": "json",
-                  "header": [
-                    {
-                      "key": "Content-Type",
-                      "value": "application/json"
-                    }
-                  ],
-                  "cookie": [],
-                  "body": "{\n  \"error\": \"string\"\n}"
-                }
-              ]
-            },
-            {
-              "name": "Create a new report category.",
-              "event": [
-                {
-                  "listen": "prerequest",
-                  "script": {
-                    "exec": [
-                      "pm.environment.set('new_category_name', 'TestCat_' + Date.now());"
-                    ],
-                    "type": "text/javascript",
-                    "packages": {},
-                    "requests": {}
-                  }
-                },
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test('status 201 - category created', function () {",
-                      "    pm.response.to.have.status(201);",
-                      "});",
-                      "",
-                      "pm.test('response has id, name, is_active, created_at', function () {",
-                      "    pm.response.to.be.json;",
-                      "    var cat = pm.response.json();",
-                      "    pm.expect(cat.id).to.be.a('number');",
-                      "    pm.expect(cat.name).to.be.a('string');",
-                      "    pm.expect(cat.is_active).to.be.a('boolean');",
-                      "    pm.expect(cat.created_at).to.be.a('string');",
-                      "});",
-                      "",
-                      "pm.test('returned name matches submitted name', function () {",
-                      "    pm.expect(pm.response.json().name).to.equal(pm.environment.get('new_category_name'));",
-                      "});",
-                      "",
-                      "pm.test('new category is active by default', function () {",
-                      "    pm.expect(pm.response.json().is_active).to.equal(true);",
-                      "});",
-                      "",
-                      "pm.test('store created_category_id for later requests', function () {",
-                      "    pm.environment.set('created_category_id', pm.response.json().id);",
-                      "});"
-                    ],
-                    "type": "text/javascript",
-                    "packages": {},
-                    "requests": {}
-                  }
-                }
-              ],
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  },
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"is_active\": true,\n  \"name\": \"{{new_category_name}}\"\n}",
-                  "options": {
-                    "raw": {
-                      "headerFamily": "json",
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{baseUrl}}/admin/categories",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "admin",
-                    "categories"
-                  ]
-                }
-              },
-              "response": [
-                {
-                  "name": "Category created.",
-                  "originalRequest": {
-                    "method": "POST",
-                    "header": [
-                      {
-                        "key": "Content-Type",
-                        "value": "application/json"
-                      },
-                      {
-                        "key": "Accept",
-                        "value": "application/json"
-                      }
-                    ],
-                    "body": {
-                      "mode": "raw",
-                      "raw": "{\n  \"name\": \"string\",\n  \"is_active\": true\n}",
-                      "options": {
-                        "raw": {
-                          "headerFamily": "json",
-                          "language": "json"
-                        }
-                      }
-                    },
-                    "url": {
-                      "raw": "{{baseUrl}}/admin/categories",
-                      "host": [
-                        "{{baseUrl}}"
-                      ],
-                      "path": [
-                        "admin",
-                        "categories"
-                      ]
-                    }
-                  },
-                  "status": "Created",
-                  "code": 201,
-                  "_postman_previewlanguage": "json",
-                  "header": [
-                    {
-                      "key": "Content-Type",
-                      "value": "application/json"
-                    }
-                  ],
-                  "cookie": [],
-                  "body": "{\n  \"id\": 1,\n  \"name\": \"Roads and Urban Furniture\",\n  \"is_active\": true,\n  \"created_at\": \"2000-07-05T20:52:15.130Z\"\n}"
-                },
-                {
-                  "name": "Validation error.",
-                  "originalRequest": {
-                    "method": "POST",
-                    "header": [
-                      {
-                        "key": "Content-Type",
-                        "value": "application/json"
-                      },
-                      {
-                        "key": "Accept",
-                        "value": "application/json"
-                      }
-                    ],
-                    "body": {
-                      "mode": "raw",
-                      "raw": "{\n  \"name\": \"string\",\n  \"is_active\": true\n}",
-                      "options": {
-                        "raw": {
-                          "headerFamily": "json",
-                          "language": "json"
-                        }
-                      }
-                    },
-                    "url": {
-                      "raw": "{{baseUrl}}/admin/categories",
-                      "host": [
-                        "{{baseUrl}}"
-                      ],
-                      "path": [
-                        "admin",
-                        "categories"
-                      ]
-                    }
-                  },
-                  "status": "Bad Request",
-                  "code": 400,
-                  "_postman_previewlanguage": "json",
-                  "header": [
-                    {
-                      "key": "Content-Type",
-                      "value": "application/json"
-                    }
-                  ],
-                  "cookie": [],
-                  "body": "{\n  \"error\": \"string\"\n}"
-                },
-                {
-                  "name": "Authentication required.",
-                  "originalRequest": {
-                    "method": "POST",
-                    "header": [
-                      {
-                        "key": "Content-Type",
-                        "value": "application/json"
-                      },
-                      {
-                        "key": "Accept",
-                        "value": "application/json"
-                      }
-                    ],
-                    "body": {
-                      "mode": "raw",
-                      "raw": "{\n  \"name\": \"string\",\n  \"is_active\": true\n}",
-                      "options": {
-                        "raw": {
-                          "headerFamily": "json",
-                          "language": "json"
-                        }
-                      }
-                    },
-                    "url": {
-                      "raw": "{{baseUrl}}/admin/categories",
-                      "host": [
-                        "{{baseUrl}}"
-                      ],
-                      "path": [
-                        "admin",
-                        "categories"
-                      ]
-                    }
-                  },
-                  "status": "Unauthorized",
-                  "code": 401,
-                  "_postman_previewlanguage": "json",
-                  "header": [
-                    {
-                      "key": "Content-Type",
-                      "value": "application/json"
-                    }
-                  ],
-                  "cookie": [],
-                  "body": "{\n  \"error\": \"string\"\n}"
-                },
-                {
-                  "name": "Admin role required.",
-                  "originalRequest": {
-                    "method": "POST",
-                    "header": [
-                      {
-                        "key": "Content-Type",
-                        "value": "application/json"
-                      },
-                      {
-                        "key": "Accept",
-                        "value": "application/json"
-                      }
-                    ],
-                    "body": {
-                      "mode": "raw",
-                      "raw": "{\n  \"name\": \"string\",\n  \"is_active\": true\n}",
-                      "options": {
-                        "raw": {
-                          "headerFamily": "json",
-                          "language": "json"
-                        }
-                      }
-                    },
-                    "url": {
-                      "raw": "{{baseUrl}}/admin/categories",
-                      "host": [
-                        "{{baseUrl}}"
-                      ],
-                      "path": [
-                        "admin",
-                        "categories"
-                      ]
-                    }
-                  },
-                  "status": "Forbidden",
-                  "code": 403,
-                  "_postman_previewlanguage": "json",
-                  "header": [
-                    {
-                      "key": "Content-Type",
-                      "value": "application/json"
-                    }
-                  ],
-                  "cookie": [],
-                  "body": "{\n  \"error\": \"string\"\n}"
-                }
-              ]
-            },
             {
               "name": "{category_id}",
               "item": [
@@ -1326,7 +844,79 @@
                       ],
                       "cookie": [],
                       "body": "{\n  \"id\": 1,\n  \"name\": \"Roads and Urban Furniture\",\n  \"is_active\": true,\n  \"created_at\": \"2000-07-05T20:52:15.130Z\"\n}"
+                    }
+                  ]
+                },
+                {
+                  "name": "Validation error",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test('status 400 - validation error', function () {",
+                          "    pm.response.to.have.status(400);",
+                          "});",
+                          "",
+                          "pm.test('error body has error field', function () {",
+                          "    pm.response.to.be.json;",
+                          "    pm.expect(pm.response.json()).to.have.property('error');",
+                          "    pm.expect(pm.response.json().error).to.be.a('string');",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
                     },
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "exec": [
+                          "pm.sendRequest({",
+                          "    url: pm.environment.get('baseUrl') + '/auth/login',",
+                          "    method: 'POST',",
+                          "    header: { 'Content-Type': 'application/json' },",
+                          "    body: {",
+                          "        mode: 'raw',",
+                          "        raw: JSON.stringify({",
+                          "            identifier: pm.environment.get('admin_email'),",
+                          "            password: pm.environment.get('admin_password')",
+                          "        })",
+                          "    }",
+                          "}, function () {});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "PUT",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"name\": \"\",\n  \"is_active\": true\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/admin/categories/{{created_category_id}}",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "categories",
+                        "{{created_category_id}}"
+                      ]
+                    }
+                  },
+                  "response": [
                     {
                       "name": "Validation error.",
                       "originalRequest": {
@@ -1380,7 +970,71 @@
                       ],
                       "cookie": [],
                       "body": "{\n  \"error\": \"string\"\n}"
+                    }
+                  ]
+                },
+                {
+                  "name": "Authentication required.",
+                  "event": [
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "exec": [
+                          "pm.sendRequest({",
+                          "    url: pm.environment.get('baseUrl') + '/auth/logout',",
+                          "    method: 'POST'",
+                          "}, function () {});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
                     },
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test('status 401 - authentication required', function () {",
+                          "    pm.response.to.have.status(401);",
+                          "});",
+                          "",
+                          "pm.test('error body has error field', function () {",
+                          "    pm.response.to.be.json;",
+                          "    pm.expect(pm.response.json()).to.have.property('error');",
+                          "    pm.expect(pm.response.json().error).to.be.a('string');",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "PUT",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"name\": \"NoAuth\",\n  \"is_active\": true\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/admin/categories/{{created_category_id}}",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "categories",
+                        "{{created_category_id}}"
+                      ]
+                    }
+                  },
+                  "response": [
                     {
                       "name": "Authentication required.",
                       "originalRequest": {
@@ -1434,7 +1088,79 @@
                       ],
                       "cookie": [],
                       "body": "{\n  \"error\": \"string\"\n}"
+                    }
+                  ]
+                },
+                {
+                  "name": "Admin role required.",
+                  "event": [
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "exec": [
+                          "pm.sendRequest({",
+                          "    url: pm.environment.get('baseUrl') + '/auth/login',",
+                          "    method: 'POST',",
+                          "    header: { 'Content-Type': 'application/json' },",
+                          "    body: {",
+                          "        mode: 'raw',",
+                          "        raw: JSON.stringify({",
+                          "            identifier: pm.environment.get('citizen_email'),",
+                          "            password: pm.environment.get('citizen_password')",
+                          "        })",
+                          "    }",
+                          "}, function () {});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
                     },
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test('status 403 - admin role required', function () {",
+                          "    pm.response.to.have.status(403);",
+                          "});",
+                          "",
+                          "pm.test('error body has error field', function () {",
+                          "    pm.response.to.be.json;",
+                          "    pm.expect(pm.response.json()).to.have.property('error');",
+                          "    pm.expect(pm.response.json().error).to.be.a('string');",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "PUT",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"name\": \"NoCitizen\",\n  \"is_active\": true\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/admin/categories/{{created_category_id}}",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "categories",
+                        "{{created_category_id}}"
+                      ]
+                    }
+                  },
+                  "response": [
                     {
                       "name": "Admin role required.",
                       "originalRequest": {
@@ -1488,7 +1214,79 @@
                       ],
                       "cookie": [],
                       "body": "{\n  \"error\": \"string\"\n}"
+                    }
+                  ]
+                },
+                {
+                  "name": "Category not found.",
+                  "event": [
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "exec": [
+                          "pm.sendRequest({",
+                          "    url: pm.environment.get('baseUrl') + '/auth/login',",
+                          "    method: 'POST',",
+                          "    header: { 'Content-Type': 'application/json' },",
+                          "    body: {",
+                          "        mode: 'raw',",
+                          "        raw: JSON.stringify({",
+                          "            identifier: pm.environment.get('admin_email'),",
+                          "            password: pm.environment.get('admin_password')",
+                          "        })",
+                          "    }",
+                          "}, function () {});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
                     },
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test('status 404 - category not found', function () {",
+                          "    pm.response.to.have.status(404);",
+                          "});",
+                          "",
+                          "pm.test('error body has error field', function () {",
+                          "    pm.response.to.be.json;",
+                          "    pm.expect(pm.response.json()).to.have.property('error');",
+                          "    pm.expect(pm.response.json().error).to.be.a('string');",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "PUT",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"name\": \"Ghost Category\",\n  \"is_active\": true\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/admin/categories/{{invalid_category_id}}",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "categories",
+                        "{{invalid_category_id}}"
+                      ]
+                    }
+                  },
+                  "response": [
                     {
                       "name": "Category not found.",
                       "originalRequest": {
@@ -1546,12 +1344,1014 @@
                   ]
                 }
               ]
+            },
+            {
+              "name": "Authentication required",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('status 401 - authentication required', function () {",
+                      "    pm.response.to.have.status(401);",
+                      "});",
+                      "",
+                      "pm.test('error body has error field', function () {",
+                      "    pm.response.to.be.json;",
+                      "    pm.expect(pm.response.json()).to.have.property('error');",
+                      "    pm.expect(pm.response.json().error).to.be.a('string');",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "pm.sendRequest({",
+                      "    url: pm.environment.get('baseUrl') + '/auth/logout',",
+                      "    method: 'POST'",
+                      "}, function () {});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/categories",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "categories"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "Authentication required.",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{ \"error\": \"Authentication required\" }",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/admin/categories",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "categories"
+                      ]
+                    }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"error\": \"string\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "Admin role required",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('status 403 - admin role required', function () {",
+                      "    pm.response.to.have.status(403);",
+                      "});",
+                      "",
+                      "pm.test('error body has error field', function () {",
+                      "    pm.response.to.be.json;",
+                      "    pm.expect(pm.response.json()).to.have.property('error');",
+                      "    pm.expect(pm.response.json().error).to.be.a('string');",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "pm.sendRequest({",
+                      "    url: pm.environment.get('baseUrl') + '/auth/login',",
+                      "    method: 'POST',",
+                      "    header: { 'Content-Type': 'application/json' },",
+                      "    body: {",
+                      "        mode: 'raw',",
+                      "        raw: JSON.stringify({",
+                      "            identifier: pm.environment.get('citizen_email'),",
+                      "            password: pm.environment.get('citizen_password')",
+                      "        })",
+                      "    }",
+                      "}, function () {});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/categories",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "categories"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "Admin role required.",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{ \"error\": \"Admin role required\" }",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/admin/categories",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "categories"
+                      ]
+                    }
+                  },
+                  "status": "Forbidden",
+                  "code": 403,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"error\": \"string\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "List all categories, including inactive ones.",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('status 200', function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "pm.test('response is an array', function () {",
+                      "    pm.response.to.be.json;",
+                      "    pm.expect(pm.response.json()).to.be.an('array');",
+                      "});",
+                      "",
+                      "pm.test('each category has id, name, is_active, created_at', function () {",
+                      "    var json = pm.response.json();",
+                      "    pm.expect(json.length).to.be.above(0);",
+                      "    json.forEach(function (cat) {",
+                      "        pm.expect(cat.id).to.be.a('number');",
+                      "        pm.expect(cat.name).to.be.a('string');",
+                      "        pm.expect(cat.is_active).to.be.a('boolean');",
+                      "        pm.expect(cat.created_at).to.be.a('string');",
+                      "    });",
+                      "});",
+                      "",
+                      "pm.test('admin list includes inactive categories', function () {",
+                      "    pm.expect(pm.response.json().length).to.be.above(0);",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/categories",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "categories"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "Category list.",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/admin/categories",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "categories"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "[\n  {\n    \"id\": 1,\n    \"name\": \"Roads and Urban Furniture\",\n    \"is_active\": true,\n    \"created_at\": \"2025-01-27T21:35:07.820Z\"\n  },\n  {\n    \"id\": 1,\n    \"name\": \"Roads and Urban Furniture\",\n    \"is_active\": true,\n    \"created_at\": \"1977-10-31T17:37:03.556Z\"\n  }\n]"
+                }
+              ]
+            },
+            {
+              "name": "Create a new report category.",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "pm.environment.set('new_category_name', 'TestCat_' + Date.now());"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('status 201 - category created', function () {",
+                      "    pm.response.to.have.status(201);",
+                      "});",
+                      "",
+                      "pm.test('response has id, name, is_active, created_at', function () {",
+                      "    pm.response.to.be.json;",
+                      "    var cat = pm.response.json();",
+                      "    pm.expect(cat.id).to.be.a('number');",
+                      "    pm.expect(cat.name).to.be.a('string');",
+                      "    pm.expect(cat.is_active).to.be.a('boolean');",
+                      "    pm.expect(cat.created_at).to.be.a('string');",
+                      "});",
+                      "",
+                      "pm.test('returned name matches submitted name', function () {",
+                      "    pm.expect(pm.response.json().name).to.equal(pm.environment.get('new_category_name'));",
+                      "});",
+                      "",
+                      "pm.test('new category is active by default', function () {",
+                      "    pm.expect(pm.response.json().is_active).to.equal(true);",
+                      "});",
+                      "",
+                      "pm.test('store created_category_id for later requests', function () {",
+                      "    pm.environment.set('created_category_id', pm.response.json().id);",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"is_active\": true,\n  \"name\": \"{{new_category_name}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/admin/categories",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "categories"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "Category created.",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"name\": \"string\",\n  \"is_active\": true\n}",
+                      "options": {
+                        "raw": {
+                          "headerFamily": "json",
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/admin/categories",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "categories"
+                      ]
+                    }
+                  },
+                  "status": "Created",
+                  "code": 201,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"id\": 1,\n  \"name\": \"Roads and Urban Furniture\",\n  \"is_active\": true,\n  \"created_at\": \"2000-07-05T20:52:15.130Z\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "Validation error",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "pm.sendRequest({",
+                      "    url: pm.environment.get('baseUrl') + '/auth/login',",
+                      "    method: 'POST',",
+                      "    header: { 'Content-Type': 'application/json' },",
+                      "    body: {",
+                      "        mode: 'raw',",
+                      "        raw: JSON.stringify({",
+                      "            identifier: pm.environment.get('admin_email'),",
+                      "            password: pm.environment.get('admin_password')",
+                      "        })",
+                      "    }",
+                      "}, function () {});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('status 400 - validation error', function () {",
+                      "    pm.response.to.have.status(400);",
+                      "});",
+                      "",
+                      "pm.test('error body has error field', function () {",
+                      "    pm.response.to.be.json;",
+                      "    pm.expect(pm.response.json()).to.have.property('error');",
+                      "    pm.expect(pm.response.json().error).to.be.a('string');",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"is_active\": true\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/admin/categories",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "categories"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "Validation error.",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"name\": \"string\",\n  \"is_active\": true\n}",
+                      "options": {
+                        "raw": {
+                          "headerFamily": "json",
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/admin/categories",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "categories"
+                      ]
+                    }
+                  },
+                  "status": "Bad Request",
+                  "code": 400,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"error\": \"string\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "Authentication required",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "pm.sendRequest({",
+                      "    url: pm.environment.get('baseUrl') + '/auth/logout',",
+                      "    method: 'POST'",
+                      "}, function () {});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('status 401 - authentication required', function () {",
+                      "    pm.response.to.have.status(401);",
+                      "});",
+                      "",
+                      "pm.test('error body has error field', function () {",
+                      "    pm.response.to.be.json;",
+                      "    pm.expect(pm.response.json()).to.have.property('error');",
+                      "    pm.expect(pm.response.json().error).to.be.a('string');",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"NotCreated\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/admin/categories",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "categories"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "Authentication required.",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"name\": \"string\",\n  \"is_active\": true\n}",
+                      "options": {
+                        "raw": {
+                          "headerFamily": "json",
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/admin/categories",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "categories"
+                      ]
+                    }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"error\": \"string\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "Admin role required",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "pm.sendRequest({",
+                      "    url: pm.environment.get('baseUrl') + '/auth/login',",
+                      "    method: 'POST',",
+                      "    header: { 'Content-Type': 'application/json' },",
+                      "    body: {",
+                      "        mode: 'raw',",
+                      "        raw: JSON.stringify({",
+                      "            identifier: pm.environment.get('citizen_email'),",
+                      "            password: pm.environment.get('citizen_password')",
+                      "        })",
+                      "    }",
+                      "}, function () {});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('status 403 - admin role required', function () {",
+                      "    pm.response.to.have.status(403);",
+                      "});",
+                      "",
+                      "pm.test('error body has error field', function () {",
+                      "    pm.response.to.be.json;",
+                      "    pm.expect(pm.response.json()).to.have.property('error');",
+                      "    pm.expect(pm.response.json().error).to.be.a('string');",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Not Created\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/admin/categories",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "categories"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "Admin role required.",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"name\": \"string\",\n  \"is_active\": true\n}",
+                      "options": {
+                        "raw": {
+                          "headerFamily": "json",
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/admin/categories",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "categories"
+                      ]
+                    }
+                  },
+                  "status": "Forbidden",
+                  "code": 403,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"error\": \"string\"\n}"
+                }
+              ]
             }
           ]
         },
         {
           "name": "stats",
           "item": [
+            {
+              "name": "Authentication required",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "pm.sendRequest({",
+                      "    url: pm.environment.get('baseUrl') + '/auth/logout',",
+                      "    method: 'POST'",
+                      "}, function () {});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('status 401 - authentication required', function () {",
+                      "    pm.response.to.have.status(401);",
+                      "});",
+                      "",
+                      "pm.test('error body has error field', function () {",
+                      "    pm.response.to.be.json;",
+                      "    pm.expect(pm.response.json()).to.have.property('error');",
+                      "    pm.expect(pm.response.json().error).to.be.a('string');",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/stats",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "stats"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "Authentication required.",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/admin/stats",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "stats"
+                      ]
+                    }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"error\": \"string\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "Admin role required",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "pm.sendRequest({",
+                      "    url: pm.environment.get('baseUrl') + '/auth/login',",
+                      "    method: 'POST',",
+                      "    header: { 'Content-Type': 'application/json' },",
+                      "    body: {",
+                      "        mode: 'raw',",
+                      "        raw: JSON.stringify({",
+                      "            identifier: pm.environment.get('citizen_email'),",
+                      "            password: pm.environment.get('citizen_password')",
+                      "        })",
+                      "    }",
+                      "}, function () {});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('status 403 - admin role required', function () {",
+                      "    pm.response.to.have.status(403);",
+                      "});",
+                      "",
+                      "pm.test('error body has error field', function () {",
+                      "    pm.response.to.be.json;",
+                      "    pm.expect(pm.response.json()).to.have.property('error');",
+                      "    pm.expect(pm.response.json().error).to.be.a('string');",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/stats",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "stats"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "Admin role required.",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/admin/stats",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "stats"
+                      ]
+                    }
+                  },
+                  "status": "Forbidden",
+                  "code": 403,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"error\": \"string\"\n}"
+                }
+              ]
+            },
             {
               "name": "Retrieve administrator-only statistics.",
               "event": [
@@ -1630,9 +2430,686 @@
                   ],
                   "cookie": [],
                   "body": "{\n  \"key_0\": \"string\",\n  \"key_1\": \"string\"\n}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "users",
+          "item": [
+            {
+              "name": "{user_id}",
+              "item": [
+                {
+                  "name": "Update a user account and role.",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test('status 200 - user updated', function () {",
+                          "    pm.response.to.have.status(200);",
+                          "});",
+                          "",
+                          "pm.test('response has id, email, username, role, is_active, is_email_verified, created_at', function () {",
+                          "    pm.response.to.be.json;",
+                          "    var u = pm.response.json();",
+                          "    pm.expect(u.id).to.be.a('number');",
+                          "    pm.expect(u.email).to.be.a('string');",
+                          "    pm.expect(u.username).to.be.a('string');",
+                          "    pm.expect(u.role).to.be.a('string');",
+                          "    pm.expect(u.is_active).to.be.a('boolean');",
+                          "    pm.expect(u.is_email_verified).to.be.a('boolean');",
+                          "    pm.expect(u.created_at).to.be.a('string');",
+                          "});",
+                          "",
+                          "pm.test('role was changed to citizen', function () {",
+                          "    pm.expect(pm.response.json().role).to.equal('citizen');",
+                          "});",
+                          "",
+                          "pm.test('id is unchanged', function () {",
+                          "    pm.expect(String(pm.response.json().id)).to.equal(String(pm.environment.get('created_user_id')));",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    },
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "exec": [
+                          ""
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "PUT",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"role\": \"citizen\",\n  \"first_name\": \"Test\",\n  \"last_name\": \"Operator\",\n  \"is_active\": true,\n  \"email_notifications_enabled\": true\n}",
+                      "options": {
+                        "raw": {
+                          "headerFamily": "json",
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/admin/users/{{created_user_id}}",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "users",
+                        "{{created_user_id}}"
+                      ]
+                    }
+                  },
+                  "response": [
+                    {
+                      "name": "User updated.",
+                      "originalRequest": {
+                        "method": "PUT",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n  \"category_id\": 7367,\n  \"email\": \"gbPkZiXtxZ@eIcNjyLNGWIqUIu.gw\",\n  \"email_notifications_enabled\": true,\n  \"first_name\": \"string\",\n  \"is_active\": false,\n  \"last_name\": \"string\",\n  \"password\": \"string\",\n  \"role\": \"admin\",\n  \"username\": \"string\"\n}",
+                          "options": {
+                            "raw": {
+                              "headerFamily": "json",
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{baseUrl}}/admin/users/:user_id",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "admin",
+                            "users",
+                            ":user_id"
+                          ],
+                          "variable": [
+                            {
+                              "key": "user_id",
+                              "value": "6011"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "_postman_previewlanguage": "json",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n  \"id\": 1,\n  \"username\": \"citizen\",\n  \"first_name\": \"Marco\",\n  \"last_name\": \"Citizen\",\n  \"email\": \"citizen@example.com\",\n  \"role\": \"operator\",\n  \"is_active\": true,\n  \"is_email_verified\": true,\n  \"email_notifications_enabled\": false,\n  \"category\": {\n    \"id\": 1,\n    \"name\": \"Roads and Urban Furniture\",\n    \"is_active\": false,\n    \"created_at\": \"2013-03-28T10:51:18.103Z\"\n  },\n  \"category_id\": 8369,\n  \"created_at\": \"1968-02-01T06:05:10.470Z\",\n  \"profile_picture_path\": \"string\",\n  \"profile_picture_url\": \"string\"\n}"
+                    }
+                  ]
                 },
                 {
-                  "name": "Authentication required.",
+                  "name": "Validation error",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test('status 400 - validation error', function () {",
+                          "    pm.response.to.have.status(400);",
+                          "});",
+                          "",
+                          "pm.test('error body has error field', function () {",
+                          "    pm.response.to.be.json;",
+                          "    pm.expect(pm.response.json()).to.have.property('error');",
+                          "    pm.expect(pm.response.json().error).to.be.a('string');",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "PUT",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"role\": \"superuser\",\n  \"first_name\": \"Test\",\n  \"last_name\": \"Operator\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/admin/users/{{created_user_id}}",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "users",
+                        "{{created_user_id}}"
+                      ]
+                    }
+                  },
+                  "response": [
+                    {
+                      "name": "Validation error.",
+                      "originalRequest": {
+                        "method": "PUT",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n  \"category_id\": 7367,\n  \"email\": \"gbPkZiXtxZ@eIcNjyLNGWIqUIu.gw\",\n  \"email_notifications_enabled\": true,\n  \"first_name\": \"string\",\n  \"is_active\": false,\n  \"last_name\": \"string\",\n  \"password\": \"string\",\n  \"role\": \"admin\",\n  \"username\": \"string\"\n}",
+                          "options": {
+                            "raw": {
+                              "headerFamily": "json",
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{baseUrl}}/admin/users/:user_id",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "admin",
+                            "users",
+                            ":user_id"
+                          ],
+                          "variable": [
+                            {
+                              "key": "user_id",
+                              "value": "6011"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "Bad Request",
+                      "code": 400,
+                      "_postman_previewlanguage": "json",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n  \"error\": \"string\"\n}"
+                    }
+                  ]
+                },
+                {
+                  "name": "Authentication required",
+                  "event": [
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "exec": [
+                          "pm.sendRequest({",
+                          "    url: pm.environment.get('baseUrl') + '/auth/logout',",
+                          "    method: 'POST'",
+                          "}, function () {});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    },
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test('status 401 - authentication required', function () {",
+                          "    pm.response.to.have.status(401);",
+                          "});",
+                          "",
+                          "pm.test('error body has error field', function () {",
+                          "    pm.response.to.be.json;",
+                          "    pm.expect(pm.response.json()).to.have.property('error');",
+                          "    pm.expect(pm.response.json().error).to.be.a('string');",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "PUT",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"role\": \"citizen\",\n  \"first_name\": \"Test\",\n  \"last_name\": \"Operator\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/admin/users/{{created_user_id}}",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "users",
+                        "{{created_user_id}}"
+                      ]
+                    }
+                  },
+                  "response": [
+                    {
+                      "name": "Authentication required.",
+                      "originalRequest": {
+                        "method": "PUT",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n  \"category_id\": 7367,\n  \"email\": \"gbPkZiXtxZ@eIcNjyLNGWIqUIu.gw\",\n  \"email_notifications_enabled\": true,\n  \"first_name\": \"string\",\n  \"is_active\": false,\n  \"last_name\": \"string\",\n  \"password\": \"string\",\n  \"role\": \"admin\",\n  \"username\": \"string\"\n}",
+                          "options": {
+                            "raw": {
+                              "headerFamily": "json",
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{baseUrl}}/admin/users/:user_id",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "admin",
+                            "users",
+                            ":user_id"
+                          ],
+                          "variable": [
+                            {
+                              "key": "user_id",
+                              "value": "6011"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "Unauthorized",
+                      "code": 401,
+                      "_postman_previewlanguage": "json",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n  \"error\": \"string\"\n}"
+                    }
+                  ]
+                },
+                {
+                  "name": "Admin role required",
+                  "event": [
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "exec": [
+                          "pm.sendRequest({",
+                          "    url: pm.environment.get('baseUrl') + '/auth/login',",
+                          "    method: 'POST',",
+                          "    header: { 'Content-Type': 'application/json' },",
+                          "    body: {",
+                          "        mode: 'raw',",
+                          "        raw: JSON.stringify({",
+                          "            identifier: pm.environment.get('operator_email'),",
+                          "            password: pm.environment.get('operator_password')",
+                          "        })",
+                          "    }",
+                          "}, function () {});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    },
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test('status 403 - admin role required', function () {",
+                          "    pm.response.to.have.status(403);",
+                          "});",
+                          "",
+                          "pm.test('error body has error field', function () {",
+                          "    pm.response.to.be.json;",
+                          "    pm.expect(pm.response.json()).to.have.property('error');",
+                          "    pm.expect(pm.response.json().error).to.be.a('string');",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "PUT",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"role\": \"citizen\",\n  \"first_name\": \"Test\",\n  \"last_name\": \"Operator\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/admin/users/{{created_user_id}}",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "users",
+                        "{{created_user_id}}"
+                      ]
+                    }
+                  },
+                  "response": [
+                    {
+                      "name": "Admin role required.",
+                      "originalRequest": {
+                        "method": "PUT",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n  \"category_id\": 7367,\n  \"email\": \"gbPkZiXtxZ@eIcNjyLNGWIqUIu.gw\",\n  \"email_notifications_enabled\": true,\n  \"first_name\": \"string\",\n  \"is_active\": false,\n  \"last_name\": \"string\",\n  \"password\": \"string\",\n  \"role\": \"admin\",\n  \"username\": \"string\"\n}",
+                          "options": {
+                            "raw": {
+                              "headerFamily": "json",
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{baseUrl}}/admin/users/:user_id",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "admin",
+                            "users",
+                            ":user_id"
+                          ],
+                          "variable": [
+                            {
+                              "key": "user_id",
+                              "value": "6011"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "Forbidden",
+                      "code": 403,
+                      "_postman_previewlanguage": "json",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n  \"error\": \"string\"\n}"
+                    }
+                  ]
+                },
+                {
+                  "name": "User not found",
+                  "event": [
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "exec": [
+                          "pm.sendRequest({",
+                          "    url: pm.environment.get('baseUrl') + '/auth/login',",
+                          "    method: 'POST',",
+                          "    header: { 'Content-Type': 'application/json' },",
+                          "    body: {",
+                          "        mode: 'raw',",
+                          "        raw: JSON.stringify({",
+                          "            identifier: pm.environment.get('admin_email'),",
+                          "            password: pm.environment.get('admin_password')",
+                          "        })",
+                          "    }",
+                          "}, function () {});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    },
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test('status 404 - user not found', function () {",
+                          "    pm.response.to.have.status(404);",
+                          "});",
+                          "",
+                          "pm.test('error body has error field', function () {",
+                          "    pm.response.to.be.json;",
+                          "    pm.expect(pm.response.json()).to.have.property('error');",
+                          "    pm.expect(pm.response.json().error).to.be.a('string');",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "PUT",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"role\": \"citizen\",\n  \"first_name\": \"Test\",\n  \"last_name\": \"Operator\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/admin/users/{{invalid_user_id}}",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "users",
+                        "{{invalid_user_id}}"
+                      ]
+                    }
+                  },
+                  "response": [
+                    {
+                      "name": "User not found.",
+                      "originalRequest": {
+                        "method": "PUT",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n  \"category_id\": 7367,\n  \"email\": \"gbPkZiXtxZ@eIcNjyLNGWIqUIu.gw\",\n  \"email_notifications_enabled\": true,\n  \"first_name\": \"string\",\n  \"is_active\": false,\n  \"last_name\": \"string\",\n  \"password\": \"string\",\n  \"role\": \"admin\",\n  \"username\": \"string\"\n}",
+                          "options": {
+                            "raw": {
+                              "headerFamily": "json",
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{baseUrl}}/admin/users/:user_id",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "admin",
+                            "users",
+                            ":user_id"
+                          ],
+                          "variable": [
+                            {
+                              "key": "user_id",
+                              "value": "6011"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "Not Found",
+                      "code": 404,
+                      "_postman_previewlanguage": "json",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n  \"error\": \"string\"\n}"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Authentication required",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "pm.sendRequest({",
+                      "    url: pm.environment.get('baseUrl') + '/auth/logout',",
+                      "    method: 'POST'",
+                      "}, function () {});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('status 401 - authentication required', function () {",
+                      "    pm.response.to.have.status(401);",
+                      "});",
+                      "",
+                      "pm.test('error body has error field', function () {",
+                      "    pm.response.to.be.json;",
+                      "    pm.expect(pm.response.json()).to.have.property('error');",
+                      "    pm.expect(pm.response.json().error).to.be.a('string');",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/users",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "users"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "Authentication required",
                   "originalRequest": {
                     "method": "GET",
                     "header": [
@@ -1642,13 +3119,13 @@
                       }
                     ],
                     "url": {
-                      "raw": "{{baseUrl}}/admin/stats",
+                      "raw": "{{baseUrl}}/admin/users",
                       "host": [
                         "{{baseUrl}}"
                       ],
                       "path": [
                         "admin",
-                        "stats"
+                        "users"
                       ]
                     }
                   },
@@ -1663,9 +3140,71 @@
                   ],
                   "cookie": [],
                   "body": "{\n  \"error\": \"string\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "Admin role required",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "pm.sendRequest({",
+                      "    url: pm.environment.get('baseUrl') + '/auth/login',",
+                      "    method: 'POST',",
+                      "    header: { 'Content-Type': 'application/json' },",
+                      "    body: {",
+                      "        mode: 'raw',",
+                      "        raw: JSON.stringify({",
+                      "            identifier: pm.environment.get('operator_email'),",
+                      "            password: pm.environment.get('operator_password')",
+                      "        })",
+                      "    }",
+                      "}, function () {});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
                 },
                 {
-                  "name": "Admin role required.",
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('status 403 - admin role required', function () {",
+                      "    pm.response.to.have.status(403);",
+                      "});",
+                      "",
+                      "pm.test('error body has error field', function () {",
+                      "    pm.response.to.be.json;",
+                      "    pm.expect(pm.response.json()).to.have.property('error');",
+                      "    pm.expect(pm.response.json().error).to.be.a('string');",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/users",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "users"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "Admin role required",
                   "originalRequest": {
                     "method": "GET",
                     "header": [
@@ -1675,13 +3214,13 @@
                       }
                     ],
                     "url": {
-                      "raw": "{{baseUrl}}/admin/stats",
+                      "raw": "{{baseUrl}}/admin/users",
                       "host": [
                         "{{baseUrl}}"
                       ],
                       "path": [
                         "admin",
-                        "stats"
+                        "users"
                       ]
                     }
                   },
@@ -1698,12 +3237,7 @@
                   "body": "{\n  \"error\": \"string\"\n}"
                 }
               ]
-            }
-          ]
-        },
-        {
-          "name": "users",
-          "item": [
+            },
             {
               "name": "List all users for administration.",
               "event": [
@@ -1806,72 +3340,6 @@
                   ],
                   "cookie": [],
                   "body": "[\n  {\n    \"id\": 1,\n    \"username\": \"citizen\",\n    \"first_name\": \"Marco\",\n    \"last_name\": \"Citizen\",\n    \"email\": \"citizen@example.com\",\n    \"role\": \"citizen\",\n    \"is_active\": true,\n    \"is_email_verified\": false,\n    \"email_notifications_enabled\": false,\n    \"category\": {\n      \"id\": 1,\n      \"name\": \"Roads and Urban Furniture\",\n      \"is_active\": true,\n      \"created_at\": \"1954-06-30T10:38:39.542Z\"\n    },\n    \"category_id\": 4108,\n    \"created_at\": \"2026-01-06T16:35:37.890Z\",\n    \"profile_picture_path\": \"string\",\n    \"profile_picture_url\": \"string\"\n  },\n  {\n    \"id\": 1,\n    \"username\": \"citizen\",\n    \"first_name\": \"Marco\",\n    \"last_name\": \"Citizen\",\n    \"email\": \"citizen@example.com\",\n    \"role\": \"operator\",\n    \"is_active\": false,\n    \"is_email_verified\": true,\n    \"email_notifications_enabled\": true,\n    \"category\": {\n      \"id\": 1,\n      \"name\": \"Roads and Urban Furniture\",\n      \"is_active\": true,\n      \"created_at\": \"1988-09-28T00:46:42.897Z\"\n    },\n    \"category_id\": 618,\n    \"created_at\": \"1954-06-05T21:09:16.696Z\",\n    \"profile_picture_path\": \"string\",\n    \"profile_picture_url\": \"string\"\n  }\n]"
-                },
-                {
-                  "name": "Authentication required.",
-                  "originalRequest": {
-                    "method": "GET",
-                    "header": [
-                      {
-                        "key": "Accept",
-                        "value": "application/json"
-                      }
-                    ],
-                    "url": {
-                      "raw": "{{baseUrl}}/admin/users",
-                      "host": [
-                        "{{baseUrl}}"
-                      ],
-                      "path": [
-                        "admin",
-                        "users"
-                      ]
-                    }
-                  },
-                  "status": "Unauthorized",
-                  "code": 401,
-                  "_postman_previewlanguage": "json",
-                  "header": [
-                    {
-                      "key": "Content-Type",
-                      "value": "application/json"
-                    }
-                  ],
-                  "cookie": [],
-                  "body": "{\n  \"error\": \"string\"\n}"
-                },
-                {
-                  "name": "Admin role required.",
-                  "originalRequest": {
-                    "method": "GET",
-                    "header": [
-                      {
-                        "key": "Accept",
-                        "value": "application/json"
-                      }
-                    ],
-                    "url": {
-                      "raw": "{{baseUrl}}/admin/users",
-                      "host": [
-                        "{{baseUrl}}"
-                      ],
-                      "path": [
-                        "admin",
-                        "users"
-                      ]
-                    }
-                  },
-                  "status": "Forbidden",
-                  "code": 403,
-                  "_postman_previewlanguage": "json",
-                  "header": [
-                    {
-                      "key": "Content-Type",
-                      "value": "application/json"
-                    }
-                  ],
-                  "cookie": [],
-                  "body": "{\n  \"error\": \"string\"\n}"
                 }
               ]
             },
@@ -2012,7 +3480,78 @@
                   ],
                   "cookie": [],
                   "body": "{\n  \"id\": 1,\n  \"username\": \"citizen\",\n  \"first_name\": \"Marco\",\n  \"last_name\": \"Citizen\",\n  \"email\": \"citizen@example.com\",\n  \"role\": \"operator\",\n  \"is_active\": true,\n  \"is_email_verified\": true,\n  \"email_notifications_enabled\": false,\n  \"category\": {\n    \"id\": 1,\n    \"name\": \"Roads and Urban Furniture\",\n    \"is_active\": false,\n    \"created_at\": \"2013-03-28T10:51:18.103Z\"\n  },\n  \"category_id\": 8369,\n  \"created_at\": \"1968-02-01T06:05:10.470Z\",\n  \"profile_picture_path\": \"string\",\n  \"profile_picture_url\": \"string\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "Validation error",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('status 400 - validation error', function () {",
+                      "    pm.response.to.have.status(400);",
+                      "});",
+                      "",
+                      "pm.test('error body has error field', function () {",
+                      "    pm.response.to.be.json;",
+                      "    pm.expect(pm.response.json()).to.have.property('error');",
+                      "    pm.expect(pm.response.json().error).to.be.a('string');",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
                 },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "pm.sendRequest({",
+                      "    url: pm.environment.get('baseUrl') + '/auth/login',",
+                      "    method: 'POST',",
+                      "    header: { 'Content-Type': 'application/json' },",
+                      "    body: {",
+                      "        mode: 'raw',",
+                      "        raw: JSON.stringify({",
+                      "            identifier: pm.environment.get('admin_email'),",
+                      "            password: pm.environment.get('admin_password')",
+                      "        })",
+                      "    }",
+                      "}, function () {});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"role\": \"operator\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/admin/users",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "users"
+                  ]
+                }
+              },
+              "response": [
                 {
                   "name": "Validation error.",
                   "originalRequest": {
@@ -2059,7 +3598,70 @@
                   ],
                   "cookie": [],
                   "body": "{\n  \"error\": \"string\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "Authentication required",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "pm.sendRequest({",
+                      "    url: pm.environment.get('baseUrl') + '/auth/logout',",
+                      "    method: 'POST'",
+                      "}, function () {});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
                 },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('status 401 - authentication required', function () {",
+                      "    pm.response.to.have.status(401);",
+                      "});",
+                      "",
+                      "pm.test('error body has error field', function () {",
+                      "    pm.response.to.be.json;",
+                      "    pm.expect(pm.response.json()).to.have.property('error');",
+                      "    pm.expect(pm.response.json().error).to.be.a('string');",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"ghost\",\n  \"email\": \"ghost@test.local\",\n  \"password\": \"Ghost99!\",\n  \"role\": \"citizen\",\n  \"first_name\": \"Ghost\",\n  \"last_name\": \"User\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/admin/users",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "users"
+                  ]
+                }
+              },
+              "response": [
                 {
                   "name": "Authentication required.",
                   "originalRequest": {
@@ -2106,7 +3708,78 @@
                   ],
                   "cookie": [],
                   "body": "{\n  \"error\": \"string\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "Admin role required",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "pm.sendRequest({",
+                      "    url: pm.environment.get('baseUrl') + '/auth/login',",
+                      "    method: 'POST',",
+                      "    header: { 'Content-Type': 'application/json' },",
+                      "    body: {",
+                      "        mode: 'raw',",
+                      "        raw: JSON.stringify({",
+                      "            identifier: pm.environment.get('citizen_email'),",
+                      "            password: pm.environment.get('citizen_password')",
+                      "        })",
+                      "    }",
+                      "}, function () {});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
                 },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('status 403 - admin role required', function () {",
+                      "    pm.response.to.have.status(403);",
+                      "});",
+                      "",
+                      "pm.test('error body has error field', function () {",
+                      "    pm.response.to.be.json;",
+                      "    pm.expect(pm.response.json()).to.have.property('error');",
+                      "    pm.expect(pm.response.json().error).to.be.a('string');",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"ghost\",\n  \"email\": \"ghost@test.local\",\n  \"password\": \"Ghost99!\",\n  \"role\": \"citizen\",\n  \"first_name\": \"Ghost\",\n  \"last_name\": \"User\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/admin/users",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "users"
+                  ]
+                }
+              },
+              "response": [
                 {
                   "name": "Admin role required.",
                   "originalRequest": {
@@ -2155,368 +3828,59 @@
                   "body": "{\n  \"error\": \"string\"\n}"
                 }
               ]
-            },
-            {
-              "name": "{user_id}",
-              "item": [
-                {
-                  "name": "Update a user account and role.",
-                  "event": [
-                    {
-                      "listen": "test",
-                      "script": {
-                        "exec": [
-                          "pm.test('status 200 - user updated', function () {",
-                          "    pm.response.to.have.status(200);",
-                          "});",
-                          "",
-                          "pm.test('response has id, email, username, role, is_active, is_email_verified, created_at', function () {",
-                          "    pm.response.to.be.json;",
-                          "    var u = pm.response.json();",
-                          "    pm.expect(u.id).to.be.a('number');",
-                          "    pm.expect(u.email).to.be.a('string');",
-                          "    pm.expect(u.username).to.be.a('string');",
-                          "    pm.expect(u.role).to.be.a('string');",
-                          "    pm.expect(u.is_active).to.be.a('boolean');",
-                          "    pm.expect(u.is_email_verified).to.be.a('boolean');",
-                          "    pm.expect(u.created_at).to.be.a('string');",
-                          "});",
-                          "",
-                          "pm.test('role was changed to citizen', function () {",
-                          "    pm.expect(pm.response.json().role).to.equal('citizen');",
-                          "});",
-                          "",
-                          "pm.test('id is unchanged', function () {",
-                          "    pm.expect(String(pm.response.json().id)).to.equal(String(pm.environment.get('created_user_id')));",
-                          "});"
-                        ],
-                        "type": "text/javascript",
-                        "packages": {},
-                        "requests": {}
-                      }
-                    },
-                    {
-                      "listen": "prerequest",
-                      "script": {
-                        "exec": [
-                          ""
-                        ],
-                        "type": "text/javascript",
-                        "packages": {},
-                        "requests": {}
-                      }
-                    }
-                  ],
-                  "request": {
-                    "method": "PUT",
-                    "header": [
-                      {
-                        "key": "Content-Type",
-                        "value": "application/json"
-                      },
-                      {
-                        "key": "Accept",
-                        "value": "application/json"
-                      }
-                    ],
-                    "body": {
-                      "mode": "raw",
-                      "raw": "{\n  \"role\": \"citizen\",\n  \"first_name\": \"Test\",\n  \"last_name\": \"Operator\",\n  \"is_active\": true,\n  \"email_notifications_enabled\": true\n}",
-                      "options": {
-                        "raw": {
-                          "headerFamily": "json",
-                          "language": "json"
-                        }
-                      }
-                    },
-                    "url": {
-                      "raw": "{{baseUrl}}/admin/users/{{created_user_id}}",
-                      "host": [
-                        "{{baseUrl}}"
-                      ],
-                      "path": [
-                        "admin",
-                        "users",
-                        "{{created_user_id}}"
-                      ]
-                    }
-                  },
-                  "response": [
-                    {
-                      "name": "User updated.",
-                      "originalRequest": {
-                        "method": "PUT",
-                        "header": [
-                          {
-                            "key": "Content-Type",
-                            "value": "application/json"
-                          },
-                          {
-                            "key": "Accept",
-                            "value": "application/json"
-                          }
-                        ],
-                        "body": {
-                          "mode": "raw",
-                          "raw": "{\n  \"category_id\": 7367,\n  \"email\": \"gbPkZiXtxZ@eIcNjyLNGWIqUIu.gw\",\n  \"email_notifications_enabled\": true,\n  \"first_name\": \"string\",\n  \"is_active\": false,\n  \"last_name\": \"string\",\n  \"password\": \"string\",\n  \"role\": \"admin\",\n  \"username\": \"string\"\n}",
-                          "options": {
-                            "raw": {
-                              "headerFamily": "json",
-                              "language": "json"
-                            }
-                          }
-                        },
-                        "url": {
-                          "raw": "{{baseUrl}}/admin/users/:user_id",
-                          "host": [
-                            "{{baseUrl}}"
-                          ],
-                          "path": [
-                            "admin",
-                            "users",
-                            ":user_id"
-                          ],
-                          "variable": [
-                            {
-                              "key": "user_id",
-                              "value": "6011"
-                            }
-                          ]
-                        }
-                      },
-                      "status": "OK",
-                      "code": 200,
-                      "_postman_previewlanguage": "json",
-                      "header": [
-                        {
-                          "key": "Content-Type",
-                          "value": "application/json"
-                        }
-                      ],
-                      "cookie": [],
-                      "body": "{\n  \"id\": 1,\n  \"username\": \"citizen\",\n  \"first_name\": \"Marco\",\n  \"last_name\": \"Citizen\",\n  \"email\": \"citizen@example.com\",\n  \"role\": \"operator\",\n  \"is_active\": true,\n  \"is_email_verified\": true,\n  \"email_notifications_enabled\": false,\n  \"category\": {\n    \"id\": 1,\n    \"name\": \"Roads and Urban Furniture\",\n    \"is_active\": false,\n    \"created_at\": \"2013-03-28T10:51:18.103Z\"\n  },\n  \"category_id\": 8369,\n  \"created_at\": \"1968-02-01T06:05:10.470Z\",\n  \"profile_picture_path\": \"string\",\n  \"profile_picture_url\": \"string\"\n}"
-                    },
-                    {
-                      "name": "Validation error.",
-                      "originalRequest": {
-                        "method": "PUT",
-                        "header": [
-                          {
-                            "key": "Content-Type",
-                            "value": "application/json"
-                          },
-                          {
-                            "key": "Accept",
-                            "value": "application/json"
-                          }
-                        ],
-                        "body": {
-                          "mode": "raw",
-                          "raw": "{\n  \"category_id\": 7367,\n  \"email\": \"gbPkZiXtxZ@eIcNjyLNGWIqUIu.gw\",\n  \"email_notifications_enabled\": true,\n  \"first_name\": \"string\",\n  \"is_active\": false,\n  \"last_name\": \"string\",\n  \"password\": \"string\",\n  \"role\": \"admin\",\n  \"username\": \"string\"\n}",
-                          "options": {
-                            "raw": {
-                              "headerFamily": "json",
-                              "language": "json"
-                            }
-                          }
-                        },
-                        "url": {
-                          "raw": "{{baseUrl}}/admin/users/:user_id",
-                          "host": [
-                            "{{baseUrl}}"
-                          ],
-                          "path": [
-                            "admin",
-                            "users",
-                            ":user_id"
-                          ],
-                          "variable": [
-                            {
-                              "key": "user_id",
-                              "value": "6011"
-                            }
-                          ]
-                        }
-                      },
-                      "status": "Bad Request",
-                      "code": 400,
-                      "_postman_previewlanguage": "json",
-                      "header": [
-                        {
-                          "key": "Content-Type",
-                          "value": "application/json"
-                        }
-                      ],
-                      "cookie": [],
-                      "body": "{\n  \"error\": \"string\"\n}"
-                    },
-                    {
-                      "name": "Authentication required.",
-                      "originalRequest": {
-                        "method": "PUT",
-                        "header": [
-                          {
-                            "key": "Content-Type",
-                            "value": "application/json"
-                          },
-                          {
-                            "key": "Accept",
-                            "value": "application/json"
-                          }
-                        ],
-                        "body": {
-                          "mode": "raw",
-                          "raw": "{\n  \"category_id\": 7367,\n  \"email\": \"gbPkZiXtxZ@eIcNjyLNGWIqUIu.gw\",\n  \"email_notifications_enabled\": true,\n  \"first_name\": \"string\",\n  \"is_active\": false,\n  \"last_name\": \"string\",\n  \"password\": \"string\",\n  \"role\": \"admin\",\n  \"username\": \"string\"\n}",
-                          "options": {
-                            "raw": {
-                              "headerFamily": "json",
-                              "language": "json"
-                            }
-                          }
-                        },
-                        "url": {
-                          "raw": "{{baseUrl}}/admin/users/:user_id",
-                          "host": [
-                            "{{baseUrl}}"
-                          ],
-                          "path": [
-                            "admin",
-                            "users",
-                            ":user_id"
-                          ],
-                          "variable": [
-                            {
-                              "key": "user_id",
-                              "value": "6011"
-                            }
-                          ]
-                        }
-                      },
-                      "status": "Unauthorized",
-                      "code": 401,
-                      "_postman_previewlanguage": "json",
-                      "header": [
-                        {
-                          "key": "Content-Type",
-                          "value": "application/json"
-                        }
-                      ],
-                      "cookie": [],
-                      "body": "{\n  \"error\": \"string\"\n}"
-                    },
-                    {
-                      "name": "Admin role required.",
-                      "originalRequest": {
-                        "method": "PUT",
-                        "header": [
-                          {
-                            "key": "Content-Type",
-                            "value": "application/json"
-                          },
-                          {
-                            "key": "Accept",
-                            "value": "application/json"
-                          }
-                        ],
-                        "body": {
-                          "mode": "raw",
-                          "raw": "{\n  \"category_id\": 7367,\n  \"email\": \"gbPkZiXtxZ@eIcNjyLNGWIqUIu.gw\",\n  \"email_notifications_enabled\": true,\n  \"first_name\": \"string\",\n  \"is_active\": false,\n  \"last_name\": \"string\",\n  \"password\": \"string\",\n  \"role\": \"admin\",\n  \"username\": \"string\"\n}",
-                          "options": {
-                            "raw": {
-                              "headerFamily": "json",
-                              "language": "json"
-                            }
-                          }
-                        },
-                        "url": {
-                          "raw": "{{baseUrl}}/admin/users/:user_id",
-                          "host": [
-                            "{{baseUrl}}"
-                          ],
-                          "path": [
-                            "admin",
-                            "users",
-                            ":user_id"
-                          ],
-                          "variable": [
-                            {
-                              "key": "user_id",
-                              "value": "6011"
-                            }
-                          ]
-                        }
-                      },
-                      "status": "Forbidden",
-                      "code": 403,
-                      "_postman_previewlanguage": "json",
-                      "header": [
-                        {
-                          "key": "Content-Type",
-                          "value": "application/json"
-                        }
-                      ],
-                      "cookie": [],
-                      "body": "{\n  \"error\": \"string\"\n}"
-                    },
-                    {
-                      "name": "User not found.",
-                      "originalRequest": {
-                        "method": "PUT",
-                        "header": [
-                          {
-                            "key": "Content-Type",
-                            "value": "application/json"
-                          },
-                          {
-                            "key": "Accept",
-                            "value": "application/json"
-                          }
-                        ],
-                        "body": {
-                          "mode": "raw",
-                          "raw": "{\n  \"category_id\": 7367,\n  \"email\": \"gbPkZiXtxZ@eIcNjyLNGWIqUIu.gw\",\n  \"email_notifications_enabled\": true,\n  \"first_name\": \"string\",\n  \"is_active\": false,\n  \"last_name\": \"string\",\n  \"password\": \"string\",\n  \"role\": \"admin\",\n  \"username\": \"string\"\n}",
-                          "options": {
-                            "raw": {
-                              "headerFamily": "json",
-                              "language": "json"
-                            }
-                          }
-                        },
-                        "url": {
-                          "raw": "{{baseUrl}}/admin/users/:user_id",
-                          "host": [
-                            "{{baseUrl}}"
-                          ],
-                          "path": [
-                            "admin",
-                            "users",
-                            ":user_id"
-                          ],
-                          "variable": [
-                            {
-                              "key": "user_id",
-                              "value": "6011"
-                            }
-                          ]
-                        }
-                      },
-                      "status": "Not Found",
-                      "code": 404,
-                      "_postman_previewlanguage": "json",
-                      "header": [
-                        {
-                          "key": "Content-Type",
-                          "value": "application/json"
-                        }
-                      ],
-                      "cookie": [],
-                      "body": "{\n  \"error\": \"string\"\n}"
-                    }
-                  ]
-                }
-              ]
             }
           ]
+        },
+        {
+          "name": "admin_setup",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status 200 - admin login ok', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('logged-in role is admin', function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.user.role).to.equal('admin');",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identifier\": \"{{admin_email}}\",\n  \"password\": \"{{admin_password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
         }
       ]
     },

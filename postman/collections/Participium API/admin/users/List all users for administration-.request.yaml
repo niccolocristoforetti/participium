@@ -1,0 +1,48 @@
+$kind: http-request
+name: List all users for administration.
+url: "{{baseUrl}}/admin/users"
+method: GET
+headers:
+  Accept: application/json
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('status 200', function () {
+          pm.response.to.have.status(200);
+      });
+
+      pm.test('response is an array', function () {
+          pm.response.to.be.json;
+          pm.expect(pm.response.json()).to.be.an('array');
+      });
+
+      pm.test('each user has id, email, username, role, is_active, is_email_verified, created_at', function () {
+          var json = pm.response.json();
+          pm.expect(json.length).to.be.above(0);
+          json.forEach(function (u) {
+              pm.expect(u.id).to.be.a('number');
+              pm.expect(u.email).to.be.a('string');
+              pm.expect(u.username).to.be.a('string');
+              pm.expect(u.role).to.be.a('string');
+              pm.expect(u.is_active).to.be.a('boolean');
+              pm.expect(u.is_email_verified).to.be.a('boolean');
+              pm.expect(u.created_at).to.be.a('string');
+          });
+      });
+
+      pm.test('roles are valid values: citizen | operator | admin', function () {
+          var validRoles = ['citizen', 'operator', 'admin'];
+          pm.response.json().forEach(function (u) {
+              pm.expect(validRoles).to.include(u.role);
+          });
+      });
+
+      pm.test('seed user citizen@example.com is present', function () {
+          var found = pm.response.json().some(function (u) {
+              return u.email === pm.environment.get('citizen_email');
+          });
+          pm.expect(found).to.be.true;
+      });
+    language: text/javascript
+examples: ./.resources/List all users for administration-.resources/examples
+order: 2000

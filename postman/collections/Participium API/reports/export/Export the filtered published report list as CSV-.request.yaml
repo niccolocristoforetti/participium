@@ -1,0 +1,8 @@
+$kind: http-request
+name: Export the filtered published report list as CSV.
+url: "{{baseUrl}}/reports/export"
+method: GET
+headers:
+  Accept: application/json
+examples: ./.resources/Export the filtered published report list as CSV-.resources/examples
+order: 1000

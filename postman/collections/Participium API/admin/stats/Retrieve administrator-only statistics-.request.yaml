@@ -1,0 +1,24 @@
+$kind: http-request
+name: Retrieve administrator-only statistics.
+url: "{{baseUrl}}/admin/stats"
+method: GET
+headers:
+  Accept: application/json
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('status 200', function () {
+          pm.response.to.have.status(200);
+      });
+
+      pm.test('response is a JSON object', function () {
+          pm.response.to.be.json;
+          pm.expect(pm.response.json()).to.be.an('object');
+      });
+
+      pm.test('stats object is not empty', function () {
+          pm.expect(Object.keys(pm.response.json()).length).to.be.above(0);
+      });
+    language: text/javascript
+examples: ./.resources/Retrieve administrator-only statistics-.resources/examples
+order: 1000

@@ -1,0 +1,17 @@
+$kind: http-request
+name: Health check endpoint.
+url: "{{baseUrl}}/health"
+method: GET
+headers:
+  Accept: application/json
+scripts:
+  - type: afterResponse
+    code: |
+      pm.test("Status 200", () => pm.response.to.have.status(200));
+      pm.test("Status is ok", () => {
+          const body = pm.response.json();
+          pm.expect(body.status).to.eql("ok");
+      });
+    language: text/javascript
+examples: ./.resources/Health check endpoint-.resources/examples
+order: 1000

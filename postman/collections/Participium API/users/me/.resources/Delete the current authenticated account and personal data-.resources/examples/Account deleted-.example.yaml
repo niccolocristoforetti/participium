@@ -1,0 +1,19 @@
+$kind: http-example
+name: Account deleted.
+request:
+  url: "{{baseUrl}}/users/me"
+  method: DELETE
+  headers:
+    Accept: application/json
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "message": "Operation completed."
+      }
+order: 1000

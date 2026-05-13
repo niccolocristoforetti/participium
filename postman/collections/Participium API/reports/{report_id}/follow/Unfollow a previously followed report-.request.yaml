@@ -1,0 +1,10 @@
+$kind: http-request
+name: Unfollow a previously followed report.
+url: "{{baseUrl}}/reports/:report_id/follow"
+method: DELETE
+headers:
+  Accept: application/json
+pathVariables:
+  report_id: "6011"
+examples: ./.resources/Unfollow a previously followed report-.resources/examples
+order: 1000

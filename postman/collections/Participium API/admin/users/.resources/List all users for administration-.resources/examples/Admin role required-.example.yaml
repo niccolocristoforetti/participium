@@ -1,0 +1,19 @@
+$kind: http-example
+name: Admin role required.
+request:
+  url: "{{baseUrl}}/admin/users"
+  method: GET
+  headers:
+    Accept: application/json
+response:
+  statusCode: 403
+  statusText: Forbidden
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "error": "string"
+      }
+order: 3000

@@ -1,0 +1,46 @@
+$kind: http-request
+name: Create a new report category.
+url: "{{baseUrl}}/admin/categories"
+method: POST
+headers:
+  Content-Type: application/json
+  Accept: application/json
+body:
+  type: json
+  content: |-
+    {
+      "name": {{new_category_name}}
+    }
+scripts:
+  - type: beforeRequest
+    code: pm.environment.set('new_category_name', 'TestCat_' + Date.now());
+    language: text/javascript
+  - type: afterResponse
+    code: |-
+      pm.test('status 201 - category created', function () {
+          pm.response.to.have.status(201);
+      });
+
+      pm.test('response has id, name, is_active, created_at', function () {
+          pm.response.to.be.json;
+          var cat = pm.response.json();
+          pm.expect(cat.id).to.be.a('number');
+          pm.expect(cat.name).to.be.a('string');
+          pm.expect(cat.is_active).to.be.a('boolean');
+          pm.expect(cat.created_at).to.be.a('string');
+      });
+
+      pm.test('returned name matches submitted name', function () {
+          pm.expect(pm.response.json().name).to.equal(pm.environment.get('new_category_name'));
+      });
+
+      pm.test('new category is active by default', function () {
+          pm.expect(pm.response.json().is_active).to.equal(true);
+      });
+
+      pm.test('store created_category_id for later requests', function () {
+          pm.environment.set('created_category_id', pm.response.json().id);
+      });
+    language: text/javascript
+examples: ./.resources/Create a new report category-.resources/examples
+order: 3000

@@ -1,0 +1,35 @@
+name: Participium Local
+values:
+  - key: baseUrl
+    value: ''
+  - key: citizen_email
+    value: ''
+  - key: citizen_password
+    value: ''
+  - key: operator_email
+    value: ''
+  - key: operator_password
+    value: ''
+  - key: admin_email
+    value: ''
+  - key: admin_password
+    value: ''
+  - key: invalid_report_id
+    value: ''
+  - key: invalid_category_id
+    value: ''
+  - key: invalid_user_id
+    value: ''
+  - key: updated_category_name
+    value: ''
+  - key: new_category_name
+    value: ''
+  - key: new_admin_created_username
+    value: ''
+  - key: new_admin_created_email
+    value: ''
+  - key: created_user_id
+    value: ''
+  - key: created_category_id
+    value: ''
+color: 240

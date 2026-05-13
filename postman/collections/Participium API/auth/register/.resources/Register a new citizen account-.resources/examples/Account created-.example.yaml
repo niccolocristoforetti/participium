@@ -1,0 +1,51 @@
+$kind: http-example
+name: Account created.
+request:
+  url: "{{baseUrl}}/auth/register"
+  method: POST
+  headers:
+    Content-Type: application/json
+    Accept: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "username": "string",
+        "first_name": "string",
+        "last_name": "string",
+        "email": "lbhgc4E0zU8Tfl@YxwRakaCxrlVUVDbOle.hvbf",
+        "password": "string"
+      }
+response:
+  statusCode: 201
+  statusText: Created
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "user": {
+          "id": 1,
+          "username": "citizen",
+          "first_name": "Marco",
+          "last_name": "Citizen",
+          "email": "citizen@example.com",
+          "role": "admin",
+          "is_active": false,
+          "is_email_verified": false,
+          "email_notifications_enabled": false,
+          "category": {
+            "id": 1,
+            "name": "Roads and Urban Furniture",
+            "is_active": true,
+            "created_at": "1988-11-21T10:48:10.862Z"
+          },
+          "category_id": 9328,
+          "created_at": "1987-07-29T12:46:29.875Z",
+          "profile_picture_path": "string",
+          "profile_picture_url": "string"
+        },
+        "verification_url": "string"
+      }
+order: 1000

@@ -1,0 +1,104 @@
+$kind: http-example
+name: Operator report queue.
+request:
+  url: "{{baseUrl}}/operator/reports/assigned"
+  method: GET
+  headers:
+    Accept: application/json
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      [
+        {
+          "id": 10,
+          "title": "Pothole on Via Roma",
+          "description": "string",
+          "category": {
+            "id": 1,
+            "name": "Roads and Urban Furniture",
+            "is_active": true,
+            "created_at": "2017-07-23T18:47:45.797Z"
+          },
+          "status": "resolved",
+          "is_anonymous": true,
+          "reporter": {
+            "id": 3995,
+            "display_name": "Marco Citizen",
+            "role": "admin"
+          },
+          "latitude": 45.0678,
+          "longitude": 7.6825,
+          "photos": [
+            {
+              "id": 9688,
+              "file_path": "string",
+              "url": "string",
+              "original_filename": "string",
+              "content_type": "image/jpeg"
+            },
+            {
+              "id": 3220,
+              "file_path": "string",
+              "url": "string",
+              "original_filename": "string",
+              "content_type": "image/jpeg"
+            }
+          ],
+          "followers_count": 1428,
+          "is_followed_by_current_user": false,
+          "is_public": true,
+          "created_at": "2003-09-11T22:20:44.725Z",
+          "rejection_reason": "string",
+          "updated_at": "1953-10-22T06:51:38.005Z",
+          "unread_message_count": 948
+        },
+        {
+          "id": 10,
+          "title": "Pothole on Via Roma",
+          "description": "string",
+          "category": {
+            "id": 1,
+            "name": "Roads and Urban Furniture",
+            "is_active": true,
+            "created_at": "1952-03-05T09:26:03.442Z"
+          },
+          "status": "in_progress",
+          "is_anonymous": true,
+          "reporter": {
+            "id": 5108,
+            "display_name": "Marco Citizen",
+            "role": "admin"
+          },
+          "latitude": 45.0678,
+          "longitude": 7.6825,
+          "photos": [
+            {
+              "id": 3393,
+              "file_path": "string",
+              "url": "string",
+              "original_filename": "string",
+              "content_type": "image/jpeg"
+            },
+            {
+              "id": 7809,
+              "file_path": "string",
+              "url": "string",
+              "original_filename": "string",
+              "content_type": "image/jpeg"
+            }
+          ],
+          "followers_count": 2739,
+          "is_followed_by_current_user": false,
+          "is_public": false,
+          "created_at": "2024-08-25T07:13:43.713Z",
+          "rejection_reason": "string",
+          "updated_at": "2020-12-02T08:27:30.617Z",
+          "unread_message_count": 1655
+        }
+      ]
+order: 1000

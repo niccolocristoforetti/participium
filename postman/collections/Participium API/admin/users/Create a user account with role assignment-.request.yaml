@@ -1,0 +1,55 @@
+$kind: http-request
+name: Create a user account with role assignment.
+url: "{{baseUrl}}/admin/users"
+method: POST
+headers:
+  Content-Type: application/json
+  Accept: application/json
+body:
+  type: json
+  content: |-
+    {
+      "username": "{{new_admin_created_username}}",
+      "email": "{{new_admin_created_email}}",
+      "password": "Operator99!",
+      "role": "operator"
+    }
+scripts:
+  - type: beforeRequest
+    code: |-
+      var ts = Date.now();
+      pm.environment.set('new_admin_created_username', 'op_adm_' + ts);
+      pm.environment.set('new_admin_created_email', 'op_adm_' + ts + '@test.local');
+    language: text/javascript
+  - type: afterResponse
+    code: |-
+      pm.test('status 201 - user created', function () {
+          pm.response.to.have.status(201);
+      });
+
+      pm.test('response has id, email, username, role, is_active, is_email_verified, created_at', function () {
+          pm.response.to.be.json;
+          var u = pm.response.json();
+          pm.expect(u.id).to.be.a('number');
+          pm.expect(u.email).to.be.a('string');
+          pm.expect(u.username).to.be.a('string');
+          pm.expect(u.role).to.be.a('string');
+          pm.expect(u.is_active).to.be.a('boolean');
+          pm.expect(u.is_email_verified).to.be.a('boolean');
+          pm.expect(u.created_at).to.be.a('string');
+      });
+
+      pm.test('role is operator as requested', function () {
+          pm.expect(pm.response.json().role).to.equal('operator');
+      });
+
+      pm.test('email matches submitted email', function () {
+          pm.expect(pm.response.json().email).to.equal(pm.environment.get('new_admin_created_email'));
+      });
+
+      pm.test('store created_user_id for PUT test', function () {
+          pm.environment.set('created_user_id', pm.response.json().id);
+      });
+    language: text/javascript
+examples: ./.resources/Create a user account with role assignment-.resources/examples
+order: 3000

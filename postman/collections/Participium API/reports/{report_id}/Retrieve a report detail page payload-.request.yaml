@@ -1,0 +1,10 @@
+$kind: http-request
+name: Retrieve a report detail page payload.
+url: "{{baseUrl}}/reports/:report_id"
+method: GET
+headers:
+  Accept: application/json
+pathVariables:
+  report_id: "6011"
+examples: ./.resources/Retrieve a report detail page payload-.resources/examples
+order: 3000

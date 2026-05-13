@@ -1,0 +1,121 @@
+$kind: http-example
+name: Report assigned.
+request:
+  url: "{{baseUrl}}/operator/reports/:report_id/assign"
+  method: POST
+  headers:
+    Accept: application/json
+  pathVariables:
+    report_id: "6011"
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "id": 10,
+        "title": "Pothole on Via Roma",
+        "description": "string",
+        "category": {
+          "id": 1,
+          "name": "Roads and Urban Furniture",
+          "is_active": true,
+          "created_at": "2019-07-23T18:41:51.756Z"
+        },
+        "status": "pending_approval",
+        "is_anonymous": true,
+        "reporter": {
+          "id": 159,
+          "display_name": "Marco Citizen",
+          "role": "admin"
+        },
+        "latitude": 45.0678,
+        "longitude": 7.6825,
+        "photos": [
+          {
+            "id": 4950,
+            "file_path": "string",
+            "url": "string",
+            "original_filename": "string",
+            "content_type": "image/jpeg"
+          },
+          {
+            "id": 491,
+            "file_path": "string",
+            "url": "string",
+            "original_filename": "string",
+            "content_type": "image/jpeg"
+          }
+        ],
+        "followers_count": 3037,
+        "is_followed_by_current_user": true,
+        "is_public": false,
+        "can_access_messages": false,
+        "status_history": [
+          {
+            "id": 6033,
+            "previous_status": "rejected",
+            "new_status": "rejected",
+            "changed_by": {
+              "id": 497,
+              "display_name": "Marco Citizen",
+              "role": "admin"
+            },
+            "created_at": "2019-12-18T21:20:19.750Z",
+            "note": "string"
+          },
+          {
+            "id": 4941,
+            "previous_status": "in_progress",
+            "new_status": "in_progress",
+            "changed_by": {
+              "id": 9399,
+              "display_name": "Marco Citizen",
+              "role": "operator"
+            },
+            "created_at": "1974-06-12T05:58:58.426Z",
+            "note": "string"
+          }
+        ],
+        "created_at": "1953-12-15T11:33:53.921Z",
+        "rejection_reason": "string",
+        "updated_at": "1989-08-22T07:21:23.239Z",
+        "messages": [
+          {
+            "id": 2365,
+            "report_id": 8171,
+            "body": "string",
+            "sender": {
+              "id": 8598,
+              "display_name": "Marco Citizen",
+              "role": "citizen"
+            },
+            "recipient": {
+              "id": 6581,
+              "display_name": "Marco Citizen",
+              "role": "admin"
+            },
+            "created_at": "2016-06-28T01:32:11.028Z"
+          },
+          {
+            "id": 9803,
+            "report_id": 6045,
+            "body": "string",
+            "sender": {
+              "id": 6667,
+              "display_name": "Marco Citizen",
+              "role": "operator"
+            },
+            "recipient": {
+              "id": 6444,
+              "display_name": "Marco Citizen",
+              "role": "operator"
+            },
+            "created_at": "1993-06-09T19:27:47.507Z"
+          }
+        ]
+      }
+order: 1000

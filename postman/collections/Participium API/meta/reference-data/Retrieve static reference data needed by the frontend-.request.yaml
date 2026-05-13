@@ -1,0 +1,27 @@
+$kind: http-request
+name: Retrieve static reference data needed by the frontend.
+url: "{{baseUrl}}/meta/reference-data"
+method: GET
+headers:
+  Accept: application/json
+scripts:
+  - type: afterResponse
+    code: |
+      pm.test("Status 200", () => pm.response.to.have.status(200));
+      pm.test("Has roles array", () => {
+          const body = pm.response.json();
+          pm.expect(body).to.have.property("roles");
+          pm.expect(body.roles).to.be.an("array").that.is.not.empty;
+      });
+      pm.test("Has report_statuses array", () => {
+          const body = pm.response.json();
+          pm.expect(body).to.have.property("report_statuses");
+          pm.expect(body.report_statuses).to.be.an("array").that.is.not.empty;
+      });
+      pm.test("Has public_report_statuses array", () => {
+          const body = pm.response.json();
+          pm.expect(body).to.have.property("public_report_statuses");
+      });
+    language: text/javascript
+examples: ./.resources/Retrieve static reference data needed by the frontend-.resources/examples
+order: 1000

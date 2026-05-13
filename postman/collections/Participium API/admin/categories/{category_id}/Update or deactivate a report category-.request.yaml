@@ -1,0 +1,47 @@
+$kind: http-request
+name: Update or deactivate a report category.
+url: "{{baseUrl}}/admin/categories/{{created_category_id}}"
+method: PUT
+headers:
+  Content-Type: application/json
+  Accept: application/json
+body:
+  type: json
+  content: |-
+    {
+      "name": "{{updated_category_name}}",
+      "is_active": false
+    }
+scripts:
+  - type: beforeRequest
+    code: pm.environment.set('updated_category_name', 'UpdatedCat_' + Date.now());
+    language: text/javascript
+  - type: afterResponse
+    code: |-
+      pm.test('status 200 - category updated', function () {
+          pm.response.to.have.status(200);
+      });
+
+      pm.test('response has id, name, is_active, created_at', function () {
+          pm.response.to.be.json;
+          var cat = pm.response.json();
+          pm.expect(cat.id).to.be.a('number');
+          pm.expect(cat.name).to.be.a('string');
+          pm.expect(cat.is_active).to.be.a('boolean');
+          pm.expect(cat.created_at).to.be.a('string');
+      });
+
+      pm.test('returned name matches updated name', function () {
+          pm.expect(pm.response.json().name).to.equal(pm.environment.get('updated_category_name'));
+      });
+
+      pm.test('is_active is now false', function () {
+          pm.expect(pm.response.json().is_active).to.equal(false);
+      });
+
+      pm.test('id is unchanged', function () {
+          pm.expect(String(pm.response.json().id)).to.equal(String(pm.environment.get('created_category_id')));
+      });
+    language: text/javascript
+examples: ./.resources/Update or deactivate a report category-.resources/examples
+order: 1000

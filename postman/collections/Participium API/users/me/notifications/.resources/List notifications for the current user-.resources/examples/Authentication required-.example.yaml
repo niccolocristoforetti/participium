@@ -1,0 +1,19 @@
+$kind: http-example
+name: Authentication required.
+request:
+  url: "{{baseUrl}}/users/me/notifications"
+  method: GET
+  headers:
+    Accept: application/json
+response:
+  statusCode: 401
+  statusText: Unauthorized
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "error": "string"
+      }
+order: 2000

@@ -1,0 +1,33 @@
+$kind: http-request
+name: Create a new report with up to 3 photos.
+url: "{{baseUrl}}/reports"
+method: POST
+headers:
+  Content-Type: multipart/form-data
+  Accept: application/json
+body:
+  type: formdata
+  content:
+    - type: text
+      key: title
+      value: string
+    - type: text
+      key: description
+      value: string
+    - type: text
+      key: category_id
+      value: "1236"
+    - type: text
+      key: latitude
+      value: "211.46117424509004"
+    - type: text
+      key: longitude
+      value: "2352.843199876353"
+    - type: file
+      key: photos
+      src: []
+    - type: text
+      key: is_anonymous
+      value: "false"
+examples: ./.resources/Create a new report with up to 3 photos-.resources/examples
+order: 4000

@@ -1,0 +1,21 @@
+$kind: http-example
+name: Report not found.
+request:
+  url: "{{baseUrl}}/operator/reports/:report_id/assign"
+  method: POST
+  headers:
+    Accept: application/json
+  pathVariables:
+    report_id: "6011"
+response:
+  statusCode: 404
+  statusText: Not Found
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "error": "string"
+      }
+order: 4000

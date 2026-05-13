@@ -1,0 +1,22 @@
+$kind: http-request
+name: admin_setup
+url: "{{baseUrl}}/auth/login"
+method: POST
+body:
+  type: json
+  content: |-
+    {
+      "identifier": "{{admin_email}}",
+      "password": "{{admin_password}}"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status 200", () => pm.response.to.have.status(200));
+      pm.test("Logged in as admin", () => {
+          const b = pm.response.json();
+          pm.expect(b.message).to.eql("Logged in.");
+          pm.expect(b.user.role).to.eql("admin");
+      });
+    language: text/javascript
+order: 502

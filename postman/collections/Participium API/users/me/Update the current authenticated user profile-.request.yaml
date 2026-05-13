@@ -1,0 +1,8 @@
+$kind: http-request
+name: Update the current authenticated user profile.
+url: "{{baseUrl}}/users/me"
+method: PUT
+headers:
+  Accept: application/json
+examples: ./.resources/Update the current authenticated user profile-.resources/examples
+order: 5000

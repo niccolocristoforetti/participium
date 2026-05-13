@@ -1,0 +1,46 @@
+$kind: http-request
+name: Update a user account and role.
+url: "{{baseUrl}}/admin/users/:user_id"
+method: PUT
+headers:
+  Content-Type: application/json
+  Accept: application/json
+pathVariables:
+  user_id: "6011"
+body:
+  type: json
+  content: |-
+    {
+      "role": "citizen",
+      "is_active": true,
+      "email_notifications_enabled": true
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('status 200 - user updated', function () {
+          pm.response.to.have.status(200);
+      });
+
+      pm.test('response has id, email, username, role, is_active, is_email_verified, created_at', function () {
+          pm.response.to.be.json;
+          var u = pm.response.json();
+          pm.expect(u.id).to.be.a('number');
+          pm.expect(u.email).to.be.a('string');
+          pm.expect(u.username).to.be.a('string');
+          pm.expect(u.role).to.be.a('string');
+          pm.expect(u.is_active).to.be.a('boolean');
+          pm.expect(u.is_email_verified).to.be.a('boolean');
+          pm.expect(u.created_at).to.be.a('string');
+      });
+
+      pm.test('role was changed to citizen', function () {
+          pm.expect(pm.response.json().role).to.equal('citizen');
+      });
+
+      pm.test('id is unchanged', function () {
+          pm.expect(String(pm.response.json().id)).to.equal(String(pm.environment.get('created_user_id')));
+      });
+    language: text/javascript
+examples: ./.resources/Update a user account and role-.resources/examples
+order: 1000

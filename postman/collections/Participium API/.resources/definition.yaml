@@ -1,0 +1,4 @@
+$kind: collection
+description: REST API for the Participium civic issue reporting platform.
+variables:
+  baseUrl: "{{baseUrl}}"

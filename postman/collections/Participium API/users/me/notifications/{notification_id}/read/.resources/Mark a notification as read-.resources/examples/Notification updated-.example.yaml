@@ -1,0 +1,27 @@
+$kind: http-example
+name: Notification updated.
+request:
+  url: "{{baseUrl}}/users/me/notifications/:notification_id/read"
+  method: POST
+  headers:
+    Accept: application/json
+  pathVariables:
+    notification_id: "6011"
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "id": 2666,
+        "type": "string",
+        "title": "string",
+        "body": "string",
+        "is_read": true,
+        "created_at": "2003-05-22T06:15:31.272Z",
+        "report_id": 4728
+      }
+order: 1000

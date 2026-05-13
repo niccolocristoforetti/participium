@@ -1,0 +1,8 @@
+$kind: http-request
+name: Retrieve the current authenticated user profile.
+url: "{{baseUrl}}/users/me"
+method: GET
+headers:
+  Accept: application/json
+examples: ./.resources/Retrieve the current authenticated user profile-.resources/examples
+order: 4000

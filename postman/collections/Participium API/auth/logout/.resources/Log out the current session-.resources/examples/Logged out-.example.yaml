@@ -1,0 +1,19 @@
+$kind: http-example
+name: Logged out.
+request:
+  url: "{{baseUrl}}/auth/logout"
+  method: POST
+  headers:
+    Accept: application/json
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "message": "Operation completed."
+      }
+order: 1000

@@ -1,0 +1,21 @@
+$kind: http-example
+name: Invalid granularity.
+request:
+  url: "{{baseUrl}}/stats/public?granularity=month"
+  method: GET
+  headers:
+    Accept: application/json
+  queryParams:
+    granularity: month
+response:
+  statusCode: 400
+  statusText: Bad Request
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "error": "string"
+      }
+order: 2000

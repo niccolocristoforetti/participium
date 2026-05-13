@@ -1,0 +1,17 @@
+$kind: http-request
+name: Log out the current session.
+url: "{{baseUrl}}/auth/logout"
+method: POST
+headers:
+  Accept: application/json
+scripts:
+  - type: afterResponse
+    code: |
+      pm.test("Status 200", () => pm.response.to.have.status(200));
+      pm.test("Has logged out message", () => {
+          const body = pm.response.json();
+          pm.expect(body.message).to.eql("Logged out.");
+      });
+    language: text/javascript
+examples: ./.resources/Log out the current session-.resources/examples
+order: 1000

@@ -67,7 +67,6 @@ def multiple_notifications_case(notification_service_bundle: dict[str, object]) 
     return notification_service_bundle
 
 
-@pytest.mark.skip(reason="Disabled.")
 def test_mark_message_notifications_returns_zero_without_matches(
     empty_notifications_case: dict[str, object],
 ) -> None:
@@ -85,7 +84,6 @@ def test_mark_message_notifications_returns_zero_without_matches(
     session.commit.assert_not_called()
 
 
-@pytest.mark.skip(reason="Disabled.")
 def test_mark_message_notifications_marks_one_notification_and_commits(
     single_notification_case: dict[str, object],
 ) -> None:
@@ -100,7 +98,6 @@ def test_mark_message_notifications_marks_one_notification_and_commits(
     session.commit.assert_called_once_with()
 
 
-@pytest.mark.skip(reason="Disabled.")
 def test_mark_message_notifications_marks_all_notifications_in_the_result_set(
     multiple_notifications_case: dict[str, object],
 ) -> None:

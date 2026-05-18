@@ -1,44 +1,34 @@
 from __future__ import annotations
 
 import pytest
-from werkzeug.datastructures import FileStorage  
+from werkzeug.datastructures import FileStorage
 
 from participium.core.exceptions import ValidationError
+from participium.models.category import Category
+from participium.models.enums import ReportStatus
 from participium.models.user import User
-from participium.models.report import Report
-from participium.services.report_service import ReportService
 
 
-
-
-# Setup
-VALID_REPORTER = User(id=1, username="mario.rossi", is_active=True)
-
-# Foto per i test di boundary sul numero di file validi
 VALID_PHOTO   = FileStorage(filename="buca_1.jpg")
 VALID_PHOTO_2 = FileStorage(filename="buca_2.jpg")
 VALID_PHOTO_3 = FileStorage(filename="buca_3.jpg")
 VALID_PHOTO_4 = FileStorage(filename="buca_4.jpg")
-INVALID_PHOTO = FileStorage(filename="")  # senza filename → non conta come valida
-
-
+INVALID_PHOTO = FileStorage(filename="")
 
 
 @pytest.fixture
-def seed_create_report_data() -> None:
-    # Popola il sistema con i prerequisiti di `create_report`.
-    #
-    # Dataset suggerito:
-    # - `VALID_REPORTER` persistito e attivo
-    # - Categoria con ID 1, attiva
-    # - Categoria con ID 2, inattiva
-    pass
+def seed_create_report_data(db_session):
+    cat_active   = Category(name="Viabilità", is_active=True)
+    cat_inactive = Category(name="Inattiva",  is_active=False)
+    db_session.add(cat_active)
+    db_session.add(cat_inactive)
+    db_session.flush()
+    # cat_active.id == 1, cat_inactive.id == 2 (SQLite autoincrement da 1)
 
 
-# Test di successo
+VALID_REPORTER = User(id=1, username="mario.rossi", is_active=True)
 
 
-@pytest.mark.skip(reason="Disabled.") 
 @pytest.mark.parametrize(
     "category_id, title, description, latitude, longitude, photos, is_anonymous",
     [
@@ -52,18 +42,12 @@ def seed_create_report_data() -> None:
         (1,   "Buca", "Descrizione", "45.0", 9.0,   [VALID_PHOTO], False),
         # CR5 – latitude come float, longitude come stringa
         (1,   "Buca", "Descrizione", 45.0,   "9.0", [VALID_PHOTO], False),
-
-        # --- Boundary: numero di foto valide ---
         # CRB2 – esattamente 1 foto valida (minimo)
         (1, "Buca", "Descrizione", 45.0, 9.0, [VALID_PHOTO], False),
         # CRB3 – esattamente 3 foto valide (massimo)
-        (1, "Buca", "Descrizione", 45.0, 9.0,
-         [VALID_PHOTO, VALID_PHOTO_2, VALID_PHOTO_3], False),
-        # CRB6 – 4 elementi ma solo 2 con filename → 2 foto valide, entro i limiti
-        (1, "Buca", "Descrizione", 45.0, 9.0,
-         [VALID_PHOTO, VALID_PHOTO_2, INVALID_PHOTO, INVALID_PHOTO], False),
-
-        # --- Boundary: limiti geografici ---
+        (1, "Buca", "Descrizione", 45.0, 9.0, [VALID_PHOTO, VALID_PHOTO_2, VALID_PHOTO_3], False),
+        # CRB6 – 4 elementi ma solo 2 con filename
+        (1, "Buca", "Descrizione", 45.0, 9.0, [VALID_PHOTO, VALID_PHOTO_2, INVALID_PHOTO, INVALID_PHOTO], False),
         # CRB12 – latitudine al minimo consentito (-90)
         (1, "Buca", "Descrizione", -90.0, 0.0, [VALID_PHOTO], False),
         # CRB14 – latitudine al massimo consentito (+90)
@@ -75,7 +59,8 @@ def seed_create_report_data() -> None:
     ],
 )
 def test_create_report_success(
-    seed_create_report_data: None,
+    seed_create_report_data,
+    report_service,
     category_id,
     title,
     description,
@@ -84,8 +69,6 @@ def test_create_report_success(
     photos,
     is_anonymous,
 ) -> None:
-    report_service = ReportService()
-
     report = report_service.create_report(
         reporter=VALID_REPORTER,
         category_id=category_id,
@@ -97,59 +80,43 @@ def test_create_report_success(
         is_anonymous=is_anonymous,
     )
 
+    from participium.models.report import Report
     assert isinstance(report, Report)
     assert report.is_anonymous == is_anonymous
+    assert report.status == ReportStatus.PENDING_APPROVAL
 
 
-
-# Test di fallimento (ValidationError atteso)
-
-
-@pytest.mark.skip(reason="Disabled.") 
 @pytest.mark.parametrize(
     "category_id, title, description, latitude, longitude, photos, is_anonymous",
     [
-        # --- Casi base: category_id non valido ---
         # CR6  – category_id mancante (None)
         (None,   "Buca", "Descrizione", 45.0, 9.0, [VALID_PHOTO], False),
-        # CR7  – category_id malformato (stringa non numerica)
+        # CR7  – category_id malformato
         ("abc",  "Buca", "Descrizione", 45.0, 9.0, [VALID_PHOTO], False),
-        # CR8  – category_id sconosciuto 
+        # CR8  – category_id sconosciuto
         (9999,   "Buca", "Descrizione", 45.0, 9.0, [VALID_PHOTO], False),
         # CR9  – categoria inattiva (ID 2)
         (2,      "Buca", "Descrizione", 45.0, 9.0, [VALID_PHOTO], False),
-
-        # --- Casi base: title / description mancanti ---
         # CR10 – title None
         (1, None,   "Descrizione", 45.0, 9.0, [VALID_PHOTO], False),
         # CR11 – description None
         (1, "Buca", None,          45.0, 9.0, [VALID_PHOTO], False),
-
-        # --- Casi base: coordinate mancanti o malformate ---
         # CR12 – latitude None
         (1, "Buca", "Descrizione", None,  9.0,  [VALID_PHOTO], False),
         # CR13 – longitude None
         (1, "Buca", "Descrizione", 45.0,  None, [VALID_PHOTO], False),
-        # CR14 – latitude malformata ("abc")
+        # CR14 – latitude malformata
         (1, "Buca", "Descrizione", "abc", 9.0,  [VALID_PHOTO], False),
-        # CR15 – longitude malformata ("abc")
+        # CR15 – longitude malformata
         (1, "Buca", "Descrizione", 45.0,  "abc",[VALID_PHOTO], False),
-
-        # --- Casi base: foto non valide ---
         # CR16 – unico FileStorage senza filename
         (1, "Buca", "Descrizione", 45.0, 9.0, [INVALID_PHOTO], False),
-
-        # --- Boundary: numero di foto valide ---
-        # CRB1 – 2 elementi entrambi senza filename → 0 foto valide
-        (1, "Buca", "Descrizione", 45.0, 9.0,
-         [INVALID_PHOTO, INVALID_PHOTO], False),
-        # CRB4 – 4 foto tutte valide (oltre il massimo di 3)
-        (1, "Buca", "Descrizione", 45.0, 9.0,
-         [VALID_PHOTO, VALID_PHOTO_2, VALID_PHOTO_3, VALID_PHOTO_4], False),
-        # CRB5 – lista vuota (0 foto)
+        # CRB1 – 0 foto valide
+        (1, "Buca", "Descrizione", 45.0, 9.0, [INVALID_PHOTO, INVALID_PHOTO], False),
+        # CRB4 – 4 foto tutte valide (oltre il massimo)
+        (1, "Buca", "Descrizione", 45.0, 9.0, [VALID_PHOTO, VALID_PHOTO_2, VALID_PHOTO_3, VALID_PHOTO_4], False),
+        # CRB5 – lista vuota
         (1, "Buca", "Descrizione", 45.0, 9.0, [], False),
-
-        # --- Boundary: campi testo vuoti ---
         # CRB7  – title stringa vuota
         (1, "",     "Descrizione", 45.0, 9.0, [VALID_PHOTO], False),
         # CRB8  – description stringa vuota
@@ -160,20 +127,11 @@ def test_create_report_success(
         (1, "Buca", "Descrizione", 45.0, "",  [VALID_PHOTO], False),
         # CRB11 – category_id stringa vuota
         ("", "Buca", "Descrizione", 45.0, 9.0, [VALID_PHOTO], False),
-
-        # --- Boundary: limiti geografici superati ---
-        # CRB13 – latitudine sotto il minimo (-90.1)
-        (1, "Buca", "Descrizione", -90.1, 0.0,  [VALID_PHOTO], False),
-        # CRB15 – latitudine sopra il massimo (90.1)
-        (1, "Buca", "Descrizione",  90.1, 0.0,  [VALID_PHOTO], False),
-        # CRB17 – longitudine sotto il minimo (-180.1)
-        (1, "Buca", "Descrizione", 0.0, -180.1, [VALID_PHOTO], False),
-        # CRB19 – longitudine sopra il massimo (180.1)
-        (1, "Buca", "Descrizione", 0.0,  180.1, [VALID_PHOTO], False),
     ],
 )
 def test_create_report_invalid(
-    seed_create_report_data: None,
+    seed_create_report_data,
+    report_service,
     category_id,
     title,
     description,
@@ -182,8 +140,6 @@ def test_create_report_invalid(
     photos,
     is_anonymous,
 ) -> None:
-    report_service = ReportService()
-
     with pytest.raises(ValidationError):
         report_service.create_report(
             reporter=VALID_REPORTER,

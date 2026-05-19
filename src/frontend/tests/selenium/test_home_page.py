@@ -36,7 +36,7 @@ UC-05 copre:
 
 # Helpers
 
-# Attende che la home page e il corpo della tabella siano presenti nel DOM.
+# Funzione per aspettare che la home e la tabella dei report siano caricate del tutto
 def _wait_home_loaded(driver, timeout: int = 10) -> None:
     WebDriverWait(driver, timeout).until(
         EC.presence_of_element_located((By.ID, "home-page"))
@@ -46,9 +46,9 @@ def _wait_home_loaded(driver, timeout: int = 10) -> None:
     )
 
 
-# Restituisce gli id delle sole righe tabellari effettive visibili nella tabella pubblica.
+# Prende gli ID delle righe visibili in tabella, ignorando i marker della mappa
 def _get_visible_row_ids(driver) -> list:
-    # Vincoliamo il selettore al tag 'tr' per escludere i marker delle mappe e le celle interne.
+    # Cerchiamo solo i tag 'tr' per non fare confusione con altri elementi che hanno ID simili
     rows = driver.find_elements(By.CSS_SELECTOR, "tr[id^='public-report-row-']")
     return [
         r.get_attribute("id")
@@ -59,7 +59,7 @@ def _get_visible_row_ids(driver) -> list:
 
 # UC-04 – Accesso pubblico senza autenticazione
 
-# La home page è raggiungibile da un visitatore non autenticato.
+# Verifichiamo che un utente non loggato riesca ad aprire la home senza problemi
 @pytest.mark.e2e
 def test_uc04_home_page_accessible_without_login(driver):
     driver.get(BASE_URL)
@@ -73,7 +73,7 @@ def test_uc04_home_page_accessible_without_login(driver):
 
 # UC-04 – Struttura della pagina: hero, mappa, statistiche
 
-# Il banner introduttivo con titolo e link di navigazione (Register / Login) è visibile.
+# Controlliamo se il banner iniziale ha il titolo e i pulsanti per Login e Registrazione
 @pytest.mark.e2e
 def test_uc04_hero_section_visible(driver):
     driver.get(BASE_URL)
@@ -85,7 +85,7 @@ def test_uc04_hero_section_visible(driver):
     assert driver.find_element(By.ID, "login-link").is_displayed()
 
 
-# La sezione con la mappa OpenStreetMap è visibile nella home page.
+# Verifichiamo che il box che contiene la mappa di OpenStreetMap sia visibile
 @pytest.mark.e2e
 def test_uc04_map_card_present(driver):
     driver.get(BASE_URL)
@@ -96,7 +96,7 @@ def test_uc04_map_card_present(driver):
     assert driver.find_element(By.ID, "public-map-title").is_displayed()
 
 
-# Il contenitore della mappa (id=public-map) è inserito nel DOM da MapPanel.
+# Controlliamo che il componente MapPanel inserisca effettivamente il div della mappa nella pagina
 @pytest.mark.e2e
 def test_uc04_map_container_rendered(driver):
     driver.get(BASE_URL)
@@ -106,7 +106,7 @@ def test_uc04_map_container_rendered(driver):
     assert map_el is not None, "Il contenitore della mappa deve essere presente nel DOM"
 
 
-# La sezione statistiche pubbliche mostra il totale dei report come numero intero.
+# Vediamo se la sezione delle statistiche mostra il numero totale di segnalazioni (deve essere un numero)
 @pytest.mark.e2e
 def test_uc04_statistics_section_visible(driver):
     driver.get(BASE_URL)
@@ -126,7 +126,7 @@ def test_uc04_statistics_section_visible(driver):
 
 # UC-04 – Tabella report pubblicati
 
-# La tabella dei report pubblicati è visibile con tutte le intestazioni attese.
+# Ci assicuriamo che la tabella si veda e che ci siano tutte le colonne che servono
 @pytest.mark.e2e
 def test_uc04_report_table_headers_visible(driver):
     driver.get(BASE_URL)
@@ -145,7 +145,7 @@ def test_uc04_report_table_headers_visible(driver):
         )
 
 
-# Le righe della tabella usano ID stabili nel formato public-report-row-<id numerico>.
+# Controlliamo che gli ID delle righe seguano lo schema giusto e finiscano con un numero coerente
 @pytest.mark.e2e
 def test_uc04_report_rows_have_stable_ids(driver):
     driver.get(BASE_URL)
@@ -155,7 +155,7 @@ def test_uc04_report_rows_have_stable_ids(driver):
         EC.presence_of_element_located((By.CSS_SELECTOR, "tr[id^='public-report-row-']"))
     )
 
-    # Selezioniamo solo i tag 'tr' reali escludendo i marker della mappa.
+    # Escludiamo i marker della mappa e prendiamo solo le righe vere della tabella
     row_ids = [
         row.get_attribute("id")
         for row in driver.find_elements(By.CSS_SELECTOR, "tr[id^='public-report-row-']")
@@ -174,7 +174,7 @@ def test_uc04_report_rows_have_stable_ids(driver):
 
 # UC-04 – Navigazione dal report nella tabella alla pagina di dettaglio
 
-# Cliccando 'Open' su un report della tabella si arriva alla pagina di dettaglio.
+# Proviamo a cliccare sul link 'Open' del primo report per vedere se si apre la pagina di dettaglio
 @pytest.mark.e2e
 def test_uc04_open_link_navigates_to_report_detail(driver):
     driver.get(BASE_URL)
@@ -199,7 +199,7 @@ def test_uc04_open_link_navigates_to_report_detail(driver):
 
 # UC-04 – Extension 3a: tabella vuota non causa errori
 
-# Il tbody della tabella esiste sempre; l'assenza di report non causa errori JS visibili.
+# Anche se non ci sono segnalazioni, il corpo della tabella deve esistere e l'app non deve crashare
 @pytest.mark.e2e
 def test_uc04_empty_table_body_does_not_crash(driver):
     driver.get(BASE_URL)
@@ -208,18 +208,17 @@ def test_uc04_empty_table_body_does_not_crash(driver):
     tbody = driver.find_element(By.ID, "public-report-table-body")
     assert tbody is not None, "Il corpo della tabella deve esistere anche quando è vuoto"
 
-    # Nessun elemento di errore deve essere visibile sulla pagina al caricamento.
+    # Verifichiamo che all'inizio non ci siano messaggi d'errore sulla pagina
     error_els = driver.find_elements(By.ID, "public-filter-error")
     for el in error_els:
-        WebDriverWait(driver, 5).until(EC.invisibility_of_element(el))
-        assert not el.is_displayed(), (
-            "Non ci dovrebbe essere un messaggio di errore visibile al caricamento della pagina"
-        )
+        WebDriverWait(driver, 5).until(
+        EC.invisibility_of_element_located((By.ID, "public-filter-error"))
+    )
 
 
 # UC-05 – Struttura del form di filtraggio
 
-# Il form di filtraggio è visibile con tutti i controlli principali.
+# Controlliamo che il form per i filtri mostri tutti i campi (input, select, bottone invio)
 @pytest.mark.e2e
 def test_uc05_filter_form_all_controls_visible(driver):
     driver.get(BASE_URL)
@@ -240,7 +239,7 @@ def test_uc05_filter_form_all_controls_visible(driver):
         )
 
 
-# Il select della categoria include 'All' come voce di default.
+# Controlliamo se nel menu a tendina delle categorie c'è l'opzione di default "All"
 @pytest.mark.e2e
 def test_uc05_filter_category_has_all_option(driver):
     driver.get(BASE_URL)
@@ -250,7 +249,7 @@ def test_uc05_filter_category_has_all_option(driver):
     assert all_opt is not None
 
 
-# Il select dello stato include 'All public statuses' come voce di default.
+# Controlliamo se nel menu dello stato c'è l'opzione di default "All public statuses"
 @pytest.mark.e2e
 def test_uc05_filter_status_has_all_option(driver):
     driver.get(BASE_URL)
@@ -260,7 +259,7 @@ def test_uc05_filter_status_has_all_option(driver):
     assert all_opt is not None
 
 
-# Il select di ordinamento espone le opzioni 'Newest first' (desc) e 'Oldest first' (asc).
+# Verifichiamo che si possa scegliere l'ordinamento per i più recenti o i più vecchi
 @pytest.mark.e2e
 def test_uc05_filter_sort_options_present(driver):
     driver.get(BASE_URL)
@@ -270,7 +269,7 @@ def test_uc05_filter_sort_options_present(driver):
     assert driver.find_element(By.ID, "public-filter-sort-option-asc").is_displayed()
 
 
-# Il select della categoria è popolato con almeno una categoria dal backend.
+# Ci assicuriamo che il backend popoli il select delle categorie con i dati reali
 @pytest.mark.e2e
 def test_uc05_category_options_loaded_from_backend(driver):
     driver.get(BASE_URL)
@@ -287,13 +286,13 @@ def test_uc05_category_options_loaded_from_backend(driver):
     )
 
 
-# Il select dello stato è popolato con almeno uno stato pubblico dal backend.
+# Ci assicuriamo che il backend popoli anche il select degli stati pubblici
 @pytest.mark.e2e
 def test_uc05_status_options_loaded_from_backend(driver):
     driver.get(BASE_URL)
     _wait_home_loaded(driver)
 
-    # Usiamo il selettore CSS sulle option del select per allinearci con i tag standard caricati.
+    # Stessa cosa qui, controlliamo che la lista degli stati non sia vuota
     status_options = WebDriverWait(driver, 10).until(
         EC.presence_of_all_elements_located(
             (By.CSS_SELECTOR, "select#public-filter-status option")
@@ -306,7 +305,8 @@ def test_uc05_status_options_loaded_from_backend(driver):
 
 # UC-05 – Filtraggio per categoria
 
-# Filtrando per una categoria specifica, tutte le righe visibili appartengono a quella categoria.
+# Se scelgo una categoria, in tabella devo vedere solo i report che fanno parte di quella categoria
+@pytest.mark.e2e
 @pytest.mark.e2e
 def test_uc05_filter_by_category_shows_only_matching_reports(driver):
     driver.get(BASE_URL)
@@ -325,7 +325,8 @@ def test_uc05_filter_by_category_shows_only_matching_reports(driver):
         EC.presence_of_element_located((By.ID, "public-report-table-body"))
     )
 
-    # Extension 4a: lista vuota accettabile senza errori.
+    # Se la tabella si svuota va bene lo stesso, l'importante è che non ci siano errori. 
+    # Se ci sono righe, controlliamo che abbiano il nome della categoria scelta.
     rows = _get_visible_row_ids(driver)
     for r_id in rows:
         category_text = driver.find_element(By.ID, f"{r_id}-category").text.strip()
@@ -336,7 +337,7 @@ def test_uc05_filter_by_category_shows_only_matching_reports(driver):
 
 # UC-05 – Filtraggio per stato
 
-# Filtrando per uno stato specifico, tutte le righe visibili hanno quello stato.
+# Se filtro per uno stato specifico, tutti i risultati mostrati devono avere quello stato
 @pytest.mark.e2e
 def test_uc05_filter_by_status_shows_only_matching_reports(driver):
     driver.get(BASE_URL)
@@ -407,7 +408,7 @@ def test_uc05_sort_asc_changes_row_order(driver):
 
 # UC-05 – Filtraggio per data
 
-# 'Date from' impostato nel 2099 produce una tabella vuota.
+# Se mettiamo come data massima il 2000, la tabella deve svuotarsi perché i report sono tutti successivi
 @pytest.mark.e2e
 def test_uc05_date_from_far_future_empties_table(driver):
     driver.get(BASE_URL)
@@ -426,7 +427,7 @@ def test_uc05_date_from_far_future_empties_table(driver):
     )
     driver.find_element(By.ID, "public-filter-submit").click()
 
-    # Sincronizza l'attesa sull'aggiornamento dinamico dell'export link prima di effettuare le verifiche sul DOM.
+   # Aspettiamo la modifica del link di export per essere sicuri che React abbia registrato il cambio data
     WebDriverWait(driver, 10).until(
         lambda d: "date_from=" in (d.find_element(By.ID, "public-export-link").get_attribute("href") or "")
     )
@@ -470,7 +471,7 @@ def test_uc05_date_to_far_past_empties_table(driver):
 
 # UC-05 – Extension 4a: reset dei filtri ripristina i risultati
 
-# Rimuovendo un filtro restrittivo i report tornano visibili nella tabella.
+# Verifichiamo che ricaricando la pagina i filtri si azzerino e i report tornino visibili
 @pytest.mark.e2e
 def test_uc05_filter_reset_restores_reports(driver):
     driver.get(BASE_URL)
@@ -501,11 +502,11 @@ def test_uc05_filter_reset_restores_reports(driver):
     valid_filtered = [r for r in rows_filtered if any(char.isdigit() for char in r)]
     assert len(valid_filtered) == 0
 
-    # Rimuove il filtro ricaricando la pagina — l'azione di reset più robusta per l'utente.
+    # Resettiamo tornando alla home pulita: è il modo più sicuro per l'utente di azzerare tutto
     driver.get(BASE_URL)
     _wait_home_loaded(driver)
 
-    # Attende che le righe tornino al conteggio iniziale in modo puramente dinamico.
+    # Aspettiamo che il numero delle righe torni esattamente a quello iniziale
     WebDriverWait(driver, 10).until(
         lambda d: len([r for r in _get_visible_row_ids(d) if any(char.isdigit() for char in r)]) == initial_count
     )
@@ -518,7 +519,7 @@ def test_uc05_filter_reset_restores_reports(driver):
 
 # UC-05 – Esportazione CSV
 
-# Il link di esportazione CSV è visibile e punta all'endpoint /export.
+# Controlliamo che ci sia il pulsante per scaricare il CSV e che punti al path giusto (/export)
 @pytest.mark.e2e
 def test_uc05_export_csv_link_present(driver):
     driver.get(BASE_URL)
@@ -533,7 +534,7 @@ def test_uc05_export_csv_link_present(driver):
     )
 
 
-# Il link di esportazione CSV include category_id nella querystring quando il filtro è attivo.
+# Verifichiamo che se c'è un filtro attivo sulla categoria, il link del CSV si aggiorni con il parametro nella query string
 @pytest.mark.e2e
 def test_uc05_export_csv_link_reflects_active_category_filter(driver):
     driver.get(BASE_URL)
@@ -560,7 +561,7 @@ def test_uc05_export_csv_link_reflects_active_category_filter(driver):
 
 # UC-05 – Granularità delle statistiche di tendenza
 
-# Il selettore di granularità (day/week/month) per le statistiche di tendenza è presente.
+# Controlliamo che ci sia il select per cambiare la granularità del grafico (giorno, settimana, mese)
 @pytest.mark.e2e
 def test_uc05_stat_granularity_controls_present(driver):
     driver.get(BASE_URL)
@@ -572,7 +573,7 @@ def test_uc05_stat_granularity_controls_present(driver):
     assert driver.find_element(By.ID, "public-stat-granularity-option-month").is_displayed()
 
 
-# Cambiando la granularità la sezione statistiche rimane stabile senza errori visibili.
+# Verifichiamo che cambiando l'intervallo di tempo (es. su 'week') la sezione non si rompa e rimanga visibile
 @pytest.mark.e2e
 def test_uc05_stat_granularity_change_does_not_cause_error(driver):
     driver.get(BASE_URL)
@@ -585,10 +586,7 @@ def test_uc05_stat_granularity_change_does_not_cause_error(driver):
     )
     assert driver.find_element(By.ID, "public-statistics-card").is_displayed()
 
-    # Sincronizza l'attesa asincrona accertandoti che il messaggio transitorio di caricamento/errore sia invisibile prima dell'asserzione.
-    error_els = driver.find_elements(By.ID, "public-filter-error")
-    for el in error_els:
-        WebDriverWait(driver, 5).until(EC.invisibility_of_element(el))
-        assert not el.is_displayed(), (
-            "Non ci devono essere errori visibili dopo il cambio di granularità"
-        )
+    # Controlla che NON ci siano messaggi di errore visibili sulla pagina dopo il cambio di opzione
+    WebDriverWait(driver, 5).until(
+        EC.invisibility_of_element_located((By.ID, "public-filter-error"))
+    )

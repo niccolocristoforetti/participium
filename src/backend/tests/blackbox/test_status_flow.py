@@ -4,10 +4,9 @@ import pytest
 
 from participium.core.exceptions import ValidationError
 from participium.core.status_flow import ensure_transition_allowed
-from participium.models.enums import ReportStatus  
+from participium.models.enums import ReportStatus
 
 
-@pytest.mark.skip(reason="Disabled.")  
 @pytest.mark.parametrize(
     "current_status, next_status",
     [
@@ -35,12 +34,12 @@ from participium.models.enums import ReportStatus
     ],
 )
 def test_ensure_transition_allowed_success(
-    current_status: ReportStatus, next_status: ReportStatus) -> None:
+    current_status: ReportStatus, next_status: ReportStatus
+) -> None:
     result = ensure_transition_allowed(current_status, next_status)
     assert result is True
 
 
-@pytest.mark.skip(reason="Disabled.")  
 @pytest.mark.parametrize(
     "current_status, next_status",
     [
@@ -74,6 +73,7 @@ def test_ensure_transition_allowed_success(
     ],
 )
 def test_ensure_transition_allowed_invalid(
-    current_status: ReportStatus, next_status: ReportStatus) -> None:
+    current_status: ReportStatus, next_status: ReportStatus
+) -> None:
     with pytest.raises(ValidationError):
         ensure_transition_allowed(current_status, next_status)

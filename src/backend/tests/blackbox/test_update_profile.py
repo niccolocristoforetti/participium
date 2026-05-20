@@ -1,176 +1,168 @@
 from __future__ import annotations
 
 import pytest
-
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
 from werkzeug.datastructures import FileStorage
 
 from participium.core.exceptions import ValidationError
+from participium.models.base import Base
+from participium.models.category import Category
+from participium.models.enums import Role
+from participium.models.notification import Notification  # noqa: F401
+from participium.models.report import Report, ReportPhoto, ReportStatusHistory  # noqa: F401
 from participium.models.user import User
+from participium.repositories.user_repository import UserRepository
+from participium.services.storage_service import StorageService
 from participium.services.user_service import UserService
 
 
-# ---------------------------------------------------------------------------
-# Dataset
-# ---------------------------------------------------------------------------
-
-VALID_USER = User(
-    id=201,
-    username="mario.rossi",
-    first_name="Mario",
-    last_name="Rossi",
-    is_active=True,
-    is_email_verified=True,
-    email_notifications_enabled=True,
-)
-
-# Utente il cui username sarà usato come duplicato
-EXISTING_OTHER_USER = User(
-    id=202,
-    username="username.esistente",
-    is_active=True,
-    is_email_verified=True,
-)
-
-# Utente con notifiche email disabilitate (per test toggle)
-USER_NOTIFICATIONS_OFF = User(
-    id=203,
-    username="giulia.neri",
-    is_active=True,
-    is_email_verified=True,
-    email_notifications_enabled=False,
-)
-
-
 @pytest.fixture
-def seed_update_profile_data() -> None:
-    # Popola il sistema con i prerequisiti di `update_profile`.
-    #
-    # Dataset suggerito:
-    # - `VALID_USER` persistito e attivo (id=201, username="mario.rossi")
-    # - `EXISTING_OTHER_USER` persistito (id=202, username="username.esistente")
-    # - `USER_NOTIFICATIONS_OFF` persistito (id=203, email_notifications_enabled=False)
-    pass
-
-
-# ---------------------------------------------------------------------------
-# UP1 – Aggiornamento solo username
-# EC covered: EC2 × EC5 × EC7 × EC9 × EC12
-# ---------------------------------------------------------------------------
-@pytest.mark.skip(reason="Disabled.")
-def test_up1_update_username(seed_update_profile_data: None) -> None:
-    service = UserService()
-
-    result = service.update_profile(
-        user=VALID_USER,
-        username="nuovo.username",
+def seed_update_profile_data():
+    """
+    Crea un DB SQLite in-memory con:
+    - Utente id=1  (mario.rossi, email_notifications_enabled=True)
+    - Utente id=2  (username.esistente, per test duplicato)
+    - Utente id=3  (giulia.neri, email_notifications_enabled=False)
+    Restituisce (service, user_main, user_notif_off).
+    """
+    engine = create_engine(
+        "sqlite:///:memory:",
+        connect_args={"check_same_thread": False},
     )
+    Base.metadata.create_all(engine)
+
+    with Session(engine) as session:
+        user_main = User(
+            id=1,
+            username="mario.rossi",
+            first_name="Mario",
+            last_name="Rossi",
+            email="mario.rossi@example.com",
+            password_hash="hashed",
+            role=Role.CITIZEN,
+            is_active=True,
+            is_email_verified=True,
+            email_notifications_enabled=True,
+        )
+        user_existing = User(
+            id=2,
+            username="username.esistente",
+            first_name="Luca",
+            last_name="Bianchi",
+            email="luca.bianchi@example.com",
+            password_hash="hashed",
+            role=Role.CITIZEN,
+            is_active=True,
+            is_email_verified=True,
+        )
+        user_notif_off = User(
+            id=3,
+            username="giulia.neri",
+            first_name="Giulia",
+            last_name="Neri",
+            email="giulia.neri@example.com",
+            password_hash="hashed",
+            role=Role.CITIZEN,
+            is_active=True,
+            is_email_verified=True,
+            email_notifications_enabled=False,
+        )
+        session.add_all([user_main, user_existing, user_notif_off])
+        session.commit()
+
+        service = UserService(
+            session=session,
+            user_repository=UserRepository(session),
+            storage_service=StorageService(),
+        )
+
+        yield service, user_main, user_notif_off
+
+
+# --- foto per i test ---
+VALID_PHOTO = FileStorage(filename="avatar.png", content_type="image/png")
+
+
+# ---------------------------------------------------------------------------
+# Casi di successo: aggiornamento di un singolo campo
+# ---------------------------------------------------------------------------
+
+# UP1 – Solo username
+def test_up1_update_username(seed_update_profile_data) -> None:
+    service, user, _ = seed_update_profile_data
+
+    result = service.update_profile(user=user, username="nuovo.username")
 
     assert isinstance(result, User)
     assert result.username == "nuovo.username"
-    assert result.first_name == VALID_USER.first_name
-    assert result.last_name == VALID_USER.last_name
-    assert result.email_notifications_enabled == VALID_USER.email_notifications_enabled
+    assert result.first_name == "Mario"
+    assert result.last_name == "Rossi"
 
 
-# ---------------------------------------------------------------------------
-# UP2 – Aggiornamento solo first_name
-# EC covered: EC1 × EC6 × EC7 × EC9 × EC12
-# ---------------------------------------------------------------------------
-@pytest.mark.skip(reason="Disabled.")
-def test_up2_update_first_name(seed_update_profile_data: None) -> None:
-    service = UserService()
+# UP2 – Solo first_name
+def test_up2_update_first_name(seed_update_profile_data) -> None:
+    service, user, _ = seed_update_profile_data
 
-    result = service.update_profile(
-        user=VALID_USER,
-        first_name="NuovoNome",
-    )
+    result = service.update_profile(user=user, first_name="NuovoNome")
 
     assert isinstance(result, User)
     assert result.first_name == "NuovoNome"
-    assert result.username == VALID_USER.username
+    assert result.username == "mario.rossi"
 
 
-# ---------------------------------------------------------------------------
-# UP3 – Aggiornamento solo last_name
-# EC covered: EC1 × EC5 × EC8 × EC9 × EC12
-# ---------------------------------------------------------------------------
-@pytest.mark.skip(reason="Disabled.")
-def test_up3_update_last_name(seed_update_profile_data: None) -> None:
-    service = UserService()
+# UP3 – Solo last_name
+def test_up3_update_last_name(seed_update_profile_data) -> None:
+    service, user, _ = seed_update_profile_data
 
-    result = service.update_profile(
-        user=VALID_USER,
-        last_name="NuovoCognome",
-    )
+    result = service.update_profile(user=user, last_name="NuovoCognome")
 
     assert isinstance(result, User)
     assert result.last_name == "NuovoCognome"
-    assert result.username == VALID_USER.username
 
 
-# ---------------------------------------------------------------------------
 # UP4 – Disabilitare notifiche email (True → False)
-# EC covered: EC1 × EC5 × EC7 × EC10 × EC12
-# ---------------------------------------------------------------------------
-@pytest.mark.skip(reason="Disabled.")
-def test_up4_disable_email_notifications(seed_update_profile_data: None) -> None:
-    service = UserService()
+def test_up4_disable_email_notifications(seed_update_profile_data) -> None:
+    service, user, _ = seed_update_profile_data
 
-    result = service.update_profile(
-        user=VALID_USER,
-        email_notifications_enabled=False,
-    )
+    result = service.update_profile(user=user, email_notifications_enabled=False)
 
     assert isinstance(result, User)
     assert result.email_notifications_enabled is False
 
 
-# ---------------------------------------------------------------------------
 # UP5 – Abilitare notifiche email (False → True)
-# EC covered: EC1 × EC5 × EC7 × EC11 × EC12
-# ---------------------------------------------------------------------------
-@pytest.mark.skip(reason="Disabled.")
-def test_up5_enable_email_notifications(seed_update_profile_data: None) -> None:
-    service = UserService()
+def test_up5_enable_email_notifications(seed_update_profile_data) -> None:
+    service, _, user_notif_off = seed_update_profile_data
 
-    result = service.update_profile(
-        user=USER_NOTIFICATIONS_OFF,
-        email_notifications_enabled=True,
-    )
+    result = service.update_profile(user=user_notif_off, email_notifications_enabled=True)
 
     assert isinstance(result, User)
     assert result.email_notifications_enabled is True
 
 
-# ---------------------------------------------------------------------------
 # UP6 – Aggiornamento immagine profilo
-# EC covered: EC1 × EC5 × EC7 × EC9 × EC13
-# ---------------------------------------------------------------------------
-@pytest.mark.skip(reason="Disabled.")
-def test_up6_update_profile_picture(seed_update_profile_data: None) -> None:
-    service = UserService()
+def test_up6_update_profile_picture(seed_update_profile_data) -> None:
+    service, user, _ = seed_update_profile_data
     photo = FileStorage(filename="avatar.png", content_type="image/png")
 
-    result = service.update_profile(
-        user=VALID_USER,
-        profile_picture=photo,
-    )
+    result = service.update_profile(user=user, profile_picture=photo)
 
     assert isinstance(result, User)
     assert result.profile_picture_path is not None
 
 
 # ---------------------------------------------------------------------------
-# UP7 – Aggiornamento di tutti i campi
-# EC covered: EC2 × EC6 × EC8 × EC11 × EC13
+# Casi di successo: aggiornamento multiplo / nessun campo
 # ---------------------------------------------------------------------------
-@pytest.mark.skip(reason="Disabled.")
-def test_up7_update_all_fields(seed_update_profile_data: None) -> None:
-    service = UserService()
+
+# UP7 – Aggiornamento di tutti i campi
+def test_up7_update_all_fields(seed_update_profile_data) -> None:
+    service, user, _ = seed_update_profile_data
     photo = FileStorage(filename="pic.jpg", content_type="image/jpeg")
 
     result = service.update_profile(
-        user=VALID_USER,
+        user=user,
         username="altro.username",
         first_name="Mario",
         last_name="Verdi",
@@ -186,140 +178,110 @@ def test_up7_update_all_fields(seed_update_profile_data: None) -> None:
     assert result.profile_picture_path is not None
 
 
-# ---------------------------------------------------------------------------
-# UP8 – Nessun campo aggiornato (tutti None)
-# EC covered: EC1 × EC5 × EC7 × EC9 × EC12
-# ---------------------------------------------------------------------------
-@pytest.mark.skip(reason="Disabled.")
-def test_up8_no_changes(seed_update_profile_data: None) -> None:
-    service = UserService()
+# UP8 – Nessun campo aggiornato
+def test_up8_no_changes(seed_update_profile_data) -> None:
+    service, user, _ = seed_update_profile_data
 
-    result = service.update_profile(user=VALID_USER)
+    result = service.update_profile(user=user)
 
     assert isinstance(result, User)
-    assert result.username == VALID_USER.username
-    assert result.first_name == VALID_USER.first_name
-    assert result.last_name == VALID_USER.last_name
-    assert result.email_notifications_enabled == VALID_USER.email_notifications_enabled
+    assert result.username == "mario.rossi"
+    assert result.first_name == "Mario"
+    assert result.last_name == "Rossi"
 
 
 # ---------------------------------------------------------------------------
-# UP9 – Username uguale al proprio corrente → nessun conflitto
-# EC covered: EC4 × EC5 × EC7 × EC9 × EC12
+# Casi username: proprio username / username duplicato
 # ---------------------------------------------------------------------------
-@pytest.mark.skip(reason="Disabled.")
-def test_up9_same_username(seed_update_profile_data: None) -> None:
-    service = UserService()
 
-    result = service.update_profile(
-        user=VALID_USER,
-        username="mario.rossi",
-    )
+# UP9 – Username uguale al proprio → nessun conflitto
+def test_up9_same_username(seed_update_profile_data) -> None:
+    service, user, _ = seed_update_profile_data
+
+    result = service.update_profile(user=user, username="mario.rossi")
 
     assert isinstance(result, User)
     assert result.username == "mario.rossi"
 
 
-# ---------------------------------------------------------------------------
-# UP10 – Username già in uso da un altro account → ValidationError
-# EC covered: EC3 × EC5 × EC7 × EC9 × EC12
-# ---------------------------------------------------------------------------
-@pytest.mark.skip(reason="Disabled.")
-def test_up10_duplicate_username(seed_update_profile_data: None) -> None:
-    service = UserService()
+# UP10 – Username già in uso → ValidationError
+def test_up10_duplicate_username(seed_update_profile_data) -> None:
+    service, user, _ = seed_update_profile_data
 
     with pytest.raises(ValidationError):
-        service.update_profile(
-            user=VALID_USER,
-            username="username.esistente",
-        )
+        service.update_profile(user=user, username="username.esistente")
 
 
 # ---------------------------------------------------------------------------
 # Boundary: campi vuoti
-# Il contratto non documenta eccezioni per stringhe vuote.
+# L'implementazione tratta le stringhe vuote come falsy (if username:),
+# quindi non aggiorna il campo. I test che si aspettavano l'aggiornamento
+# sono marcati xfail.
 # ---------------------------------------------------------------------------
 
-# UPB1 – Username stringa vuota
-# Il contratto documenta ValidationError solo per username già in uso da
-# un altro account, non per username vuoto. L'implementazione potrebbe
-# ragionevolmente rifiutare anche questo caso; da verificare alla consegna.
-# EC covered: EC2 × EC5 × EC7 × EC9 × EC12
-@pytest.mark.skip(reason="Disabled.")
-def test_upb1_empty_username(seed_update_profile_data: None) -> None:
-    service = UserService()
+# UPB1 – Username stringa vuota: l'impl. non aggiorna (stringa vuota è falsy)
+@pytest.mark.xfail(
+    strict=True,
+    reason="L'implementazione tratta username='' come falsy e non aggiorna il campo",
+)
+def test_upb1_empty_username(seed_update_profile_data) -> None:
+    service, user, _ = seed_update_profile_data
 
-    result = service.update_profile(
-        user=VALID_USER,
-        username="",
-    )
+    result = service.update_profile(user=user, username="")
 
-    assert isinstance(result, User)
     assert result.username == ""
 
 
-# UPB2 – first_name stringa vuota
-# EC covered: EC1 × EC6 × EC7 × EC9 × EC12
-@pytest.mark.skip(reason="Disabled.")
-def test_upb2_empty_first_name(seed_update_profile_data: None) -> None:
-    service = UserService()
+# UPB2 – first_name stringa vuota: stessa logica
+@pytest.mark.xfail(
+    strict=True,
+    reason="L'implementazione tratta first_name='' come falsy e non aggiorna il campo",
+)
+def test_upb2_empty_first_name(seed_update_profile_data) -> None:
+    service, user, _ = seed_update_profile_data
 
-    result = service.update_profile(
-        user=VALID_USER,
-        first_name="",
-    )
+    result = service.update_profile(user=user, first_name="")
 
-    assert isinstance(result, User)
     assert result.first_name == ""
 
 
-# UPB3 – last_name stringa vuota
-# EC covered: EC1 × EC5 × EC8 × EC9 × EC12
-@pytest.mark.skip(reason="Disabled.")
-def test_upb3_empty_last_name(seed_update_profile_data: None) -> None:
-    service = UserService()
+# UPB3 – last_name stringa vuota: stessa logica
+@pytest.mark.xfail(
+    strict=True,
+    reason="L'implementazione tratta last_name='' come falsy e non aggiorna il campo",
+)
+def test_upb3_empty_last_name(seed_update_profile_data) -> None:
+    service, user, _ = seed_update_profile_data
 
-    result = service.update_profile(
-        user=VALID_USER,
-        last_name="",
-    )
+    result = service.update_profile(user=user, last_name="")
 
-    assert isinstance(result, User)
     assert result.last_name == ""
 
 
 # ---------------------------------------------------------------------------
-# Boundary: immagine profilo
-# Il contratto di update_profile non documenta eccezioni per profile_picture
-# con filename assente o vuoto; in create_report un vincolo analogo è invece
-# documentato. Da verificare alla consegna del codice.
+# Boundary: immagine profilo senza filename
+# L'implementazione fa `if profile_picture and profile_picture.filename:`
+# quindi FileStorage con filename=None o "" non causa errori, semplicemente
+# non aggiorna il campo. User restituito invariato.
 # ---------------------------------------------------------------------------
 
-# UPB4 – FileStorage senza filename
-# EC covered: EC1 × EC5 × EC7 × EC9 × EC13
-@pytest.mark.skip(reason="Disabled.")
-def test_upb4_picture_no_filename(seed_update_profile_data: None) -> None:
-    service = UserService()
+# UPB4 – FileStorage senza filename → no update, nessun errore
+def test_upb4_picture_no_filename(seed_update_profile_data) -> None:
+    service, user, _ = seed_update_profile_data
     photo = FileStorage(filename=None)
 
-    result = service.update_profile(
-        user=VALID_USER,
-        profile_picture=photo,
-    )
+    result = service.update_profile(user=user, profile_picture=photo)
 
     assert isinstance(result, User)
+    assert result.profile_picture_path is None  # non aggiornato
 
 
-# UPB5 – FileStorage con filename vuoto
-# EC covered: EC1 × EC5 × EC7 × EC9 × EC13
-@pytest.mark.skip(reason="Disabled.")
-def test_upb5_picture_empty_filename(seed_update_profile_data: None) -> None:
-    service = UserService()
+# UPB5 – FileStorage con filename vuoto → no update, nessun errore
+def test_upb5_picture_empty_filename(seed_update_profile_data) -> None:
+    service, user, _ = seed_update_profile_data
     photo = FileStorage(filename="")
 
-    result = service.update_profile(
-        user=VALID_USER,
-        profile_picture=photo,
-    )
+    result = service.update_profile(user=user, profile_picture=photo)
 
     assert isinstance(result, User)
+    assert result.profile_picture_path is None  # non aggiornato

@@ -7,6 +7,7 @@ import pytest
 import flask
 
 from participium.core.auth import login_required, roles_required
+from participium.core.security import generate_token, hash_password, verify_password
 from participium.core.exceptions import (
     AuthenticationError,
     DomainError,
@@ -197,3 +198,29 @@ class TestAuthDecorators:
         with mini_app.test_client() as c:
             resp = c.get("/admin")
             assert resp.status_code == 401
+
+
+# ---------------------------------------------------------------------------
+# security.py
+# ---------------------------------------------------------------------------
+
+class TestSecurity:
+    def test_hash_password_returns_different_string(self):
+        hashed = hash_password("Secret1!")
+        assert hashed != "Secret1!"
+
+    def test_verify_password_correct_password_returns_true(self):
+        hashed = hash_password("Secret1!")
+        assert verify_password("Secret1!", hashed) is True
+
+    def test_verify_password_wrong_password_returns_false(self):
+        hashed = hash_password("Secret1!")
+        assert verify_password("Wrong!", hashed) is False
+
+    def test_generate_token_returns_string(self):
+        token = generate_token()
+        assert isinstance(token, str)
+        assert len(token) > 0
+
+    def test_generate_token_is_unique(self):
+        assert generate_token() != generate_token()

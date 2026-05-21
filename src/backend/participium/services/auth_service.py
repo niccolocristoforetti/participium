@@ -99,7 +99,10 @@ class AuthService:
             AuthenticationError: if the matched user exists but is inactive.
             AuthenticationError: if the matched user exists but email is not verified.
         """
-        user = self.user_repository.get_by_username_or_email(identifier.strip())
+        identifier = identifier.strip()
+        if "@" in identifier:
+            identifier = identifier.lower()
+        user = self.user_repository.get_by_username_or_email(identifier)
         if not user or not user.is_active or not verify_password(password, user.password_hash):
             raise AuthenticationError("Invalid credentials.")
         if not user.is_email_verified:

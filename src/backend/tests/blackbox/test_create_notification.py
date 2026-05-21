@@ -1,223 +1,169 @@
 from __future__ import annotations
 
-import pytest
+from unittest.mock import Mock
 
-from participium.models.enums import NotificationType, ReportStatus
+import pytest
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
+
+from participium.models.base import Base
+from participium.models.category import Category
+from participium.models.enums import NotificationType, ReportStatus, Role
 from participium.models.notification import Notification
-from participium.models.report import Report
+from participium.models.report import Report, ReportPhoto, ReportStatusHistory  # noqa: F401
 from participium.models.user import User
+from participium.repositories.notification_repository import NotificationRepository
 from participium.services.notification_service import NotificationService
 
 
-# ---------------------------------------------------------------------------
-# Dataset
-# ---------------------------------------------------------------------------
-
-VALID_USER = User(id=201, username="mario.rossi", is_active=True, is_email_verified=True)
-
-VALID_REPORT = Report(
-    id=301,
-    title="Buca in Via Roma",
-    status=ReportStatus.ASSIGNED,
-    reporter_id=VALID_USER.id,
-    category_id=1,
-)
-
-
 @pytest.fixture
-def seed_notification_data() -> None:
-    # Popola il sistema con i prerequisiti di `create_notification`.
-    #
-    # Dataset suggerito:
-    # - `VALID_USER` persistito e attivo (id=201)
-    # - `VALID_REPORT` persistito (id=301, reporter_id=201)
-    pass
+def seed_notification_data():
+    """
+    Crea un DB SQLite in-memory con:
+    - Categoria id=1  attiva
+    - Utente id=1     (mario.rossi, email_notifications_enabled=False per evitare invio email)
+    - Report id=1     associato all'utente e alla categoria
+    Restituisce (service, user, report).
+    """
+    engine = create_engine(
+        "sqlite:///:memory:",
+        connect_args={"check_same_thread": False},
+    )
+    Base.metadata.create_all(engine)
+
+    with Session(engine) as session:
+        cat = Category(id=1, name="Viabilità", is_active=True)
+        user = User(
+            id=1,
+            username="mario.rossi",
+            first_name="Mario",
+            last_name="Rossi",
+            email="mario.rossi@example.com",
+            password_hash="hashed",
+            role=Role.CITIZEN,
+            is_active=True,
+            is_email_verified=True,
+            email_notifications_enabled=False,
+        )
+        report = Report(
+            id=1,
+            title="Buca in Via Roma",
+            description="Grande buca pericolosa",
+            latitude=45.0,
+            longitude=9.0,
+            status=ReportStatus.ASSIGNED,
+            reporter_id=1,
+            category_id=1,
+        )
+        session.add_all([cat, user, report])
+        session.commit()
+
+        service = NotificationService(
+            session=session,
+            notification_repository=NotificationRepository(session),
+            email_gateway=Mock(),  # mock per evitare invio email reale
+        )
+
+        yield service, user, report
 
 
 # ---------------------------------------------------------------------------
-# CN1 – STATUS_CHANGE con report valido
-# EC covered: EC1 × EC3 × EC6
+# Casi di successo: user valido con report
+# EC covered: EC1 × {EC3,EC4,EC5} × EC6
 # ---------------------------------------------------------------------------
-@pytest.mark.skip(reason="Disabled.")
-def test_cn1_status_change_with_report(seed_notification_data: None) -> None:
-    service = NotificationService()
+@pytest.mark.parametrize(
+    "notification_type, title, body",
+    [
+        # CN1 – STATUS_CHANGE con report
+        (NotificationType.STATUS_CHANGE, "Stato aggiornato", "Il report è stato assegnato"),
+        # CN2 – MESSAGE con report
+        (NotificationType.MESSAGE, "Nuovo messaggio", "Hai ricevuto un messaggio"),
+        # CN3 – SYSTEM con report
+        (NotificationType.SYSTEM, "Avviso di sistema", "Manutenzione programmata"),
+    ],
+)
+def test_create_notification_with_report(
+    seed_notification_data, notification_type, title, body,
+) -> None:
+    service, user, report = seed_notification_data
 
     result = service.create_notification(
-        user=VALID_USER,
-        notification_type=NotificationType.STATUS_CHANGE,
-        title="Stato aggiornato",
-        body="Il report è stato assegnato",
-        report=VALID_REPORT,
+        user=user,
+        notification_type=notification_type,
+        title=title,
+        body=body,
+        report=report,
     )
 
     assert isinstance(result, Notification)
-    assert result.user_id == VALID_USER.id
-    assert result.report_id == VALID_REPORT.id
-    assert result.type == NotificationType.STATUS_CHANGE
-    assert result.title == "Stato aggiornato"
-    assert result.body == "Il report è stato assegnato"
+    assert result.user_id == user.id
+    assert result.report_id == report.id
+    assert result.type == notification_type
+    assert result.title == title
+    assert result.body == body
     assert result.is_read is False
 
 
 # ---------------------------------------------------------------------------
-# CN2 – MESSAGE con report valido
-# EC covered: EC1 × EC4 × EC6
+# Casi di successo: user valido senza report
+# EC covered: EC1 × {EC3,EC4,EC5} × EC7
 # ---------------------------------------------------------------------------
-@pytest.mark.skip(reason="Disabled.")
-def test_cn2_message_with_report(seed_notification_data: None) -> None:
-    service = NotificationService()
+@pytest.mark.parametrize(
+    "notification_type, title, body",
+    [
+        # CN4 – STATUS_CHANGE senza report
+        (NotificationType.STATUS_CHANGE, "Stato aggiornato", "Il report è stato risolto"),
+        # CN5 – MESSAGE senza report
+        (NotificationType.MESSAGE, "Nuovo messaggio", "Contenuto del messaggio"),
+        # CN6 – SYSTEM senza report
+        (NotificationType.SYSTEM, "Avviso di sistema", "Manutenzione programmata"),
+    ],
+)
+def test_create_notification_no_report(
+    seed_notification_data, notification_type, title, body,
+) -> None:
+    service, user, _report = seed_notification_data
 
     result = service.create_notification(
-        user=VALID_USER,
-        notification_type=NotificationType.MESSAGE,
-        title="Nuovo messaggio",
-        body="Hai ricevuto un messaggio",
-        report=VALID_REPORT,
-    )
-
-    assert isinstance(result, Notification)
-    assert result.type == NotificationType.MESSAGE
-    assert result.report_id == VALID_REPORT.id
-
-
-# ---------------------------------------------------------------------------
-# CN3 – SYSTEM con report valido
-# EC covered: EC1 × EC5 × EC6
-# ---------------------------------------------------------------------------
-@pytest.mark.skip(reason="Disabled.")
-def test_cn3_system_with_report(seed_notification_data: None) -> None:
-    service = NotificationService()
-
-    result = service.create_notification(
-        user=VALID_USER,
-        notification_type=NotificationType.SYSTEM,
-        title="Avviso di sistema",
-        body="Manutenzione programmata",
-        report=VALID_REPORT,
-    )
-
-    assert isinstance(result, Notification)
-    assert result.type == NotificationType.SYSTEM
-    assert result.report_id == VALID_REPORT.id
-
-
-# ---------------------------------------------------------------------------
-# CN4 – STATUS_CHANGE senza report
-# EC covered: EC1 × EC3 × EC7
-# ---------------------------------------------------------------------------
-@pytest.mark.skip(reason="Disabled.")
-def test_cn4_status_change_no_report(seed_notification_data: None) -> None:
-    service = NotificationService()
-
-    result = service.create_notification(
-        user=VALID_USER,
-        notification_type=NotificationType.STATUS_CHANGE,
-        title="Stato aggiornato",
-        body="Il report è stato risolto",
+        user=user,
+        notification_type=notification_type,
+        title=title,
+        body=body,
         report=None,
     )
 
     assert isinstance(result, Notification)
-    assert result.user_id == VALID_USER.id
+    assert result.user_id == user.id
     assert result.report_id is None
-    assert result.type == NotificationType.STATUS_CHANGE
+    assert result.type == notification_type
 
 
 # ---------------------------------------------------------------------------
-# CN5 – MESSAGE senza report
-# EC covered: EC1 × EC4 × EC7
+# Casi user=None → ritorna None
+# EC covered: EC2 × {EC3,EC4,EC5} × {EC6,EC7}
 # ---------------------------------------------------------------------------
-@pytest.mark.skip(reason="Disabled.")
-def test_cn5_message_no_report(seed_notification_data: None) -> None:
-    service = NotificationService()
-
-    result = service.create_notification(
-        user=VALID_USER,
-        notification_type=NotificationType.MESSAGE,
-        title="Nuovo messaggio",
-        body="Contenuto del messaggio",
-        report=None,
-    )
-
-    assert isinstance(result, Notification)
-    assert result.type == NotificationType.MESSAGE
-    assert result.report_id is None
-
-
-# ---------------------------------------------------------------------------
-# CN6 – SYSTEM senza report
-# EC covered: EC1 × EC5 × EC7
-# ---------------------------------------------------------------------------
-@pytest.mark.skip(reason="Disabled.")
-def test_cn6_system_no_report(seed_notification_data: None) -> None:
-    service = NotificationService()
-
-    result = service.create_notification(
-        user=VALID_USER,
-        notification_type=NotificationType.SYSTEM,
-        title="Avviso di sistema",
-        body="Manutenzione programmata",
-        report=None,
-    )
-
-    assert isinstance(result, Notification)
-    assert result.type == NotificationType.SYSTEM
-    assert result.user_id == VALID_USER.id
-    assert result.report_id is None
-
-
-# ---------------------------------------------------------------------------
-# CN7 – user=None, STATUS_CHANGE con report → None
-# EC covered: EC2 × EC3 × EC6
-# ---------------------------------------------------------------------------
-@pytest.mark.skip(reason="Disabled.")
-def test_cn7_null_user_status_change(seed_notification_data: None) -> None:
-    service = NotificationService()
+@pytest.mark.parametrize(
+    "notification_type, title, body, use_report",
+    [
+        # CN7 – None, STATUS_CHANGE, con report
+        (NotificationType.STATUS_CHANGE, "Stato aggiornato", "Il report è stato assegnato", True),
+        # CN8 – None, MESSAGE, con report
+        (NotificationType.MESSAGE, "Nuovo messaggio", "Hai ricevuto un messaggio", True),
+        # CN9 – None, SYSTEM, senza report
+        (NotificationType.SYSTEM, "Avviso di sistema", "Manutenzione programmata", False),
+    ],
+)
+def test_create_notification_null_user(
+    seed_notification_data, notification_type, title, body, use_report,
+) -> None:
+    service, _user, report = seed_notification_data
 
     result = service.create_notification(
         user=None,
-        notification_type=NotificationType.STATUS_CHANGE,
-        title="Stato aggiornato",
-        body="Il report è stato assegnato",
-        report=VALID_REPORT,
-    )
-
-    assert result is None
-
-
-# ---------------------------------------------------------------------------
-# CN8 – user=None, MESSAGE con report → None
-# EC covered: EC2 × EC4 × EC6
-# ---------------------------------------------------------------------------
-@pytest.mark.skip(reason="Disabled.")
-def test_cn8_null_user_message(seed_notification_data: None) -> None:
-    service = NotificationService()
-
-    result = service.create_notification(
-        user=None,
-        notification_type=NotificationType.MESSAGE,
-        title="Nuovo messaggio",
-        body="Hai ricevuto un messaggio",
-        report=VALID_REPORT,
-    )
-
-    assert result is None
-
-
-# ---------------------------------------------------------------------------
-# CN9 – user=None, SYSTEM senza report → None
-# EC covered: EC2 × EC5 × EC7
-# ---------------------------------------------------------------------------
-@pytest.mark.skip(reason="Disabled.")
-def test_cn9_null_user_system(seed_notification_data: None) -> None:
-    service = NotificationService()
-
-    result = service.create_notification(
-        user=None,
-        notification_type=NotificationType.SYSTEM,
-        title="Avviso di sistema",
-        body="Manutenzione programmata",
-        report=None,
+        notification_type=notification_type,
+        title=title,
+        body=body,
+        report=report if use_report else None,
     )
 
     assert result is None
@@ -227,57 +173,30 @@ def test_cn9_null_user_system(seed_notification_data: None) -> None:
 # Boundary: stringhe vuote per titolo e corpo
 # Il contratto non documenta eccezioni per stringhe vuote.
 # ---------------------------------------------------------------------------
-
-# CNB1 – Titolo vuoto
-# EC covered: EC1 × EC5 × EC7
-@pytest.mark.skip(reason="Disabled.")
-def test_cnb1_empty_title(seed_notification_data: None) -> None:
-    service = NotificationService()
+@pytest.mark.parametrize(
+    "title, body",
+    [
+        # CNB1 – titolo vuoto
+        ("", "Corpo valido"),
+        # CNB2 – corpo vuoto
+        ("Titolo valido", ""),
+        # CNB3 – titolo e corpo vuoti
+        ("", ""),
+    ],
+)
+def test_create_notification_empty_strings(
+    seed_notification_data, title, body,
+) -> None:
+    service, user, _report = seed_notification_data
 
     result = service.create_notification(
-        user=VALID_USER,
+        user=user,
         notification_type=NotificationType.SYSTEM,
-        title="",
-        body="Corpo valido",
+        title=title,
+        body=body,
         report=None,
     )
 
     assert isinstance(result, Notification)
-    assert result.title == ""
-
-
-# CNB2 – Corpo vuoto
-# EC covered: EC1 × EC5 × EC7
-@pytest.mark.skip(reason="Disabled.")
-def test_cnb2_empty_body(seed_notification_data: None) -> None:
-    service = NotificationService()
-
-    result = service.create_notification(
-        user=VALID_USER,
-        notification_type=NotificationType.SYSTEM,
-        title="Titolo valido",
-        body="",
-        report=None,
-    )
-
-    assert isinstance(result, Notification)
-    assert result.body == ""
-
-
-# CNB3 – Titolo e corpo vuoti
-# EC covered: EC1 × EC5 × EC7
-@pytest.mark.skip(reason="Disabled.")
-def test_cnb3_empty_title_and_body(seed_notification_data: None) -> None:
-    service = NotificationService()
-
-    result = service.create_notification(
-        user=VALID_USER,
-        notification_type=NotificationType.SYSTEM,
-        title="",
-        body="",
-        report=None,
-    )
-
-    assert isinstance(result, Notification)
-    assert result.title == ""
-    assert result.body == ""
+    assert result.title == title
+    assert result.body == body

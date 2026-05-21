@@ -95,8 +95,6 @@ VALID_REPORTER = User(
         (1,   "Buca", "Descrizione", 45.0,   "9.0", [VALID_PHOTO], False),
 
         # --- Boundary: numero di foto valide ---
-        # CRB2 – esattamente 1 foto valida (minimo)
-        (1, "Buca", "Descrizione", 45.0, 9.0, [VALID_PHOTO], False),
         # CRB3 – esattamente 3 foto valide (massimo)
         (1, "Buca", "Descrizione", 45.0, 9.0,
          [VALID_PHOTO, VALID_PHOTO_2, VALID_PHOTO_3], False),

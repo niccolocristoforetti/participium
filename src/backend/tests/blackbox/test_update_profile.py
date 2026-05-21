@@ -4,13 +4,9 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from werkzeug.datastructures import FileStorage
-
 from participium.core.exceptions import ValidationError
 from participium.models.base import Base
-from participium.models.category import Category
 from participium.models.enums import Role
-from participium.models.notification import Notification  # noqa: F401
-from participium.models.report import Report, ReportPhoto, ReportStatusHistory  # noqa: F401
 from participium.models.user import User
 from participium.repositories.user_repository import UserRepository
 from participium.services.storage_service import StorageService
@@ -84,9 +80,9 @@ def seed_update_profile_data():
 VALID_PHOTO = FileStorage(filename="avatar.png", content_type="image/png")
 
 
-# ---------------------------------------------------------------------------
+
 # Casi di successo: aggiornamento di un singolo campo
-# ---------------------------------------------------------------------------
+
 
 # UP1 – Solo username
 def test_up1_update_username(seed_update_profile_data) -> None:
@@ -152,9 +148,9 @@ def test_up6_update_profile_picture(seed_update_profile_data) -> None:
     assert result.profile_picture_path is not None
 
 
-# ---------------------------------------------------------------------------
+
 # Casi di successo: aggiornamento multiplo / nessun campo
-# ---------------------------------------------------------------------------
+
 
 # UP7 – Aggiornamento di tutti i campi
 def test_up7_update_all_fields(seed_update_profile_data) -> None:
@@ -190,9 +186,8 @@ def test_up8_no_changes(seed_update_profile_data) -> None:
     assert result.last_name == "Rossi"
 
 
-# ---------------------------------------------------------------------------
 # Casi username: proprio username / username duplicato
-# ---------------------------------------------------------------------------
+
 
 # UP9 – Username uguale al proprio → nessun conflitto
 def test_up9_same_username(seed_update_profile_data) -> None:
@@ -212,12 +207,11 @@ def test_up10_duplicate_username(seed_update_profile_data) -> None:
         service.update_profile(user=user, username="username.esistente")
 
 
-# ---------------------------------------------------------------------------
+
 # Boundary: campi vuoti
-# L'implementazione tratta le stringhe vuote come falsy (if username:),
-# quindi non aggiorna il campo. I test che si aspettavano l'aggiornamento
-# sono marcati xfail.
-# ---------------------------------------------------------------------------
+# L'implementazione tratta le stringhe vuote come falsy (if username:),quindi non aggiorna il campo. 
+# I test che si aspettavano l'aggiornamento sono marcati xfail.
+
 
 # UPB1 – Username stringa vuota: l'impl. non aggiorna (stringa vuota è falsy)
 @pytest.mark.xfail(
@@ -258,12 +252,11 @@ def test_upb3_empty_last_name(seed_update_profile_data) -> None:
     assert result.last_name == ""
 
 
-# ---------------------------------------------------------------------------
+
 # Boundary: immagine profilo senza filename
-# L'implementazione fa `if profile_picture and profile_picture.filename:`
-# quindi FileStorage con filename=None o "" non causa errori, semplicemente
-# non aggiorna il campo. User restituito invariato.
-# ---------------------------------------------------------------------------
+# L'implementazione fa `if profile_picture and profile_picture.filename:`quindi FileStorage con filename=None
+# o "" non causa errori, semplicemente non aggiorna il campo. User restituito invariato.
+
 
 # UPB4 – FileStorage senza filename → no update, nessun errore
 def test_upb4_picture_no_filename(seed_update_profile_data) -> None:

@@ -10,7 +10,7 @@ from participium.models.base import Base
 from participium.models.category import Category
 from participium.models.enums import NotificationType, ReportStatus, Role
 from participium.models.notification import Notification
-from participium.models.report import Report, ReportPhoto, ReportStatusHistory  # noqa: F401
+from participium.models.report import Report
 from participium.models.user import User
 from participium.repositories.notification_repository import NotificationRepository
 from participium.services.notification_service import NotificationService
@@ -104,10 +104,10 @@ def test_create_notification_with_report(
     assert result.is_read is False
 
 
-# ---------------------------------------------------------------------------
+
 # Casi di successo: user valido senza report
 # EC covered: EC1 × {EC3,EC4,EC5} × EC7
-# ---------------------------------------------------------------------------
+
 @pytest.mark.parametrize(
     "notification_type, title, body",
     [
@@ -138,10 +138,10 @@ def test_create_notification_no_report(
     assert result.type == notification_type
 
 
-# ---------------------------------------------------------------------------
+
 # Casi user=None → ritorna None
 # EC covered: EC2 × {EC3,EC4,EC5} × {EC6,EC7}
-# ---------------------------------------------------------------------------
+
 @pytest.mark.parametrize(
     "notification_type, title, body, use_report",
     [
@@ -169,10 +169,10 @@ def test_create_notification_null_user(
     assert result is None
 
 
-# ---------------------------------------------------------------------------
+
 # Boundary: stringhe vuote per titolo e corpo
 # Il contratto non documenta eccezioni per stringhe vuote.
-# ---------------------------------------------------------------------------
+
 @pytest.mark.parametrize(
     "title, body",
     [

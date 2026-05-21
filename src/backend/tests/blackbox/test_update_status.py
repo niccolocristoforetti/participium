@@ -82,6 +82,7 @@ INVALID_USER = User(id=5, username="citadino1", role=Role.CITIZEN, is_active=Tru
 def seed_update_status_data(db_session) -> dict[str, User]:
     from participium.models.report import Report
     report = Report(
+        id=1,
         title="Test Report",
         description="Descrizione",
         latitude=45.0,
@@ -107,7 +108,7 @@ def seed_update_status_data(db_session) -> dict[str, User]:
 
 
 
-######################################## Test che non producono eccezioni
+
 
 @pytest.mark.parametrize(
     "report_id,operator,next_status_value,note",
@@ -147,7 +148,7 @@ def test_update_status_success(
 
 
 
-######################################## Test che producono eccezioni
+
 
 @pytest.mark.parametrize(
     "report_id,operator,next_status_value,note,expected_exception",

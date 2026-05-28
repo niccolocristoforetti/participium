@@ -4,8 +4,6 @@ from datetime import datetime
 
 import pytest
 
-pytestmark = pytest.mark.skip(reason="Disabled.")
-
 from participium.core.utils import parse_date
 
 

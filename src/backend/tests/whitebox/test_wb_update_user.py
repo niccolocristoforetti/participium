@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from unittest.mock import Mock, patch
-
 import pytest
 
 from participium.core.exceptions import ValidationError
@@ -13,10 +12,11 @@ from participium.services.user_service import UserService
 pytestmark = pytest.mark.whitebox
 
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
 
+#  Helpers 
+
+
+#  crea un'istanza reale del modello User compilata con dati di default.
 def _user(
     *,
     user_id: int = 1,
@@ -42,10 +42,11 @@ def _user(
     )
 
 
-# ---------------------------------------------------------------------------
-# Fixture: service con tutte le dipendenze mockate
-# ---------------------------------------------------------------------------
 
+#  Fixtures 
+
+
+# Prepara l'ambiente isolando UserService e configurando il recupero di un utente di default.
 @pytest.fixture
 def service_bundle() -> dict[str, object]:
     session = Mock()
@@ -56,7 +57,6 @@ def service_bundle() -> dict[str, object]:
         user_repository=user_repository,
         category_repository=category_repository,
     )
-    # get_user restituisce un utente di default
     service.get_user = Mock(return_value=_user())
     return {
         "service": service,
@@ -65,11 +65,12 @@ def service_bundle() -> dict[str, object]:
     }
 
 
-# ---------------------------------------------------------------------------
-# T1 — Username duplicato → raise ValidationError
-# Nodi: N1→N2→N3 | Condition: C1a=T, C1b=T, C1c=T | Path P1
-# ---------------------------------------------------------------------------
-def test_t1_username_already_in_use(service_bundle: dict[str, object]) -> None:
+
+#  Casi di Test 
+
+
+# UU1 – verifica il sollevamento di una ValidationError se lo username richiesto nel payload è già associato a un altro utente.
+def test_uu1_username_already_in_use(service_bundle: dict[str, object]) -> None:
     service: UserService = service_bundle["service"]
     user_repo: Mock = service_bundle["user_repository"]
     user_repo.get_by_username.return_value = _user(user_id=99, username="taken")
@@ -80,11 +81,8 @@ def test_t1_username_already_in_use(service_bundle: dict[str, object]) -> None:
     user_repo.get_by_username.assert_called_once_with("taken")
 
 
-# ---------------------------------------------------------------------------
-# T2 — Email duplicata → raise ValidationError
-# Nodi: N1→N2→N4→N5 | Condition: C2a=T, C2b=T, C2c=T | Path P2
-# ---------------------------------------------------------------------------
-def test_t2_email_already_in_use(service_bundle: dict[str, object]) -> None:
+# UU2 – verifica il sollevamento di una ValidationError se l'indirizzo email richiesto nel payload è già associato a un altro utente.
+def test_uu2_email_already_in_use(service_bundle: dict[str, object]) -> None:
     service: UserService = service_bundle["service"]
     user_repo: Mock = service_bundle["user_repository"]
     user_repo.get_by_username.return_value = None
@@ -96,12 +94,8 @@ def test_t2_email_already_in_use(service_bundle: dict[str, object]) -> None:
     user_repo.get_by_email.assert_called_once_with("taken@ex.com")
 
 
-# ---------------------------------------------------------------------------
-# T3 — Payload vuoto → nessuna modifica, tutti i rami False
-# Edge: tutti i rami False | Condition: C1a=F, C2a=F, C3=F×4, C4=F,
-#   C5a=F, C5b=F, C7=F, C8=F | Path P3 | Loop: C3=F×4
-# ---------------------------------------------------------------------------
-def test_t3_empty_payload(service_bundle: dict[str, object]) -> None:
+# UUB1 – verifica che l'invio di un payload privo di campi non modifichi l'utente corrente e salvi le modifiche correnti.
+def test_uub1_empty_payload(service_bundle: dict[str, object]) -> None:
     service: UserService = service_bundle["service"]
     session: Mock = service_bundle["session"]
 
@@ -116,12 +110,8 @@ def test_t3_empty_payload(service_bundle: dict[str, object]) -> None:
     session.commit.assert_called_once()
 
 
-# ---------------------------------------------------------------------------
-# T4 — Payload completo → tutti i rami True, tutte le modifiche applicate
-# Node: tutti | Edge: tutti i rami True | Condition: C1c=F, C2c=F,
-#   C3=T×4, C4=T, C5a=T, C6=T, C7=T, C8=T | Path P4 | Loop: C3=T×4
-# ---------------------------------------------------------------------------
-def test_t4_full_payload_all_fields(service_bundle: dict[str, object]) -> None:
+# UU3 – verifica la corretta applicazione, sanificazione (strip) e persistenza di tutti i campi modificabili presenti nel dizionario.
+def test_uu3_full_payload_all_fields(service_bundle: dict[str, object]) -> None:
     service: UserService = service_bundle["service"]
     session: Mock = service_bundle["session"]
     user_repo: Mock = service_bundle["user_repository"]
@@ -159,11 +149,8 @@ def test_t4_full_payload_all_fields(service_bundle: dict[str, object]) -> None:
     service._resolve_operator_category.assert_called_once()
 
 
-# ---------------------------------------------------------------------------
-# T5 — Username uguale all'attuale → C1a=T, C1b=F (short-circuit)
-# Path P5 | Loop: C3 mix (1 True, 3 False)
-# ---------------------------------------------------------------------------
-def test_t5_username_same_as_current(service_bundle: dict[str, object]) -> None:
+# UU4 – verifica che se lo username inviato coincide con quello attuale, il controllo di unicità sul database venga saltato.
+def test_uu4_username_same_as_current(service_bundle: dict[str, object]) -> None:
     service: UserService = service_bundle["service"]
     user_repo: Mock = service_bundle["user_repository"]
 
@@ -174,11 +161,8 @@ def test_t5_username_same_as_current(service_bundle: dict[str, object]) -> None:
     user_repo.get_by_username.assert_not_called()
 
 
-# ---------------------------------------------------------------------------
-# T6 — Email uguale all'attuale → C2a=T, C2b=F (short-circuit)
-# Path P6
-# ---------------------------------------------------------------------------
-def test_t6_email_same_as_current(service_bundle: dict[str, object]) -> None:
+# UU5 – verifica che se l'email inviata coincide con quella attuale, il controllo di unicità sul database venga saltato.
+def test_uu5_email_same_as_current(service_bundle: dict[str, object]) -> None:
     service: UserService = service_bundle["service"]
     user_repo: Mock = service_bundle["user_repository"]
 
@@ -189,12 +173,8 @@ def test_t6_email_same_as_current(service_bundle: dict[str, object]) -> None:
     user_repo.get_by_email.assert_not_called()
 
 
-# ---------------------------------------------------------------------------
-# T7 — Solo category_id, no role → C5a=T (short-circuit or), C4=F, C6=F
-#   _resolve_operator_category chiamata con user.role; restituisce None
-#   → user.category_id diventa None (N13a→N13c) | Path P7
-# ---------------------------------------------------------------------------
-def test_t7_category_id_only_no_role(service_bundle: dict[str, object]) -> None:
+# UU6 – verifica che l'invio del solo category_id aggiorni la categoria dell'operatore interpellando il risolutore interno del servizio.
+def test_uu6_category_id_only_no_role(service_bundle: dict[str, object]) -> None:
     service: UserService = service_bundle["service"]
     service._resolve_operator_category = Mock(return_value=None)
 
@@ -202,16 +182,11 @@ def test_t7_category_id_only_no_role(service_bundle: dict[str, object]) -> None:
 
     assert isinstance(result, User)
     assert result.category_id is None
-    service._resolve_operator_category.assert_called_once_with(
-        Role.CITIZEN, 3
-    )
+    service._resolve_operator_category.assert_called_once_with(Role.CITIZEN, 3)
 
 
-# ---------------------------------------------------------------------------
-# T8 — Solo role, no category_id → C5a=F, C5b=T; C4=T, C6=T
-#   _parse_role + _resolve_operator_category chiamati (N13a→N13b) | Path P8
-# ---------------------------------------------------------------------------
-def test_t8_role_only_no_category_id(service_bundle: dict[str, object]) -> None:
+# UU7 – verifica che l'invio del solo ruolo aggiorni i permessi dell'utente e ricalcoli la categoria di competenza associata.
+def test_uu7_role_only_no_category_id(service_bundle: dict[str, object]) -> None:
     service: UserService = service_bundle["service"]
     mock_category = Mock(id=10)
     service._parse_role = Mock(return_value=Role.ADMIN)

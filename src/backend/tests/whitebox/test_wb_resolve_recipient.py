@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from unittest.mock import Mock
-
 import pytest
 
 from participium.models.enums import Role
@@ -14,18 +13,26 @@ from participium.services.messaging_service import MessagingService
 pytestmark = pytest.mark.whitebox
 
 
+
+#  Helpers 
+
+
+# crea un'istanza mock di un utente con un id e un ruolo specifici.
 def _user(*, user_id: int, role: Role) -> User:
     return User(id=user_id, role=role)
 
 
+# crea un'istanza mock di un messaggio inviato da un determinato utente.
 def _message(*, sender: User | None) -> Message:
     return Message(sender=sender)
 
 
+# crea un evento di cronologia di stato modificato da un determinato utente.
 def _status_event(*, changed_by: User | None) -> ReportStatusHistory:
     return ReportStatusHistory(changed_by=changed_by)
 
 
+# configura un report mock completo di segnalatore e cronologia degli stati.
 def _report(
     *,
     reporter: User | None = None,
@@ -34,13 +41,22 @@ def _report(
     return Report(id=1, reporter=reporter, status_history=status_history or [])
 
 
+
+#  Fixtures 
+
+
+# Inizializza MessagingService isolando il modulo e mockando la repository dei messaggi.
 @pytest.fixture
 def service() -> MessagingService:
     return MessagingService(session=Mock(), message_repository=Mock())
 
 
-# T1 — C1=True: sender is ADMIN → return report.reporter (Path P1)
-def test_t1_sender_is_admin_returns_reporter(service: MessagingService) -> None:
+
+#  Casi di Test 
+
+
+# RR1 – ADMIN: verifica che se il mittente è un amministratore o operatore, venga restituito direttamente l'autore della segnalazione.
+def test_rr1_sender_is_admin_returns_reporter(service: MessagingService) -> None:
     reporter = _user(user_id=10, role=Role.CITIZEN)
     report = _report(reporter=reporter)
     sender = _user(user_id=1, role=Role.ADMIN)
@@ -51,8 +67,8 @@ def test_t1_sender_is_admin_returns_reporter(service: MessagingService) -> None:
     service.message_repository.list_for_report.assert_not_called()
 
 
-# T2 — Loop1=1 early return: first message has ADMIN sender (Path P3, Node/Edge/Condition C2a=T C2b=T)
-def test_t2_message_with_admin_sender_returns_message_sender(service: MessagingService) -> None:
+# RR2 – verifica che venga estratto l'ultimo mittente ADMIN/OPERATOR scorrendo a ritroso la lista dei messaggi.
+def test_rr2_message_with_admin_sender_returns_message_sender(service: MessagingService) -> None:
     admin = _user(user_id=2, role=Role.ADMIN)
     msg = _message(sender=admin)
     service.message_repository.list_for_report.return_value = [msg]
@@ -64,8 +80,8 @@ def test_t2_message_with_admin_sender_returns_message_sender(service: MessagingS
     assert result is admin
 
 
-# T3 — Loop1=0, Loop2=1 early return: no messages, first status event has ADMIN changed_by (Path P4, C3a=T C3b=T)
-def test_t3_status_event_with_admin_changed_by_returns_changed_by(service: MessagingService) -> None:
+# RR3 – verifica che, in assenza di messaggi validi, venga estratto l'ultimo amministratore dalla cronologia degli stati.
+def test_rr3_status_event_with_admin_changed_by_returns_changed_by(service: MessagingService) -> None:
     admin = _user(user_id=3, role=Role.ADMIN)
     service.message_repository.list_for_report.return_value = []
     report = _report(status_history=[_status_event(changed_by=admin)])
@@ -76,8 +92,8 @@ def test_t3_status_event_with_admin_changed_by_returns_changed_by(service: Messa
     assert result is admin
 
 
-# T4 — Loop1=0, Loop2=0: empty messages and empty status_history → return None (Path P2)
-def test_t4_no_messages_no_status_returns_none(service: MessagingService) -> None:
+# RRB1 – verifica che se non ci sono messaggi né cronologia degli stati, la funzione restituisca None.
+def test_rrb1_no_messages_no_status_returns_none(service: MessagingService) -> None:
     service.message_repository.list_for_report.return_value = []
     report = _report(status_history=[])
     sender = _user(user_id=99, role=Role.CITIZEN)
@@ -87,9 +103,8 @@ def test_t4_no_messages_no_status_returns_none(service: MessagingService) -> Non
     assert result is None
 
 
-# T5 — back-edges both loops exhausted: non-ADMIN message and non-ADMIN status event → return None
-# (Path P5, Edge back-edges L1/L2, Condition C2b=F C3b=F)
-def test_t5_non_admin_message_and_status_returns_none(service: MessagingService) -> None:
+# RR4 – verifica che se messaggi e stati appartengono solo a cittadini ordinari, non venga rilevato alcun destinatario (restituisce None).
+def test_rr4_non_admin_message_and_status_returns_none(service: MessagingService) -> None:
     citizen = _user(user_id=5, role=Role.CITIZEN)
     service.message_repository.list_for_report.return_value = [_message(sender=citizen)]
     report = _report(status_history=[_status_event(changed_by=citizen)])
@@ -100,8 +115,8 @@ def test_t5_non_admin_message_and_status_returns_none(service: MessagingService)
     assert result is None
 
 
-# T6 — C2a=False and C3a=False: message.sender is None and status_event.changed_by is None → return None
-def test_t6_message_sender_none_and_changed_by_none_returns_none(service: MessagingService) -> None:
+# RR5 – verifica il corretto superamento dei rami logici nel caso in cui il mittente del messaggio o l'autore dello stato siano None.
+def test_rr5_message_sender_none_and_changed_by_none_returns_none(service: MessagingService) -> None:
     service.message_repository.list_for_report.return_value = [_message(sender=None)]
     report = _report(status_history=[_status_event(changed_by=None)])
     sender = _user(user_id=99, role=Role.CITIZEN)
@@ -111,8 +126,8 @@ def test_t6_message_sender_none_and_changed_by_none_returns_none(service: Messag
     assert result is None
 
 
-# T7 — Loop1=2+, Loop2=2+: multiple non-ADMIN messages and status events → return None
-def test_t7_multiple_non_admin_messages_and_statuses_returns_none(service: MessagingService) -> None:
+# RR6 – verifica che l'intero overflow di messaggi e stati non autorizzati venga processato scorrendo tutti gli elementi senza match.
+def test_rr6_multiple_non_admin_messages_and_statuses_returns_none(service: MessagingService) -> None:
     citizen = _user(user_id=7, role=Role.CITIZEN)
     service.message_repository.list_for_report.return_value = [
         _message(sender=citizen),

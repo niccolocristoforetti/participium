@@ -189,6 +189,11 @@ def test_new_report_anonymous_flag_submits_successfully(driver):
     photo_path = _make_temp_image()
     try:
         login_as(driver, "citizen@example.com", "Citizen123!")
+        # Aspetta la dashboard per confermare che la sessione sia attiva prima di
+        # navigare alla rotta protetta — evita la race condition dell'AuthContext.
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "dashboard-page"))
+        )
         driver.get(f"{BASE_URL}/reports/new")
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.ID, "new-report-form"))

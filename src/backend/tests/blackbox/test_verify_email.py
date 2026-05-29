@@ -1,3 +1,4 @@
+
 from __future__ import annotations
 
 from datetime import timedelta
@@ -17,14 +18,21 @@ from participium.repositories.user_repository import UserRepository
 from participium.services.auth_service import AuthService
 
 
-VALID_TOKEN = "VALID_TOKEN_FOR_MARIA_ROSSI"
-USED_TOKEN = "USED_TOKEN_FOR_LUCA_BIANCHI"
+VALID_TOKEN   = "VALID_TOKEN_FOR_MARIA_ROSSI"
+USED_TOKEN    = "USED_TOKEN_FOR_LUCA_BIANCHI"
 INVALID_TOKEN = "INVALID_TOKEN"
 EXPIRED_TOKEN = "EXPIRED_TOKEN_FOR_GIULIA_NERI"
 
 
 @pytest.fixture
 def seed_verify_email_data():
+    """
+    Crea un DB SQLite in-memory con:
+    - Utente id=101  (maria.rossi,  is_email_verified=False, token valido)
+    - Utente id=102  (luca.bianchi, is_email_verified=True,  token già usato)
+    - Utente id=103  (giulia.neri,  is_email_verified=False, token scaduto)
+    Restituisce un AuthService pronto all'uso.
+    """
     engine = create_engine(
         "sqlite:///:memory:",
         connect_args={"check_same_thread": False},
@@ -101,28 +109,34 @@ def seed_verify_email_data():
         )
 
 
-def test_verify_email_success(seed_verify_email_data) -> None:
-    verified_user = seed_verify_email_data.verify_email(VALID_TOKEN)
 
-    assert isinstance(verified_user, User)
-    assert verified_user.id == 101
-    assert verified_user.username == "maria.rossi"
-    assert verified_user.first_name == "Maria"
-    assert verified_user.last_name == "Rossi"
-    assert verified_user.email == "maria.rossi@example.com"
-    assert verified_user.is_email_verified is True
+#  token valido → utente verificato
+# VE1 – token valido, utente non ancora verificato
+def test_ve1_valid_token(seed_verify_email_data) -> None:
+    result = seed_verify_email_data.verify_email(VALID_TOKEN)
+
+    assert isinstance(result, User)
+    assert result.id == 101
+    assert result.username == "maria.rossi"
+    assert result.first_name == "Maria"
+    assert result.last_name == "Rossi"
+    assert result.email == "maria.rossi@example.com"
+    assert result.is_email_verified is True
 
 
-def test_verify_email_used_token(seed_verify_email_data) -> None:
+#token non valido → ValidationError
+
+@pytest.mark.parametrize(
+    "token",
+    [
+        # VE2 – token già utilizzato
+        USED_TOKEN,
+        # VE3 – token inesistente
+        INVALID_TOKEN,
+        # VE4 – token scaduto
+        EXPIRED_TOKEN,
+    ],
+)
+def test_ve_invalid_token(seed_verify_email_data, token) -> None:
     with pytest.raises(ValidationError):
-        seed_verify_email_data.verify_email(USED_TOKEN)
-
-
-def test_verify_email_invalid_token(seed_verify_email_data) -> None:
-    with pytest.raises(ValidationError):
-        seed_verify_email_data.verify_email(INVALID_TOKEN)
-
-
-def test_verify_email_expired_token(seed_verify_email_data) -> None:
-    with pytest.raises(ValidationError):
-        seed_verify_email_data.verify_email(EXPIRED_TOKEN)
+        seed_verify_email_data.verify_email(token)

@@ -67,10 +67,8 @@ def seed_notification_data():
         yield service, user, report
 
 
-# ---------------------------------------------------------------------------
 # Casi di successo: user valido con report
-# EC covered: EC1 × {EC3,EC4,EC5} × EC6
-# ---------------------------------------------------------------------------
+
 @pytest.mark.parametrize(
     "notification_type, title, body",
     [
@@ -106,7 +104,7 @@ def test_create_notification_with_report(
 
 
 # Casi di successo: user valido senza report
-# EC covered: EC1 × {EC3,EC4,EC5} × EC7
+
 
 @pytest.mark.parametrize(
     "notification_type, title, body",
@@ -140,7 +138,7 @@ def test_create_notification_no_report(
 
 
 # Casi user=None → ritorna None
-# EC covered: EC2 × {EC3,EC4,EC5} × {EC6,EC7}
+
 
 @pytest.mark.parametrize(
     "notification_type, title, body, use_report",

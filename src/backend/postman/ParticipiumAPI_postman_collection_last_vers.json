@@ -1,11 +1,11 @@
 {
   "info": {
-    "_postman_id": "ad201892-705d-44a6-aa13-b25642af253d",
-    "name": "Participium API Copy",
+    "_postman_id": "59e6e4bb-c211-45d7-9d3c-55488bf2875a",
+    "name": "Participium API Copy 2",
     "description": "REST API for the Participium civic issue reporting platform.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "54877159",
-    "_collection_link": "https://go.postman.co/collection/54877159-ad201892-705d-44a6-aa13-b25642af253d?source=collection_link"
+    "_exporter_id": "54558608",
+    "_collection_link": "https://go.postman.co/collection/54558608-59e6e4bb-c211-45d7-9d3c-55488bf2875a?source=collection_link"
   },
   "item": [
     {
@@ -4212,1718 +4212,6 @@
       ]
     },
     {
-      "name": "operator",
-      "item": [
-        {
-          "name": "reports",
-          "item": [
-            {
-              "name": "setup",
-              "item": [
-                {
-                  "name": "operator_setup",
-                  "event": [
-                    {
-                      "listen": "test",
-                      "script": {
-                        "exec": [
-                          "pm.test('status 200 - operator login ok', function () {",
-                          "    pm.response.to.have.status(200);",
-                          "});",
-                          "",
-                          "pm.test('logged-in role is operator', function () {",
-                          "    var json = pm.response.json();",
-                          "    pm.expect(json.user.role).to.equal('operator');",
-                          "});"
-                        ],
-                        "type": "text/javascript",
-                        "packages": {},
-                        "requests": {}
-                      }
-                    },
-                    {
-                      "listen": "prerequest",
-                      "script": {
-                        "exec": [
-                          ""
-                        ],
-                        "type": "text/javascript",
-                        "packages": {},
-                        "requests": {}
-                      }
-                    }
-                  ],
-                  "request": {
-                    "method": "POST",
-                    "header": [
-                      {
-                        "key": "Content-Type",
-                        "value": "application/json"
-                      },
-                      {
-                        "key": "Accept",
-                        "value": "application/json"
-                      }
-                    ],
-                    "body": {
-                      "mode": "raw",
-                      "raw": "{\n  \"identifier\": \"{{operator_email}}\",\n  \"password\": \"{{operator_password}}\"\n}"
-                    },
-                    "url": {
-                      "raw": "{{baseUrl}}/auth/login",
-                      "host": [
-                        "{{baseUrl}}"
-                      ],
-                      "path": [
-                        "auth",
-                        "login"
-                      ]
-                    }
-                  },
-                  "response": []
-                }
-              ]
-            },
-            {
-              "name": "assigned",
-              "item": [
-                {
-                  "name": "List operator-visible reports.",
-                  "event": [
-                    {
-                      "listen": "test",
-                      "script": {
-                        "exec": [
-                          "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\r",
-                          "pm.test(\"Returns array of reports\", () => {\r",
-                          "    const body = pm.response.json();\r",
-                          "    pm.expect(body).to.be.an(\"array\").that.is.not.empty;\r",
-                          "});\r",
-                          "\r",
-                          "pm.test(\"Report has required fields\", () =>{\r",
-                          "    const body = pm.response.json();\r",
-                          "    const cat = body[0];\r",
-                          "    pm.expect(cat).to.have.property(\"category\");\r",
-                          "    pm.expect(cat).to.have.property(\"created_at\");\r",
-                          "    pm.expect(cat).to.have.property(\"description\");\r",
-                          "    pm.expect(cat).to.have.property(\"followers_count\");\r",
-                          "    pm.expect(cat).to.have.property(\"id\");\r",
-                          "    pm.expect(cat).to.have.property(\"is_anonymous\");\r",
-                          "    pm.expect(cat).to.have.property(\"is_followed_by_current_user\");\r",
-                          "    pm.expect(cat).to.have.property(\"is_public\");\r",
-                          "    pm.expect(cat).to.have.property(\"latitude\");\r",
-                          "    pm.expect(cat).to.have.property(\"longitude\");\r",
-                          "    pm.expect(cat).to.have.property(\"photos\");\r",
-                          "});"
-                        ],
-                        "type": "text/javascript",
-                        "packages": {},
-                        "requests": {}
-                      }
-                    },
-                    {
-                      "listen": "prerequest",
-                      "script": {
-                        "exec": [
-                          "pm.sendRequest({\r",
-                          "    url: pm.environment.get('baseUrl') + '/auth/login',\r",
-                          "    method: 'POST',\r",
-                          "    header: { 'Content-Type': 'application/json' },\r",
-                          "    body: {\r",
-                          "        mode: 'raw',\r",
-                          "        raw: JSON.stringify({\r",
-                          "            identifier: pm.environment.get('operator_email'),\r",
-                          "            password: pm.environment.get('operator_password')\r",
-                          "        })\r",
-                          "    }\r",
-                          "}, function () {});"
-                        ],
-                        "type": "text/javascript",
-                        "packages": {},
-                        "requests": {}
-                      }
-                    }
-                  ],
-                  "request": {
-                    "method": "GET",
-                    "header": [
-                      {
-                        "key": "Accept",
-                        "value": "application/json"
-                      }
-                    ],
-                    "url": {
-                      "raw": "{{baseUrl}}/operator/reports/assigned",
-                      "host": [
-                        "{{baseUrl}}"
-                      ],
-                      "path": [
-                        "operator",
-                        "reports",
-                        "assigned"
-                      ]
-                    }
-                  },
-                  "response": [
-                    {
-                      "name": "Operator report queue.",
-                      "originalRequest": {
-                        "method": "GET",
-                        "header": [
-                          {
-                            "key": "Accept",
-                            "value": "application/json"
-                          }
-                        ],
-                        "url": {
-                          "raw": "{{baseUrl}}/operator/reports/assigned",
-                          "host": [
-                            "{{baseUrl}}"
-                          ],
-                          "path": [
-                            "operator",
-                            "reports",
-                            "assigned"
-                          ]
-                        }
-                      },
-                      "status": "OK",
-                      "code": 200,
-                      "_postman_previewlanguage": "json",
-                      "header": [
-                        {
-                          "key": "Content-Type",
-                          "value": "application/json"
-                        }
-                      ],
-                      "cookie": [],
-                      "body": "[\n  {\n    \"id\": 10,\n    \"title\": \"Pothole on Via Roma\",\n    \"description\": \"string\",\n    \"category\": {\n      \"id\": 1,\n      \"name\": \"Roads and Urban Furniture\",\n      \"is_active\": true,\n      \"created_at\": \"2017-07-23T18:47:45.797Z\"\n    },\n    \"status\": \"resolved\",\n    \"is_anonymous\": true,\n    \"reporter\": {\n      \"id\": 3995,\n      \"display_name\": \"Marco Citizen\",\n      \"role\": \"admin\"\n    },\n    \"latitude\": 45.0678,\n    \"longitude\": 7.6825,\n    \"photos\": [\n      {\n        \"id\": 9688,\n        \"file_path\": \"string\",\n        \"url\": \"string\",\n        \"original_filename\": \"string\",\n        \"content_type\": \"image/jpeg\"\n      },\n      {\n        \"id\": 3220,\n        \"file_path\": \"string\",\n        \"url\": \"string\",\n        \"original_filename\": \"string\",\n        \"content_type\": \"image/jpeg\"\n      }\n    ],\n    \"followers_count\": 1428,\n    \"is_followed_by_current_user\": false,\n    \"is_public\": true,\n    \"created_at\": \"2003-09-11T22:20:44.725Z\",\n    \"rejection_reason\": \"string\",\n    \"updated_at\": \"1953-10-22T06:51:38.005Z\",\n    \"unread_message_count\": 948\n  },\n  {\n    \"id\": 10,\n    \"title\": \"Pothole on Via Roma\",\n    \"description\": \"string\",\n    \"category\": {\n      \"id\": 1,\n      \"name\": \"Roads and Urban Furniture\",\n      \"is_active\": true,\n      \"created_at\": \"1952-03-05T09:26:03.442Z\"\n    },\n    \"status\": \"in_progress\",\n    \"is_anonymous\": true,\n    \"reporter\": {\n      \"id\": 5108,\n      \"display_name\": \"Marco Citizen\",\n      \"role\": \"admin\"\n    },\n    \"latitude\": 45.0678,\n    \"longitude\": 7.6825,\n    \"photos\": [\n      {\n        \"id\": 3393,\n        \"file_path\": \"string\",\n        \"url\": \"string\",\n        \"original_filename\": \"string\",\n        \"content_type\": \"image/jpeg\"\n      },\n      {\n        \"id\": 7809,\n        \"file_path\": \"string\",\n        \"url\": \"string\",\n        \"original_filename\": \"string\",\n        \"content_type\": \"image/jpeg\"\n      }\n    ],\n    \"followers_count\": 2739,\n    \"is_followed_by_current_user\": false,\n    \"is_public\": false,\n    \"created_at\": \"2024-08-25T07:13:43.713Z\",\n    \"rejection_reason\": \"string\",\n    \"updated_at\": \"2020-12-02T08:27:30.617Z\",\n    \"unread_message_count\": 1655\n  }\n]"
-                    },
-                    {
-                      "name": "Authentication required.",
-                      "originalRequest": {
-                        "method": "GET",
-                        "header": [
-                          {
-                            "key": "Accept",
-                            "value": "application/json"
-                          }
-                        ],
-                        "url": {
-                          "raw": "{{baseUrl}}/operator/reports/assigned",
-                          "host": [
-                            "{{baseUrl}}"
-                          ],
-                          "path": [
-                            "operator",
-                            "reports",
-                            "assigned"
-                          ]
-                        }
-                      },
-                      "status": "Unauthorized",
-                      "code": 401,
-                      "_postman_previewlanguage": "json",
-                      "header": [
-                        {
-                          "key": "Content-Type",
-                          "value": "application/json"
-                        }
-                      ],
-                      "cookie": [],
-                      "body": "{\n  \"error\": \"string\"\n}"
-                    },
-                    {
-                      "name": "Operator or admin role required.",
-                      "originalRequest": {
-                        "method": "GET",
-                        "header": [
-                          {
-                            "key": "Accept",
-                            "value": "application/json"
-                          }
-                        ],
-                        "url": {
-                          "raw": "{{baseUrl}}/operator/reports/assigned",
-                          "host": [
-                            "{{baseUrl}}"
-                          ],
-                          "path": [
-                            "operator",
-                            "reports",
-                            "assigned"
-                          ]
-                        }
-                      },
-                      "status": "Forbidden",
-                      "code": 403,
-                      "_postman_previewlanguage": "json",
-                      "header": [
-                        {
-                          "key": "Content-Type",
-                          "value": "application/json"
-                        }
-                      ],
-                      "cookie": [],
-                      "body": "{\n  \"error\": \"string\"\n}"
-                    }
-                  ]
-                },
-                {
-                  "name": "Authentication required",
-                  "event": [
-                    {
-                      "listen": "test",
-                      "script": {
-                        "exec": [
-                          "pm.test('status 401 - authentication required', function () {\r",
-                          "    pm.response.to.have.status(401);\r",
-                          "});\r",
-                          "\r",
-                          "pm.test('error body has error field', function () {\r",
-                          "    pm.response.to.be.json;\r",
-                          "    pm.expect(pm.response.json()).to.have.property('error');\r",
-                          "    pm.expect(pm.response.json().error).to.be.a('string');\r",
-                          "});"
-                        ],
-                        "type": "text/javascript",
-                        "packages": {},
-                        "requests": {}
-                      }
-                    },
-                    {
-                      "listen": "prerequest",
-                      "script": {
-                        "exec": [
-                          "pm.sendRequest({\r",
-                          "    url: pm.environment.get('baseUrl') + '/auth/logout',\r",
-                          "    method: 'POST'\r",
-                          "}, function () {});"
-                        ],
-                        "type": "text/javascript",
-                        "packages": {},
-                        "requests": {}
-                      }
-                    }
-                  ],
-                  "request": {
-                    "method": "GET",
-                    "header": [],
-                    "url": {
-                      "raw": "{{baseUrl}}/operator/reports/assigned",
-                      "host": [
-                        "{{baseUrl}}"
-                      ],
-                      "path": [
-                        "operator",
-                        "reports",
-                        "assigned"
-                      ]
-                    }
-                  },
-                  "response": []
-                },
-                {
-                  "name": "Operator-or-admin-role-required",
-                  "event": [
-                    {
-                      "listen": "test",
-                      "script": {
-                        "exec": [
-                          "pm.test('status 403 - authentication required', function () {\r",
-                          "    pm.response.to.have.status(403);\r",
-                          "});\r",
-                          "\r",
-                          "pm.test('error body has error field', function () {\r",
-                          "    pm.response.to.be.json;\r",
-                          "    pm.expect(pm.response.json()).to.have.property('error');\r",
-                          "    pm.expect(pm.response.json().error).to.be.a('string');\r",
-                          "});"
-                        ],
-                        "type": "text/javascript",
-                        "packages": {},
-                        "requests": {}
-                      }
-                    },
-                    {
-                      "listen": "prerequest",
-                      "script": {
-                        "exec": [
-                          "pm.sendRequest({\r",
-                          "    url: pm.environment.get('baseUrl') + '/auth/login',\r",
-                          "    method: 'POST',\r",
-                          "    header: { 'Content-Type': 'application/json' },\r",
-                          "    body: {\r",
-                          "        mode: 'raw',\r",
-                          "        raw: JSON.stringify({\r",
-                          "            identifier: pm.environment.get('citizen_email'),\r",
-                          "            password: pm.environment.get('citizen_password')\r",
-                          "        })\r",
-                          "    }\r",
-                          "}, function (err, res) {\r",
-                          "    if (err) {\r",
-                          "        console.log(err);\r",
-                          "    } else {\r",
-                          "        // Estrai il JSON dalla risposta di login\r",
-                          "        const responseData = res.json();\r",
-                          "        \r",
-                          "        // Salva il token in una variabile temporanea per questo test\r",
-                          "        // NOTA: Cambia 'token' con il nome esatto del campo che la tua API restituisce\r",
-                          "        pm.environment.set('test_token', responseData.token); \r",
-                          "    }\r",
-                          "});"
-                        ],
-                        "type": "text/javascript",
-                        "packages": {},
-                        "requests": {}
-                      }
-                    }
-                  ],
-                  "request": {
-                    "auth": {
-                      "type": "bearer",
-                      "bearer": [
-                        {
-                          "key": "token",
-                          "value": "{{test_token}}",
-                          "type": "string"
-                        }
-                      ]
-                    },
-                    "method": "GET",
-                    "header": [],
-                    "url": {
-                      "raw": "{{baseUrl}}/operator/reports/assigned",
-                      "host": [
-                        "{{baseUrl}}"
-                      ],
-                      "path": [
-                        "operator",
-                        "reports",
-                        "assigned"
-                      ]
-                    }
-                  },
-                  "response": []
-                }
-              ]
-            },
-            {
-              "name": "pending",
-              "item": [
-                {
-                  "name": "List-report-waiting-for-approval",
-                  "event": [
-                    {
-                      "listen": "test",
-                      "script": {
-                        "exec": [
-                          "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\r",
-                          "pm.test(\"Returns array of reports\", () => {\r",
-                          "    const body = pm.response.json();\r",
-                          "    pm.expect(body).to.be.an(\"array\")\r",
-                          "});\r",
-                          "\r",
-                          "pm.test(\"If reports exist, they have required fields\", () => {\r",
-                          "    const body = pm.response.json();\r",
-                          "    \r",
-                          "    // Eseguiamo il controllo dei campi SOLO se l'array contiene qualcosa\r",
-                          "    if (body.length > 0) {\r",
-                          "        const cat = body[0];\r",
-                          "        pm.expect(cat).to.have.property(\"category\");\r",
-                          "        pm.expect(cat).to.have.property(\"created_at\");\r",
-                          "        pm.expect(cat).to.have.property(\"description\");\r",
-                          "        pm.expect(cat).to.have.property(\"followers_count\");\r",
-                          "        pm.expect(cat).to.have.property(\"id\");\r",
-                          "        pm.expect(cat).to.have.property(\"is_anonymous\");\r",
-                          "        pm.expect(cat).to.have.property(\"is_followed_by_current_user\");\r",
-                          "        pm.expect(cat).to.have.property(\"is_public\");\r",
-                          "        pm.expect(cat).to.have.property(\"latitude\");\r",
-                          "        pm.expect(cat).to.have.property(\"longitude\");\r",
-                          "        pm.expect(cat).to.have.property(\"photos\");\r",
-                          "        pm.expect(cat).to.have.property(\"rejection_reason\");\r",
-                          "    } else {\r",
-                          "        console.log(\"Nessun report pending al momento, test dei campi saltato.\");\r",
-                          "    }\r",
-                          "});\r",
-                          ""
-                        ],
-                        "type": "text/javascript",
-                        "packages": {},
-                        "requests": {}
-                      }
-                    },
-                    {
-                      "listen": "prerequest",
-                      "script": {
-                        "exec": [
-                          "// create a report in pending status\r",
-                          "\r",
-                          "\r",
-                          "pm.sendRequest({\r",
-                          "    url: pm.environment.get('baseUrl') + '/auth/login',\r",
-                          "    method: 'POST',\r",
-                          "    header: { 'Content-Type': 'application/json' },\r",
-                          "    body: {\r",
-                          "        mode: 'raw',\r",
-                          "        raw: JSON.stringify({\r",
-                          "            identifier: pm.environment.get('operator_email'),\r",
-                          "            password: pm.environment.get('operator_password')\r",
-                          "        })\r",
-                          "    }\r",
-                          "}, function () {});\r",
-                          ""
-                        ],
-                        "type": "text/javascript",
-                        "packages": {},
-                        "requests": {}
-                      }
-                    }
-                  ],
-                  "request": {
-                    "method": "GET",
-                    "header": [
-                      {
-                        "key": "Accept",
-                        "value": "application/json"
-                      }
-                    ],
-                    "url": {
-                      "raw": "{{baseUrl}}/operator/reports/pending",
-                      "host": [
-                        "{{baseUrl}}"
-                      ],
-                      "path": [
-                        "operator",
-                        "reports",
-                        "pending"
-                      ]
-                    }
-                  },
-                  "response": [
-                    {
-                      "name": "Operator report queue.",
-                      "originalRequest": {
-                        "method": "GET",
-                        "header": [
-                          {
-                            "key": "Accept",
-                            "value": "application/json"
-                          }
-                        ],
-                        "url": {
-                          "raw": "{{baseUrl}}/operator/reports/assigned",
-                          "host": [
-                            "{{baseUrl}}"
-                          ],
-                          "path": [
-                            "operator",
-                            "reports",
-                            "assigned"
-                          ]
-                        }
-                      },
-                      "status": "OK",
-                      "code": 200,
-                      "_postman_previewlanguage": "json",
-                      "header": [
-                        {
-                          "key": "Content-Type",
-                          "value": "application/json"
-                        }
-                      ],
-                      "cookie": [],
-                      "body": "[\n  {\n    \"id\": 10,\n    \"title\": \"Pothole on Via Roma\",\n    \"description\": \"string\",\n    \"category\": {\n      \"id\": 1,\n      \"name\": \"Roads and Urban Furniture\",\n      \"is_active\": true,\n      \"created_at\": \"2017-07-23T18:47:45.797Z\"\n    },\n    \"status\": \"resolved\",\n    \"is_anonymous\": true,\n    \"reporter\": {\n      \"id\": 3995,\n      \"display_name\": \"Marco Citizen\",\n      \"role\": \"admin\"\n    },\n    \"latitude\": 45.0678,\n    \"longitude\": 7.6825,\n    \"photos\": [\n      {\n        \"id\": 9688,\n        \"file_path\": \"string\",\n        \"url\": \"string\",\n        \"original_filename\": \"string\",\n        \"content_type\": \"image/jpeg\"\n      },\n      {\n        \"id\": 3220,\n        \"file_path\": \"string\",\n        \"url\": \"string\",\n        \"original_filename\": \"string\",\n        \"content_type\": \"image/jpeg\"\n      }\n    ],\n    \"followers_count\": 1428,\n    \"is_followed_by_current_user\": false,\n    \"is_public\": true,\n    \"created_at\": \"2003-09-11T22:20:44.725Z\",\n    \"rejection_reason\": \"string\",\n    \"updated_at\": \"1953-10-22T06:51:38.005Z\",\n    \"unread_message_count\": 948\n  },\n  {\n    \"id\": 10,\n    \"title\": \"Pothole on Via Roma\",\n    \"description\": \"string\",\n    \"category\": {\n      \"id\": 1,\n      \"name\": \"Roads and Urban Furniture\",\n      \"is_active\": true,\n      \"created_at\": \"1952-03-05T09:26:03.442Z\"\n    },\n    \"status\": \"in_progress\",\n    \"is_anonymous\": true,\n    \"reporter\": {\n      \"id\": 5108,\n      \"display_name\": \"Marco Citizen\",\n      \"role\": \"admin\"\n    },\n    \"latitude\": 45.0678,\n    \"longitude\": 7.6825,\n    \"photos\": [\n      {\n        \"id\": 3393,\n        \"file_path\": \"string\",\n        \"url\": \"string\",\n        \"original_filename\": \"string\",\n        \"content_type\": \"image/jpeg\"\n      },\n      {\n        \"id\": 7809,\n        \"file_path\": \"string\",\n        \"url\": \"string\",\n        \"original_filename\": \"string\",\n        \"content_type\": \"image/jpeg\"\n      }\n    ],\n    \"followers_count\": 2739,\n    \"is_followed_by_current_user\": false,\n    \"is_public\": false,\n    \"created_at\": \"2024-08-25T07:13:43.713Z\",\n    \"rejection_reason\": \"string\",\n    \"updated_at\": \"2020-12-02T08:27:30.617Z\",\n    \"unread_message_count\": 1655\n  }\n]"
-                    },
-                    {
-                      "name": "Authentication required.",
-                      "originalRequest": {
-                        "method": "GET",
-                        "header": [
-                          {
-                            "key": "Accept",
-                            "value": "application/json"
-                          }
-                        ],
-                        "url": {
-                          "raw": "{{baseUrl}}/operator/reports/assigned",
-                          "host": [
-                            "{{baseUrl}}"
-                          ],
-                          "path": [
-                            "operator",
-                            "reports",
-                            "assigned"
-                          ]
-                        }
-                      },
-                      "status": "Unauthorized",
-                      "code": 401,
-                      "_postman_previewlanguage": "json",
-                      "header": [
-                        {
-                          "key": "Content-Type",
-                          "value": "application/json"
-                        }
-                      ],
-                      "cookie": [],
-                      "body": "{\n  \"error\": \"string\"\n}"
-                    },
-                    {
-                      "name": "Operator or admin role required.",
-                      "originalRequest": {
-                        "method": "GET",
-                        "header": [
-                          {
-                            "key": "Accept",
-                            "value": "application/json"
-                          }
-                        ],
-                        "url": {
-                          "raw": "{{baseUrl}}/operator/reports/assigned",
-                          "host": [
-                            "{{baseUrl}}"
-                          ],
-                          "path": [
-                            "operator",
-                            "reports",
-                            "assigned"
-                          ]
-                        }
-                      },
-                      "status": "Forbidden",
-                      "code": 403,
-                      "_postman_previewlanguage": "json",
-                      "header": [
-                        {
-                          "key": "Content-Type",
-                          "value": "application/json"
-                        }
-                      ],
-                      "cookie": [],
-                      "body": "{\n  \"error\": \"string\"\n}"
-                    }
-                  ]
-                },
-                {
-                  "name": "Authentication-required-pending",
-                  "event": [
-                    {
-                      "listen": "test",
-                      "script": {
-                        "exec": [
-                          "pm.test('status 401 - authentication required', function () {\r",
-                          "    pm.response.to.have.status(401);\r",
-                          "});\r",
-                          "\r",
-                          "pm.test('error body has error field', function () {\r",
-                          "    pm.response.to.be.json;\r",
-                          "    pm.expect(pm.response.json()).to.have.property('error');\r",
-                          "    pm.expect(pm.response.json().error).to.be.a('string');\r",
-                          "});"
-                        ],
-                        "type": "text/javascript",
-                        "packages": {},
-                        "requests": {}
-                      }
-                    },
-                    {
-                      "listen": "prerequest",
-                      "script": {
-                        "exec": [
-                          "pm.sendRequest({\r",
-                          "    url: pm.environment.get('baseUrl') + '/auth/logout',\r",
-                          "    method: 'POST'\r",
-                          "}, function () {});"
-                        ],
-                        "type": "text/javascript",
-                        "packages": {},
-                        "requests": {}
-                      }
-                    }
-                  ],
-                  "request": {
-                    "method": "GET",
-                    "header": [],
-                    "url": {
-                      "raw": "{{baseUrl}}/operator/reports/assigned",
-                      "host": [
-                        "{{baseUrl}}"
-                      ],
-                      "path": [
-                        "operator",
-                        "reports",
-                        "assigned"
-                      ]
-                    }
-                  },
-                  "response": []
-                },
-                {
-                  "name": "Operator-or-admin-role-required-pending",
-                  "event": [
-                    {
-                      "listen": "test",
-                      "script": {
-                        "exec": [
-                          "pm.test('status 403 - authentication required', function () {\r",
-                          "    pm.response.to.have.status(403);\r",
-                          "});\r",
-                          "\r",
-                          "pm.test('error body has error field', function () {\r",
-                          "    pm.response.to.be.json;\r",
-                          "    pm.expect(pm.response.json()).to.have.property('error');\r",
-                          "    pm.expect(pm.response.json().error).to.be.a('string');\r",
-                          "});"
-                        ],
-                        "type": "text/javascript",
-                        "packages": {},
-                        "requests": {}
-                      }
-                    },
-                    {
-                      "listen": "prerequest",
-                      "script": {
-                        "exec": [
-                          "pm.sendRequest({\r",
-                          "    url: pm.environment.get('baseUrl') + '/auth/login',\r",
-                          "    method: 'POST',\r",
-                          "    header: { 'Content-Type': 'application/json' },\r",
-                          "    body: {\r",
-                          "        mode: 'raw',\r",
-                          "        raw: JSON.stringify({\r",
-                          "            identifier: pm.environment.get('citizen_email'),\r",
-                          "            password: pm.environment.get('citizen_password')\r",
-                          "        })\r",
-                          "    }\r",
-                          "}, function () {});"
-                        ],
-                        "type": "text/javascript",
-                        "packages": {},
-                        "requests": {}
-                      }
-                    }
-                  ],
-                  "request": {
-                    "method": "GET",
-                    "header": [],
-                    "url": {
-                      "raw": "{{baseUrl}}/operator/reports/pending",
-                      "host": [
-                        "{{baseUrl}}"
-                      ],
-                      "path": [
-                        "operator",
-                        "reports",
-                        "pending"
-                      ]
-                    }
-                  },
-                  "response": []
-                }
-              ]
-            },
-            {
-              "name": "{report_id}",
-              "item": [
-                {
-                  "name": "assign",
-                  "item": [
-                    {
-                      "name": "Accept a pending report for handling in its category.",
-                      "event": [
-                        {
-                          "listen": "prerequest",
-                          "script": {
-                            "exec": [
-                              "pm.sendRequest({\r",
-                              "    url: pm.environment.get('baseUrl') + '/auth/login',\r",
-                              "    method: 'POST',\r",
-                              "    header: { 'Content-Type': 'application/json' },\r",
-                              "    body: {\r",
-                              "        mode: 'raw',\r",
-                              "        raw: JSON.stringify({\r",
-                              "            identifier: pm.environment.get('operator_email'),\r",
-                              "            password: pm.environment.get('operator_password')\r",
-                              "        })\r",
-                              "    }\r",
-                              "}, function () {});"
-                            ],
-                            "type": "text/javascript",
-                            "packages": {},
-                            "requests": {}
-                          }
-                        },
-                        {
-                          "listen": "test",
-                          "script": {
-                            "exec": [
-                              "// Verifica che lo status code sia 200\r",
-                              "pm.test(\"Status code is 200\", function () {\r",
-                              "    pm.response.to.have.status(200);\r",
-                              "});\r",
-                              "\r",
-                              "// Verifica che la segnalazione restituita sia quella corretta\r",
-                              "pm.test(\"Report ID matches\", function () {\r",
-                              "    var jsonData = pm.response.json();\r",
-                              "    pm.expect(jsonData.id).to.be.a('number');\r",
-                              "    console.log(\"Assegnato il report: \" + jsonData.title);\r",
-                              "});\r",
-                              "\r",
-                              "// Verifica che lo stato sia coerente (se l'assegnazione cambia lo stato)\r",
-                              "pm.test(\"Check status consistency\", function () {\r",
-                              "    var jsonData = pm.response.json();\r",
-                              "    pm.expect(jsonData.status).to.exist;\r",
-                              "});"
-                            ],
-                            "type": "text/javascript",
-                            "packages": {},
-                            "requests": {}
-                          }
-                        }
-                      ],
-                      "request": {
-                        "method": "POST",
-                        "header": [
-                          {
-                            "key": "Accept",
-                            "value": "application/json"
-                          }
-                        ],
-                        "url": {
-                          "raw": "{{baseUrl}}/operator/reports/:report_id/assign",
-                          "host": [
-                            "{{baseUrl}}"
-                          ],
-                          "path": [
-                            "operator",
-                            "reports",
-                            ":report_id",
-                            "assign"
-                          ],
-                          "variable": [
-                            {
-                              "key": "report_id",
-                              "value": "1"
-                            }
-                          ]
-                        }
-                      },
-                      "response": [
-                        {
-                          "name": "Report assigned.",
-                          "originalRequest": {
-                            "method": "POST",
-                            "header": [
-                              {
-                                "key": "Accept",
-                                "value": "application/json"
-                              }
-                            ],
-                            "url": {
-                              "raw": "{{baseUrl}}/operator/reports/:report_id/assign",
-                              "host": [
-                                "{{baseUrl}}"
-                              ],
-                              "path": [
-                                "operator",
-                                "reports",
-                                ":report_id",
-                                "assign"
-                              ],
-                              "variable": [
-                                {
-                                  "key": "report_id",
-                                  "value": "6011"
-                                }
-                              ]
-                            }
-                          },
-                          "status": "OK",
-                          "code": 200,
-                          "_postman_previewlanguage": "json",
-                          "header": [
-                            {
-                              "key": "Content-Type",
-                              "value": "application/json"
-                            }
-                          ],
-                          "cookie": [],
-                          "body": "{\n  \"id\": 10,\n  \"title\": \"Pothole on Via Roma\",\n  \"description\": \"string\",\n  \"category\": {\n    \"id\": 1,\n    \"name\": \"Roads and Urban Furniture\",\n    \"is_active\": true,\n    \"created_at\": \"2019-07-23T18:41:51.756Z\"\n  },\n  \"status\": \"pending_approval\",\n  \"is_anonymous\": true,\n  \"reporter\": {\n    \"id\": 159,\n    \"display_name\": \"Marco Citizen\",\n    \"role\": \"admin\"\n  },\n  \"latitude\": 45.0678,\n  \"longitude\": 7.6825,\n  \"photos\": [\n    {\n      \"id\": 4950,\n      \"file_path\": \"string\",\n      \"url\": \"string\",\n      \"original_filename\": \"string\",\n      \"content_type\": \"image/jpeg\"\n    },\n    {\n      \"id\": 491,\n      \"file_path\": \"string\",\n      \"url\": \"string\",\n      \"original_filename\": \"string\",\n      \"content_type\": \"image/jpeg\"\n    }\n  ],\n  \"followers_count\": 3037,\n  \"is_followed_by_current_user\": true,\n  \"is_public\": false,\n  \"can_access_messages\": false,\n  \"status_history\": [\n    {\n      \"id\": 6033,\n      \"previous_status\": \"rejected\",\n      \"new_status\": \"rejected\",\n      \"changed_by\": {\n        \"id\": 497,\n        \"display_name\": \"Marco Citizen\",\n        \"role\": \"admin\"\n      },\n      \"created_at\": \"2019-12-18T21:20:19.750Z\",\n      \"note\": \"string\"\n    },\n    {\n      \"id\": 4941,\n      \"previous_status\": \"in_progress\",\n      \"new_status\": \"in_progress\",\n      \"changed_by\": {\n        \"id\": 9399,\n        \"display_name\": \"Marco Citizen\",\n        \"role\": \"operator\"\n      },\n      \"created_at\": \"1974-06-12T05:58:58.426Z\",\n      \"note\": \"string\"\n    }\n  ],\n  \"created_at\": \"1953-12-15T11:33:53.921Z\",\n  \"rejection_reason\": \"string\",\n  \"updated_at\": \"1989-08-22T07:21:23.239Z\",\n  \"messages\": [\n    {\n      \"id\": 2365,\n      \"report_id\": 8171,\n      \"body\": \"string\",\n      \"sender\": {\n        \"id\": 8598,\n        \"display_name\": \"Marco Citizen\",\n        \"role\": \"citizen\"\n      },\n      \"recipient\": {\n        \"id\": 6581,\n        \"display_name\": \"Marco Citizen\",\n        \"role\": \"admin\"\n      },\n      \"created_at\": \"2016-06-28T01:32:11.028Z\"\n    },\n    {\n      \"id\": 9803,\n      \"report_id\": 6045,\n      \"body\": \"string\",\n      \"sender\": {\n        \"id\": 6667,\n        \"display_name\": \"Marco Citizen\",\n        \"role\": \"operator\"\n      },\n      \"recipient\": {\n        \"id\": 6444,\n        \"display_name\": \"Marco Citizen\",\n        \"role\": \"operator\"\n      },\n      \"created_at\": \"1993-06-09T19:27:47.507Z\"\n    }\n  ]\n}"
-                        },
-                        {
-                          "name": "Authentication required.",
-                          "originalRequest": {
-                            "method": "POST",
-                            "header": [
-                              {
-                                "key": "Accept",
-                                "value": "application/json"
-                              }
-                            ],
-                            "url": {
-                              "raw": "{{baseUrl}}/operator/reports/:report_id/assign",
-                              "host": [
-                                "{{baseUrl}}"
-                              ],
-                              "path": [
-                                "operator",
-                                "reports",
-                                ":report_id",
-                                "assign"
-                              ],
-                              "variable": [
-                                {
-                                  "key": "report_id",
-                                  "value": "6011"
-                                }
-                              ]
-                            }
-                          },
-                          "status": "Unauthorized",
-                          "code": 401,
-                          "_postman_previewlanguage": "json",
-                          "header": [
-                            {
-                              "key": "Content-Type",
-                              "value": "application/json"
-                            }
-                          ],
-                          "cookie": [],
-                          "body": "{\n  \"error\": \"string\"\n}"
-                        },
-                        {
-                          "name": "Operator or admin role required.",
-                          "originalRequest": {
-                            "method": "POST",
-                            "header": [
-                              {
-                                "key": "Accept",
-                                "value": "application/json"
-                              }
-                            ],
-                            "url": {
-                              "raw": "{{baseUrl}}/operator/reports/:report_id/assign",
-                              "host": [
-                                "{{baseUrl}}"
-                              ],
-                              "path": [
-                                "operator",
-                                "reports",
-                                ":report_id",
-                                "assign"
-                              ],
-                              "variable": [
-                                {
-                                  "key": "report_id",
-                                  "value": "6011"
-                                }
-                              ]
-                            }
-                          },
-                          "status": "Forbidden",
-                          "code": 403,
-                          "_postman_previewlanguage": "json",
-                          "header": [
-                            {
-                              "key": "Content-Type",
-                              "value": "application/json"
-                            }
-                          ],
-                          "cookie": [],
-                          "body": "{\n  \"error\": \"string\"\n}"
-                        },
-                        {
-                          "name": "Report not found.",
-                          "originalRequest": {
-                            "method": "POST",
-                            "header": [
-                              {
-                                "key": "Accept",
-                                "value": "application/json"
-                              }
-                            ],
-                            "url": {
-                              "raw": "{{baseUrl}}/operator/reports/:report_id/assign",
-                              "host": [
-                                "{{baseUrl}}"
-                              ],
-                              "path": [
-                                "operator",
-                                "reports",
-                                ":report_id",
-                                "assign"
-                              ],
-                              "variable": [
-                                {
-                                  "key": "report_id",
-                                  "value": "6011"
-                                }
-                              ]
-                            }
-                          },
-                          "status": "Not Found",
-                          "code": 404,
-                          "_postman_previewlanguage": "json",
-                          "header": [
-                            {
-                              "key": "Content-Type",
-                              "value": "application/json"
-                            }
-                          ],
-                          "cookie": [],
-                          "body": "{\n  \"error\": \"string\"\n}"
-                        }
-                      ]
-                    },
-                    {
-                      "name": "Authentication required",
-                      "event": [
-                        {
-                          "listen": "prerequest",
-                          "script": {
-                            "exec": [
-                              "pm.sendRequest({\r",
-                              "    url: pm.environment.get('baseUrl') + '/auth/logout',\r",
-                              "    method: 'POST'\r",
-                              "}, function () {});"
-                            ],
-                            "type": "text/javascript",
-                            "packages": {},
-                            "requests": {}
-                          }
-                        },
-                        {
-                          "listen": "test",
-                          "script": {
-                            "exec": [
-                              "pm.test('status 401 - validation error', function () {\r",
-                              "    pm.response.to.have.status(401);\r",
-                              "});\r",
-                              "\r",
-                              "pm.test('error body has error field', function () {\r",
-                              "    pm.response.to.be.json;\r",
-                              "    pm.expect(pm.response.json()).to.have.property('error');\r",
-                              "    pm.expect(pm.response.json().error).to.be.a('string');\r",
-                              "});"
-                            ],
-                            "type": "text/javascript",
-                            "packages": {},
-                            "requests": {}
-                          }
-                        }
-                      ],
-                      "request": {
-                        "method": "POST",
-                        "header": [],
-                        "url": {
-                          "raw": "{{baseUrl}}/operator/reports/:report_id/assign",
-                          "host": [
-                            "{{baseUrl}}"
-                          ],
-                          "path": [
-                            "operator",
-                            "reports",
-                            ":report_id",
-                            "assign"
-                          ],
-                          "variable": [
-                            {
-                              "key": "report_id",
-                              "value": "1"
-                            }
-                          ]
-                        }
-                      },
-                      "response": []
-                    },
-                    {
-                      "name": "Operator-admin-role-required",
-                      "event": [
-                        {
-                          "listen": "test",
-                          "script": {
-                            "exec": [
-                              "pm.test('status 403 - validation error', function () {\r",
-                              "    pm.response.to.have.status(403);\r",
-                              "});\r",
-                              "\r",
-                              "pm.test('error body has error field', function () {\r",
-                              "    pm.response.to.be.json;\r",
-                              "    pm.expect(pm.response.json()).to.have.property('error');\r",
-                              "    pm.expect(pm.response.json().error).to.be.a('string');\r",
-                              "});"
-                            ],
-                            "type": "text/javascript",
-                            "packages": {},
-                            "requests": {}
-                          }
-                        },
-                        {
-                          "listen": "prerequest",
-                          "script": {
-                            "exec": [
-                              "pm.sendRequest({\r",
-                              "    url: pm.environment.get('baseUrl') + '/auth/login',\r",
-                              "    method: 'POST',\r",
-                              "    header: { 'Content-Type': 'application/json' },\r",
-                              "    body: {\r",
-                              "        mode: 'raw',\r",
-                              "        raw: JSON.stringify({\r",
-                              "            identifier: pm.environment.get('citizen_email'),\r",
-                              "            password: pm.environment.get('citizen_password')\r",
-                              "        })\r",
-                              "    }\r",
-                              "}, function () {});"
-                            ],
-                            "type": "text/javascript",
-                            "packages": {},
-                            "requests": {}
-                          }
-                        }
-                      ],
-                      "request": {
-                        "method": "POST",
-                        "header": [],
-                        "url": {
-                          "raw": "{{baseUrl}}/operator/reports/:report_id/assign",
-                          "host": [
-                            "{{baseUrl}}"
-                          ],
-                          "path": [
-                            "operator",
-                            "reports",
-                            ":report_id",
-                            "assign"
-                          ],
-                          "variable": [
-                            {
-                              "key": "report_id",
-                              "value": "1"
-                            }
-                          ]
-                        }
-                      },
-                      "response": []
-                    },
-                    {
-                      "name": "Report-not-found",
-                      "event": [
-                        {
-                          "listen": "test",
-                          "script": {
-                            "exec": [
-                              "pm.test(\"Status code is 404\", () => {\r",
-                              "    pm.response.to.have.status(404);\r",
-                              "});\r",
-                              "\r",
-                              "pm.test('error body has error field', function () {\r",
-                              "    pm.response.to.be.json;\r",
-                              "    pm.expect(pm.response.json()).to.have.property('error');\r",
-                              "    pm.expect(pm.response.json().error).to.be.a('string');\r",
-                              "});\r",
-                              ""
-                            ],
-                            "type": "text/javascript",
-                            "packages": {},
-                            "requests": {}
-                          }
-                        },
-                        {
-                          "listen": "prerequest",
-                          "script": {
-                            "exec": [
-                              "pm.sendRequest({\r",
-                              "    url: pm.environment.get('baseUrl') + '/auth/login',\r",
-                              "    method: 'POST',\r",
-                              "    header: { 'Content-Type': 'application/json' },\r",
-                              "    body: {\r",
-                              "        mode: 'raw',\r",
-                              "        raw: JSON.stringify({\r",
-                              "            identifier: pm.environment.get('operator_email'),\r",
-                              "            password: pm.environment.get('operator_password')\r",
-                              "        })\r",
-                              "    }\r",
-                              "}, function () {});"
-                            ],
-                            "type": "text/javascript",
-                            "packages": {},
-                            "requests": {}
-                          }
-                        }
-                      ],
-                      "request": {
-                        "method": "POST",
-                        "header": [],
-                        "url": {
-                          "raw": "{{baseUrl}}/operator/reports/:report_id/assign",
-                          "host": [
-                            "{{baseUrl}}"
-                          ],
-                          "path": [
-                            "operator",
-                            "reports",
-                            ":report_id",
-                            "assign"
-                          ],
-                          "variable": [
-                            {
-                              "key": "report_id",
-                              "value": "99999"
-                            }
-                          ]
-                        }
-                      },
-                      "response": []
-                    }
-                  ]
-                },
-                {
-                  "name": "status",
-                  "item": [
-                    {
-                      "name": "Update the status of a report.",
-                      "event": [
-                        {
-                          "listen": "prerequest",
-                          "script": {
-                            "exec": [
-                              "pm.environment.set('new_note', 'nota del ' + Date.now());\r",
-                              "\r",
-                              "\r",
-                              "pm.sendRequest({\r",
-                              "    url: pm.environment.get('baseUrl') + '/auth/login',\r",
-                              "    method: 'POST',\r",
-                              "    header: { 'Content-Type': 'application/json' },\r",
-                              "    body: {\r",
-                              "        mode: 'raw',\r",
-                              "        raw: JSON.stringify({\r",
-                              "            identifier: pm.environment.get('operator_email'),\r",
-                              "            password: pm.environment.get('operator_password')\r",
-                              "        })\r",
-                              "    }\r",
-                              "}, function () {});"
-                            ],
-                            "type": "text/javascript",
-                            "packages": {},
-                            "requests": {}
-                          }
-                        },
-                        {
-                          "listen": "test",
-                          "script": {
-                            "exec": [
-                              "// Verifica che lo status code sia 200\r",
-                              "pm.test(\"Status code is 200\", function () {\r",
-                              "    pm.response.to.have.status(200);\r",
-                              "});\r",
-                              "\r",
-                              "// Verifica che la segnalazione restituita sia quella corretta\r",
-                              "pm.test(\"Report ID matches\", function () {\r",
-                              "    var jsonData = pm.response.json();\r",
-                              "    pm.expect(jsonData.id).to.be.a('number');\r",
-                              "    console.log(\"Assegnato il report: \" + jsonData.title);\r",
-                              "});\r",
-                              "\r",
-                              "// Verifica che lo stato sia coerente (se l'assegnazione cambia lo stato)\r",
-                              "pm.test(\"Check status consistency\", function () {\r",
-                              "    var jsonData = pm.response.json();\r",
-                              "    pm.expect(jsonData.status).to.exist;\r",
-                              "});"
-                            ],
-                            "type": "text/javascript",
-                            "packages": {},
-                            "requests": {}
-                          }
-                        }
-                      ],
-                      "request": {
-                        "method": "POST",
-                        "header": [
-                          {
-                            "key": "Content-Type",
-                            "value": "application/json"
-                          },
-                          {
-                            "key": "Accept",
-                            "value": "application/json"
-                          }
-                        ],
-                        "body": {
-                          "mode": "raw",
-                          "raw": "{\n  \"status\": \"Assigned\",\n  \"note\": \"{{new_note}}\"\n}",
-                          "options": {
-                            "raw": {
-                              "headerFamily": "json",
-                              "language": "json"
-                            }
-                          }
-                        },
-                        "url": {
-                          "raw": "{{baseUrl}}/operator/reports/:report_id/status",
-                          "host": [
-                            "{{baseUrl}}"
-                          ],
-                          "path": [
-                            "operator",
-                            "reports",
-                            ":report_id",
-                            "status"
-                          ],
-                          "variable": [
-                            {
-                              "key": "report_id",
-                              "value": "1"
-                            }
-                          ]
-                        }
-                      },
-                      "response": [
-                        {
-                          "name": "Status updated.",
-                          "originalRequest": {
-                            "method": "POST",
-                            "header": [
-                              {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                              },
-                              {
-                                "key": "Accept",
-                                "value": "application/json"
-                              }
-                            ],
-                            "body": {
-                              "mode": "raw",
-                              "raw": "{\n  \"status\": \"in_progress\",\n  \"note\": \"string\"\n}",
-                              "options": {
-                                "raw": {
-                                  "headerFamily": "json",
-                                  "language": "json"
-                                }
-                              }
-                            },
-                            "url": {
-                              "raw": "{{baseUrl}}/operator/reports/:report_id/status",
-                              "host": [
-                                "{{baseUrl}}"
-                              ],
-                              "path": [
-                                "operator",
-                                "reports",
-                                ":report_id",
-                                "status"
-                              ],
-                              "variable": [
-                                {
-                                  "key": "report_id",
-                                  "value": "6011"
-                                }
-                              ]
-                            }
-                          },
-                          "status": "OK",
-                          "code": 200,
-                          "_postman_previewlanguage": "json",
-                          "header": [
-                            {
-                              "key": "Content-Type",
-                              "value": "application/json"
-                            }
-                          ],
-                          "cookie": [],
-                          "body": "{\n  \"id\": 10,\n  \"title\": \"Pothole on Via Roma\",\n  \"description\": \"string\",\n  \"category\": {\n    \"id\": 1,\n    \"name\": \"Roads and Urban Furniture\",\n    \"is_active\": true,\n    \"created_at\": \"2019-07-23T18:41:51.756Z\"\n  },\n  \"status\": \"pending_approval\",\n  \"is_anonymous\": true,\n  \"reporter\": {\n    \"id\": 159,\n    \"display_name\": \"Marco Citizen\",\n    \"role\": \"admin\"\n  },\n  \"latitude\": 45.0678,\n  \"longitude\": 7.6825,\n  \"photos\": [\n    {\n      \"id\": 4950,\n      \"file_path\": \"string\",\n      \"url\": \"string\",\n      \"original_filename\": \"string\",\n      \"content_type\": \"image/jpeg\"\n    },\n    {\n      \"id\": 491,\n      \"file_path\": \"string\",\n      \"url\": \"string\",\n      \"original_filename\": \"string\",\n      \"content_type\": \"image/jpeg\"\n    }\n  ],\n  \"followers_count\": 3037,\n  \"is_followed_by_current_user\": true,\n  \"is_public\": false,\n  \"can_access_messages\": false,\n  \"status_history\": [\n    {\n      \"id\": 6033,\n      \"previous_status\": \"rejected\",\n      \"new_status\": \"rejected\",\n      \"changed_by\": {\n        \"id\": 497,\n        \"display_name\": \"Marco Citizen\",\n        \"role\": \"admin\"\n      },\n      \"created_at\": \"2019-12-18T21:20:19.750Z\",\n      \"note\": \"string\"\n    },\n    {\n      \"id\": 4941,\n      \"previous_status\": \"in_progress\",\n      \"new_status\": \"in_progress\",\n      \"changed_by\": {\n        \"id\": 9399,\n        \"display_name\": \"Marco Citizen\",\n        \"role\": \"operator\"\n      },\n      \"created_at\": \"1974-06-12T05:58:58.426Z\",\n      \"note\": \"string\"\n    }\n  ],\n  \"created_at\": \"1953-12-15T11:33:53.921Z\",\n  \"rejection_reason\": \"string\",\n  \"updated_at\": \"1989-08-22T07:21:23.239Z\",\n  \"messages\": [\n    {\n      \"id\": 2365,\n      \"report_id\": 8171,\n      \"body\": \"string\",\n      \"sender\": {\n        \"id\": 8598,\n        \"display_name\": \"Marco Citizen\",\n        \"role\": \"citizen\"\n      },\n      \"recipient\": {\n        \"id\": 6581,\n        \"display_name\": \"Marco Citizen\",\n        \"role\": \"admin\"\n      },\n      \"created_at\": \"2016-06-28T01:32:11.028Z\"\n    },\n    {\n      \"id\": 9803,\n      \"report_id\": 6045,\n      \"body\": \"string\",\n      \"sender\": {\n        \"id\": 6667,\n        \"display_name\": \"Marco Citizen\",\n        \"role\": \"operator\"\n      },\n      \"recipient\": {\n        \"id\": 6444,\n        \"display_name\": \"Marco Citizen\",\n        \"role\": \"operator\"\n      },\n      \"created_at\": \"1993-06-09T19:27:47.507Z\"\n    }\n  ]\n}"
-                        },
-                        {
-                          "name": "Validation error.",
-                          "originalRequest": {
-                            "method": "POST",
-                            "header": [
-                              {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                              },
-                              {
-                                "key": "Accept",
-                                "value": "application/json"
-                              }
-                            ],
-                            "body": {
-                              "mode": "raw",
-                              "raw": "{\n  \"status\": \"in_progress\",\n  \"note\": \"string\"\n}",
-                              "options": {
-                                "raw": {
-                                  "headerFamily": "json",
-                                  "language": "json"
-                                }
-                              }
-                            },
-                            "url": {
-                              "raw": "{{baseUrl}}/operator/reports/:report_id/status",
-                              "host": [
-                                "{{baseUrl}}"
-                              ],
-                              "path": [
-                                "operator",
-                                "reports",
-                                ":report_id",
-                                "status"
-                              ],
-                              "variable": [
-                                {
-                                  "key": "report_id",
-                                  "value": "6011"
-                                }
-                              ]
-                            }
-                          },
-                          "status": "Bad Request",
-                          "code": 400,
-                          "_postman_previewlanguage": "json",
-                          "header": [
-                            {
-                              "key": "Content-Type",
-                              "value": "application/json"
-                            }
-                          ],
-                          "cookie": [],
-                          "body": "{\n  \"error\": \"string\"\n}"
-                        },
-                        {
-                          "name": "Authentication required.",
-                          "originalRequest": {
-                            "method": "POST",
-                            "header": [
-                              {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                              },
-                              {
-                                "key": "Accept",
-                                "value": "application/json"
-                              }
-                            ],
-                            "body": {
-                              "mode": "raw",
-                              "raw": "{\n  \"status\": \"in_progress\",\n  \"note\": \"string\"\n}",
-                              "options": {
-                                "raw": {
-                                  "headerFamily": "json",
-                                  "language": "json"
-                                }
-                              }
-                            },
-                            "url": {
-                              "raw": "{{baseUrl}}/operator/reports/:report_id/status",
-                              "host": [
-                                "{{baseUrl}}"
-                              ],
-                              "path": [
-                                "operator",
-                                "reports",
-                                ":report_id",
-                                "status"
-                              ],
-                              "variable": [
-                                {
-                                  "key": "report_id",
-                                  "value": "6011"
-                                }
-                              ]
-                            }
-                          },
-                          "status": "Unauthorized",
-                          "code": 401,
-                          "_postman_previewlanguage": "json",
-                          "header": [
-                            {
-                              "key": "Content-Type",
-                              "value": "application/json"
-                            }
-                          ],
-                          "cookie": [],
-                          "body": "{\n  \"error\": \"string\"\n}"
-                        },
-                        {
-                          "name": "Operator or admin role required.",
-                          "originalRequest": {
-                            "method": "POST",
-                            "header": [
-                              {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                              },
-                              {
-                                "key": "Accept",
-                                "value": "application/json"
-                              }
-                            ],
-                            "body": {
-                              "mode": "raw",
-                              "raw": "{\n  \"status\": \"in_progress\",\n  \"note\": \"string\"\n}",
-                              "options": {
-                                "raw": {
-                                  "headerFamily": "json",
-                                  "language": "json"
-                                }
-                              }
-                            },
-                            "url": {
-                              "raw": "{{baseUrl}}/operator/reports/:report_id/status",
-                              "host": [
-                                "{{baseUrl}}"
-                              ],
-                              "path": [
-                                "operator",
-                                "reports",
-                                ":report_id",
-                                "status"
-                              ],
-                              "variable": [
-                                {
-                                  "key": "report_id",
-                                  "value": "6011"
-                                }
-                              ]
-                            }
-                          },
-                          "status": "Forbidden",
-                          "code": 403,
-                          "_postman_previewlanguage": "json",
-                          "header": [
-                            {
-                              "key": "Content-Type",
-                              "value": "application/json"
-                            }
-                          ],
-                          "cookie": [],
-                          "body": "{\n  \"error\": \"string\"\n}"
-                        }
-                      ]
-                    },
-                    {
-                      "name": "Validation error",
-                      "event": [
-                        {
-                          "listen": "prerequest",
-                          "script": {
-                            "exec": [
-                              "pm.environment.set('new_note', 'nota del ' + Date.now());\r",
-                              "\r",
-                              "\r",
-                              "pm.sendRequest({\r",
-                              "    url: pm.environment.get('baseUrl') + '/auth/login',\r",
-                              "    method: 'POST',\r",
-                              "    header: { 'Content-Type': 'application/json' },\r",
-                              "    body: {\r",
-                              "        mode: 'raw',\r",
-                              "        raw: JSON.stringify({\r",
-                              "            identifier: pm.environment.get('operator_email'),\r",
-                              "            password: pm.environment.get('operator_password')\r",
-                              "        })\r",
-                              "    }\r",
-                              "}, function () {});"
-                            ],
-                            "type": "text/javascript",
-                            "packages": {},
-                            "requests": {}
-                          }
-                        },
-                        {
-                          "listen": "test",
-                          "script": {
-                            "exec": [
-                              "pm.test('status 400 - validation error', function () {\r",
-                              "    pm.response.to.have.status(400);\r",
-                              "});\r",
-                              "\r",
-                              "pm.test('error body has error field', function () {\r",
-                              "    pm.response.to.be.json;\r",
-                              "    pm.expect(pm.response.json()).to.have.property('error');\r",
-                              "    pm.expect(pm.response.json().error).to.be.a('string');\r",
-                              "});"
-                            ],
-                            "type": "text/javascript",
-                            "packages": {},
-                            "requests": {}
-                          }
-                        }
-                      ],
-                      "request": {
-                        "method": "POST",
-                        "header": [],
-                        "url": {
-                          "raw": "{{baseUrl}}/operator/reports/:report_id/status",
-                          "host": [
-                            "{{baseUrl}}"
-                          ],
-                          "path": [
-                            "operator",
-                            "reports",
-                            ":report_id",
-                            "status"
-                          ],
-                          "variable": [
-                            {
-                              "key": "report_id",
-                              "value": "1"
-                            }
-                          ]
-                        }
-                      },
-                      "response": []
-                    },
-                    {
-                      "name": "Authentication required",
-                      "event": [
-                        {
-                          "listen": "prerequest",
-                          "script": {
-                            "exec": [
-                              "pm.sendRequest({\r",
-                              "    url: pm.environment.get('baseUrl') + '/auth/logout',\r",
-                              "    method: 'POST'\r",
-                              "}, function () {});"
-                            ],
-                            "type": "text/javascript",
-                            "packages": {},
-                            "requests": {}
-                          }
-                        },
-                        {
-                          "listen": "test",
-                          "script": {
-                            "exec": [
-                              "pm.test('status 401 - validation error', function () {\r",
-                              "    pm.response.to.have.status(401);\r",
-                              "});\r",
-                              "\r",
-                              "pm.test('error body has error field', function () {\r",
-                              "    pm.response.to.be.json;\r",
-                              "    pm.expect(pm.response.json()).to.have.property('error');\r",
-                              "    pm.expect(pm.response.json().error).to.be.a('string');\r",
-                              "});"
-                            ],
-                            "type": "text/javascript",
-                            "packages": {},
-                            "requests": {}
-                          }
-                        }
-                      ],
-                      "request": {
-                        "method": "POST",
-                        "header": [],
-                        "body": {
-                          "mode": "raw",
-                          "raw": "{\r\n  \"status\": \"Assigned\",\r\n  \"note\": \"{{new_note}}\"\r\n}",
-                          "options": {
-                            "raw": {
-                              "language": "json"
-                            }
-                          }
-                        },
-                        "url": {
-                          "raw": "{{baseUrl}}/operator/reports/:report_id/status",
-                          "host": [
-                            "{{baseUrl}}"
-                          ],
-                          "path": [
-                            "operator",
-                            "reports",
-                            ":report_id",
-                            "status"
-                          ],
-                          "variable": [
-                            {
-                              "key": "report_id",
-                              "value": "1"
-                            }
-                          ]
-                        }
-                      },
-                      "response": []
-                    },
-                    {
-                      "name": "Operator-adim-role-required",
-                      "event": [
-                        {
-                          "listen": "prerequest",
-                          "script": {
-                            "exec": [
-                              "pm.environment.set('new_note', 'nota del ' + Date.now());\r",
-                              "\r",
-                              "\r",
-                              "pm.sendRequest({\r",
-                              "    url: pm.environment.get('baseUrl') + '/auth/login',\r",
-                              "    method: 'POST',\r",
-                              "    header: { 'Content-Type': 'application/json' },\r",
-                              "    body: {\r",
-                              "        mode: 'raw',\r",
-                              "        raw: JSON.stringify({\r",
-                              "            identifier: pm.environment.get('citizen_email'),\r",
-                              "            password: pm.environment.get('citizen_password')\r",
-                              "        })\r",
-                              "    }\r",
-                              "}, function () {});"
-                            ],
-                            "type": "text/javascript",
-                            "packages": {},
-                            "requests": {}
-                          }
-                        },
-                        {
-                          "listen": "test",
-                          "script": {
-                            "exec": [
-                              "pm.test('status 403 - validation error', function () {\r",
-                              "    pm.response.to.have.status(403);\r",
-                              "});\r",
-                              "\r",
-                              "pm.test('error body has error field', function () {\r",
-                              "    pm.response.to.be.json;\r",
-                              "    pm.expect(pm.response.json()).to.have.property('error');\r",
-                              "    pm.expect(pm.response.json().error).to.be.a('string');\r",
-                              "});"
-                            ],
-                            "type": "text/javascript",
-                            "packages": {},
-                            "requests": {}
-                          }
-                        }
-                      ],
-                      "request": {
-                        "method": "POST",
-                        "header": [],
-                        "url": {
-                          "raw": "{{baseUrl}}/operator/reports/:report_id/status",
-                          "host": [
-                            "{{baseUrl}}"
-                          ],
-                          "path": [
-                            "operator",
-                            "reports",
-                            ":report_id",
-                            "status"
-                          ],
-                          "variable": [
-                            {
-                              "key": "report_id",
-                              "value": "1"
-                            }
-                          ]
-                        }
-                      },
-                      "response": []
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
       "name": "reports",
       "item": [
         {
@@ -10003,7 +8291,7 @@
                 },
                 {
                   "key": "category_id",
-                  "value": "1",
+                  "value": "7",
                   "type": "text"
                 },
                 {
@@ -11808,6 +10096,1718 @@
               ],
               "cookie": [],
               "body": "{\n  \"error\": \"string\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "operator",
+      "item": [
+        {
+          "name": "reports",
+          "item": [
+            {
+              "name": "setup",
+              "item": [
+                {
+                  "name": "operator_setup",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test('status 200 - operator login ok', function () {",
+                          "    pm.response.to.have.status(200);",
+                          "});",
+                          "",
+                          "pm.test('logged-in role is operator', function () {",
+                          "    var json = pm.response.json();",
+                          "    pm.expect(json.user.role).to.equal('operator');",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    },
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "exec": [
+                          ""
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"identifier\": \"{{operator_email}}\",\n  \"password\": \"{{operator_password}}\"\n}"
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/auth/login",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "auth",
+                        "login"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "assigned",
+              "item": [
+                {
+                  "name": "List operator-visible reports.",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\r",
+                          "pm.test(\"Returns array of reports\", () => {\r",
+                          "    const body = pm.response.json();\r",
+                          "    pm.expect(body).to.be.an(\"array\").that.is.not.empty;\r",
+                          "});\r",
+                          "\r",
+                          "pm.test(\"Report has required fields\", () =>{\r",
+                          "    const body = pm.response.json();\r",
+                          "    const cat = body[0];\r",
+                          "    pm.expect(cat).to.have.property(\"category\");\r",
+                          "    pm.expect(cat).to.have.property(\"created_at\");\r",
+                          "    pm.expect(cat).to.have.property(\"description\");\r",
+                          "    pm.expect(cat).to.have.property(\"followers_count\");\r",
+                          "    pm.expect(cat).to.have.property(\"id\");\r",
+                          "    pm.expect(cat).to.have.property(\"is_anonymous\");\r",
+                          "    pm.expect(cat).to.have.property(\"is_followed_by_current_user\");\r",
+                          "    pm.expect(cat).to.have.property(\"is_public\");\r",
+                          "    pm.expect(cat).to.have.property(\"latitude\");\r",
+                          "    pm.expect(cat).to.have.property(\"longitude\");\r",
+                          "    pm.expect(cat).to.have.property(\"photos\");\r",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    },
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "exec": [
+                          "pm.sendRequest({\r",
+                          "    url: pm.environment.get('baseUrl') + '/auth/login',\r",
+                          "    method: 'POST',\r",
+                          "    header: { 'Content-Type': 'application/json' },\r",
+                          "    body: {\r",
+                          "        mode: 'raw',\r",
+                          "        raw: JSON.stringify({\r",
+                          "            identifier: pm.environment.get('operator_email'),\r",
+                          "            password: pm.environment.get('operator_password')\r",
+                          "        })\r",
+                          "    }\r",
+                          "}, function () {});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/operator/reports/assigned",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "operator",
+                        "reports",
+                        "assigned"
+                      ]
+                    }
+                  },
+                  "response": [
+                    {
+                      "name": "Operator report queue.",
+                      "originalRequest": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{baseUrl}}/operator/reports/assigned",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "operator",
+                            "reports",
+                            "assigned"
+                          ]
+                        }
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "_postman_previewlanguage": "json",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "[\n  {\n    \"id\": 10,\n    \"title\": \"Pothole on Via Roma\",\n    \"description\": \"string\",\n    \"category\": {\n      \"id\": 1,\n      \"name\": \"Roads and Urban Furniture\",\n      \"is_active\": true,\n      \"created_at\": \"2017-07-23T18:47:45.797Z\"\n    },\n    \"status\": \"resolved\",\n    \"is_anonymous\": true,\n    \"reporter\": {\n      \"id\": 3995,\n      \"display_name\": \"Marco Citizen\",\n      \"role\": \"admin\"\n    },\n    \"latitude\": 45.0678,\n    \"longitude\": 7.6825,\n    \"photos\": [\n      {\n        \"id\": 9688,\n        \"file_path\": \"string\",\n        \"url\": \"string\",\n        \"original_filename\": \"string\",\n        \"content_type\": \"image/jpeg\"\n      },\n      {\n        \"id\": 3220,\n        \"file_path\": \"string\",\n        \"url\": \"string\",\n        \"original_filename\": \"string\",\n        \"content_type\": \"image/jpeg\"\n      }\n    ],\n    \"followers_count\": 1428,\n    \"is_followed_by_current_user\": false,\n    \"is_public\": true,\n    \"created_at\": \"2003-09-11T22:20:44.725Z\",\n    \"rejection_reason\": \"string\",\n    \"updated_at\": \"1953-10-22T06:51:38.005Z\",\n    \"unread_message_count\": 948\n  },\n  {\n    \"id\": 10,\n    \"title\": \"Pothole on Via Roma\",\n    \"description\": \"string\",\n    \"category\": {\n      \"id\": 1,\n      \"name\": \"Roads and Urban Furniture\",\n      \"is_active\": true,\n      \"created_at\": \"1952-03-05T09:26:03.442Z\"\n    },\n    \"status\": \"in_progress\",\n    \"is_anonymous\": true,\n    \"reporter\": {\n      \"id\": 5108,\n      \"display_name\": \"Marco Citizen\",\n      \"role\": \"admin\"\n    },\n    \"latitude\": 45.0678,\n    \"longitude\": 7.6825,\n    \"photos\": [\n      {\n        \"id\": 3393,\n        \"file_path\": \"string\",\n        \"url\": \"string\",\n        \"original_filename\": \"string\",\n        \"content_type\": \"image/jpeg\"\n      },\n      {\n        \"id\": 7809,\n        \"file_path\": \"string\",\n        \"url\": \"string\",\n        \"original_filename\": \"string\",\n        \"content_type\": \"image/jpeg\"\n      }\n    ],\n    \"followers_count\": 2739,\n    \"is_followed_by_current_user\": false,\n    \"is_public\": false,\n    \"created_at\": \"2024-08-25T07:13:43.713Z\",\n    \"rejection_reason\": \"string\",\n    \"updated_at\": \"2020-12-02T08:27:30.617Z\",\n    \"unread_message_count\": 1655\n  }\n]"
+                    },
+                    {
+                      "name": "Authentication required.",
+                      "originalRequest": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{baseUrl}}/operator/reports/assigned",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "operator",
+                            "reports",
+                            "assigned"
+                          ]
+                        }
+                      },
+                      "status": "Unauthorized",
+                      "code": 401,
+                      "_postman_previewlanguage": "json",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n  \"error\": \"string\"\n}"
+                    },
+                    {
+                      "name": "Operator or admin role required.",
+                      "originalRequest": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{baseUrl}}/operator/reports/assigned",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "operator",
+                            "reports",
+                            "assigned"
+                          ]
+                        }
+                      },
+                      "status": "Forbidden",
+                      "code": 403,
+                      "_postman_previewlanguage": "json",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n  \"error\": \"string\"\n}"
+                    }
+                  ]
+                },
+                {
+                  "name": "Authentication required",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test('status 401 - authentication required', function () {\r",
+                          "    pm.response.to.have.status(401);\r",
+                          "});\r",
+                          "\r",
+                          "pm.test('error body has error field', function () {\r",
+                          "    pm.response.to.be.json;\r",
+                          "    pm.expect(pm.response.json()).to.have.property('error');\r",
+                          "    pm.expect(pm.response.json().error).to.be.a('string');\r",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    },
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "exec": [
+                          "pm.sendRequest({\r",
+                          "    url: pm.environment.get('baseUrl') + '/auth/logout',\r",
+                          "    method: 'POST'\r",
+                          "}, function () {});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{baseUrl}}/operator/reports/assigned",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "operator",
+                        "reports",
+                        "assigned"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Operator-or-admin-role-required",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test('status 403 - authentication required', function () {\r",
+                          "    pm.response.to.have.status(403);\r",
+                          "});\r",
+                          "\r",
+                          "pm.test('error body has error field', function () {\r",
+                          "    pm.response.to.be.json;\r",
+                          "    pm.expect(pm.response.json()).to.have.property('error');\r",
+                          "    pm.expect(pm.response.json().error).to.be.a('string');\r",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    },
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "exec": [
+                          "pm.sendRequest({\r",
+                          "    url: pm.environment.get('baseUrl') + '/auth/login',\r",
+                          "    method: 'POST',\r",
+                          "    header: { 'Content-Type': 'application/json' },\r",
+                          "    body: {\r",
+                          "        mode: 'raw',\r",
+                          "        raw: JSON.stringify({\r",
+                          "            identifier: pm.environment.get('citizen_email'),\r",
+                          "            password: pm.environment.get('citizen_password')\r",
+                          "        })\r",
+                          "    }\r",
+                          "}, function (err, res) {\r",
+                          "    if (err) {\r",
+                          "        console.log(err);\r",
+                          "    } else {\r",
+                          "        // Estrai il JSON dalla risposta di login\r",
+                          "        const responseData = res.json();\r",
+                          "        \r",
+                          "        // Salva il token in una variabile temporanea per questo test\r",
+                          "        // NOTA: Cambia 'token' con il nome esatto del campo che la tua API restituisce\r",
+                          "        pm.environment.set('test_token', responseData.token); \r",
+                          "    }\r",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{test_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{baseUrl}}/operator/reports/assigned",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "operator",
+                        "reports",
+                        "assigned"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "pending",
+              "item": [
+                {
+                  "name": "List-report-waiting-for-approval",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\r",
+                          "pm.test(\"Returns array of reports\", () => {\r",
+                          "    const body = pm.response.json();\r",
+                          "    pm.expect(body).to.be.an(\"array\")\r",
+                          "});\r",
+                          "\r",
+                          "pm.test(\"If reports exist, they have required fields\", () => {\r",
+                          "    const body = pm.response.json();\r",
+                          "    \r",
+                          "    // Eseguiamo il controllo dei campi SOLO se l'array contiene qualcosa\r",
+                          "    if (body.length > 0) {\r",
+                          "        const cat = body[0];\r",
+                          "        pm.expect(cat).to.have.property(\"category\");\r",
+                          "        pm.expect(cat).to.have.property(\"created_at\");\r",
+                          "        pm.expect(cat).to.have.property(\"description\");\r",
+                          "        pm.expect(cat).to.have.property(\"followers_count\");\r",
+                          "        pm.expect(cat).to.have.property(\"id\");\r",
+                          "        pm.expect(cat).to.have.property(\"is_anonymous\");\r",
+                          "        pm.expect(cat).to.have.property(\"is_followed_by_current_user\");\r",
+                          "        pm.expect(cat).to.have.property(\"is_public\");\r",
+                          "        pm.expect(cat).to.have.property(\"latitude\");\r",
+                          "        pm.expect(cat).to.have.property(\"longitude\");\r",
+                          "        pm.expect(cat).to.have.property(\"photos\");\r",
+                          "        pm.expect(cat).to.have.property(\"rejection_reason\");\r",
+                          "    } else {\r",
+                          "        console.log(\"Nessun report pending al momento, test dei campi saltato.\");\r",
+                          "    }\r",
+                          "});\r",
+                          ""
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    },
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "exec": [
+                          "// create a report in pending status\r",
+                          "\r",
+                          "\r",
+                          "pm.sendRequest({\r",
+                          "    url: pm.environment.get('baseUrl') + '/auth/login',\r",
+                          "    method: 'POST',\r",
+                          "    header: { 'Content-Type': 'application/json' },\r",
+                          "    body: {\r",
+                          "        mode: 'raw',\r",
+                          "        raw: JSON.stringify({\r",
+                          "            identifier: pm.environment.get('operator_email'),\r",
+                          "            password: pm.environment.get('operator_password')\r",
+                          "        })\r",
+                          "    }\r",
+                          "}, function () {});\r",
+                          ""
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/operator/reports/pending",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "operator",
+                        "reports",
+                        "pending"
+                      ]
+                    }
+                  },
+                  "response": [
+                    {
+                      "name": "Operator report queue.",
+                      "originalRequest": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{baseUrl}}/operator/reports/assigned",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "operator",
+                            "reports",
+                            "assigned"
+                          ]
+                        }
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "_postman_previewlanguage": "json",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "[\n  {\n    \"id\": 10,\n    \"title\": \"Pothole on Via Roma\",\n    \"description\": \"string\",\n    \"category\": {\n      \"id\": 1,\n      \"name\": \"Roads and Urban Furniture\",\n      \"is_active\": true,\n      \"created_at\": \"2017-07-23T18:47:45.797Z\"\n    },\n    \"status\": \"resolved\",\n    \"is_anonymous\": true,\n    \"reporter\": {\n      \"id\": 3995,\n      \"display_name\": \"Marco Citizen\",\n      \"role\": \"admin\"\n    },\n    \"latitude\": 45.0678,\n    \"longitude\": 7.6825,\n    \"photos\": [\n      {\n        \"id\": 9688,\n        \"file_path\": \"string\",\n        \"url\": \"string\",\n        \"original_filename\": \"string\",\n        \"content_type\": \"image/jpeg\"\n      },\n      {\n        \"id\": 3220,\n        \"file_path\": \"string\",\n        \"url\": \"string\",\n        \"original_filename\": \"string\",\n        \"content_type\": \"image/jpeg\"\n      }\n    ],\n    \"followers_count\": 1428,\n    \"is_followed_by_current_user\": false,\n    \"is_public\": true,\n    \"created_at\": \"2003-09-11T22:20:44.725Z\",\n    \"rejection_reason\": \"string\",\n    \"updated_at\": \"1953-10-22T06:51:38.005Z\",\n    \"unread_message_count\": 948\n  },\n  {\n    \"id\": 10,\n    \"title\": \"Pothole on Via Roma\",\n    \"description\": \"string\",\n    \"category\": {\n      \"id\": 1,\n      \"name\": \"Roads and Urban Furniture\",\n      \"is_active\": true,\n      \"created_at\": \"1952-03-05T09:26:03.442Z\"\n    },\n    \"status\": \"in_progress\",\n    \"is_anonymous\": true,\n    \"reporter\": {\n      \"id\": 5108,\n      \"display_name\": \"Marco Citizen\",\n      \"role\": \"admin\"\n    },\n    \"latitude\": 45.0678,\n    \"longitude\": 7.6825,\n    \"photos\": [\n      {\n        \"id\": 3393,\n        \"file_path\": \"string\",\n        \"url\": \"string\",\n        \"original_filename\": \"string\",\n        \"content_type\": \"image/jpeg\"\n      },\n      {\n        \"id\": 7809,\n        \"file_path\": \"string\",\n        \"url\": \"string\",\n        \"original_filename\": \"string\",\n        \"content_type\": \"image/jpeg\"\n      }\n    ],\n    \"followers_count\": 2739,\n    \"is_followed_by_current_user\": false,\n    \"is_public\": false,\n    \"created_at\": \"2024-08-25T07:13:43.713Z\",\n    \"rejection_reason\": \"string\",\n    \"updated_at\": \"2020-12-02T08:27:30.617Z\",\n    \"unread_message_count\": 1655\n  }\n]"
+                    },
+                    {
+                      "name": "Authentication required.",
+                      "originalRequest": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{baseUrl}}/operator/reports/assigned",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "operator",
+                            "reports",
+                            "assigned"
+                          ]
+                        }
+                      },
+                      "status": "Unauthorized",
+                      "code": 401,
+                      "_postman_previewlanguage": "json",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n  \"error\": \"string\"\n}"
+                    },
+                    {
+                      "name": "Operator or admin role required.",
+                      "originalRequest": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{baseUrl}}/operator/reports/assigned",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "operator",
+                            "reports",
+                            "assigned"
+                          ]
+                        }
+                      },
+                      "status": "Forbidden",
+                      "code": 403,
+                      "_postman_previewlanguage": "json",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n  \"error\": \"string\"\n}"
+                    }
+                  ]
+                },
+                {
+                  "name": "Authentication-required-pending",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test('status 401 - authentication required', function () {\r",
+                          "    pm.response.to.have.status(401);\r",
+                          "});\r",
+                          "\r",
+                          "pm.test('error body has error field', function () {\r",
+                          "    pm.response.to.be.json;\r",
+                          "    pm.expect(pm.response.json()).to.have.property('error');\r",
+                          "    pm.expect(pm.response.json().error).to.be.a('string');\r",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    },
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "exec": [
+                          "pm.sendRequest({\r",
+                          "    url: pm.environment.get('baseUrl') + '/auth/logout',\r",
+                          "    method: 'POST'\r",
+                          "}, function () {});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{baseUrl}}/operator/reports/assigned",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "operator",
+                        "reports",
+                        "assigned"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Operator-or-admin-role-required-pending",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test('status 403 - authentication required', function () {\r",
+                          "    pm.response.to.have.status(403);\r",
+                          "});\r",
+                          "\r",
+                          "pm.test('error body has error field', function () {\r",
+                          "    pm.response.to.be.json;\r",
+                          "    pm.expect(pm.response.json()).to.have.property('error');\r",
+                          "    pm.expect(pm.response.json().error).to.be.a('string');\r",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    },
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "exec": [
+                          "pm.sendRequest({\r",
+                          "    url: pm.environment.get('baseUrl') + '/auth/login',\r",
+                          "    method: 'POST',\r",
+                          "    header: { 'Content-Type': 'application/json' },\r",
+                          "    body: {\r",
+                          "        mode: 'raw',\r",
+                          "        raw: JSON.stringify({\r",
+                          "            identifier: pm.environment.get('citizen_email'),\r",
+                          "            password: pm.environment.get('citizen_password')\r",
+                          "        })\r",
+                          "    }\r",
+                          "}, function () {});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{baseUrl}}/operator/reports/pending",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "operator",
+                        "reports",
+                        "pending"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "{report_id}",
+              "item": [
+                {
+                  "name": "assign",
+                  "item": [
+                    {
+                      "name": "Accept a pending report for handling in its category.",
+                      "event": [
+                        {
+                          "listen": "prerequest",
+                          "script": {
+                            "exec": [
+                              "pm.sendRequest({\r",
+                              "    url: pm.environment.get('baseUrl') + '/auth/login',\r",
+                              "    method: 'POST',\r",
+                              "    header: { 'Content-Type': 'application/json' },\r",
+                              "    body: {\r",
+                              "        mode: 'raw',\r",
+                              "        raw: JSON.stringify({\r",
+                              "            identifier: pm.environment.get('operator_email'),\r",
+                              "            password: pm.environment.get('operator_password')\r",
+                              "        })\r",
+                              "    }\r",
+                              "}, function () {});"
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        },
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "// Verifica che lo status code sia 200\r",
+                              "pm.test(\"Status code is 200\", function () {\r",
+                              "    pm.response.to.have.status(200);\r",
+                              "});\r",
+                              "\r",
+                              "// Verifica che la segnalazione restituita sia quella corretta\r",
+                              "pm.test(\"Report ID matches\", function () {\r",
+                              "    var jsonData = pm.response.json();\r",
+                              "    pm.expect(jsonData.id).to.be.a('number');\r",
+                              "    console.log(\"Assegnato il report: \" + jsonData.title);\r",
+                              "});\r",
+                              "\r",
+                              "// Verifica che lo stato sia coerente (se l'assegnazione cambia lo stato)\r",
+                              "pm.test(\"Check status consistency\", function () {\r",
+                              "    var jsonData = pm.response.json();\r",
+                              "    pm.expect(jsonData.status).to.exist;\r",
+                              "});"
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "POST",
+                        "header": [
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{baseUrl}}/operator/reports/:report_id/assign",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "operator",
+                            "reports",
+                            ":report_id",
+                            "assign"
+                          ],
+                          "variable": [
+                            {
+                              "key": "report_id",
+                              "value": "{{created_report_id}}"
+                            }
+                          ]
+                        }
+                      },
+                      "response": [
+                        {
+                          "name": "Report assigned.",
+                          "originalRequest": {
+                            "method": "POST",
+                            "header": [
+                              {
+                                "key": "Accept",
+                                "value": "application/json"
+                              }
+                            ],
+                            "url": {
+                              "raw": "{{baseUrl}}/operator/reports/:report_id/assign",
+                              "host": [
+                                "{{baseUrl}}"
+                              ],
+                              "path": [
+                                "operator",
+                                "reports",
+                                ":report_id",
+                                "assign"
+                              ],
+                              "variable": [
+                                {
+                                  "key": "report_id",
+                                  "value": "6011"
+                                }
+                              ]
+                            }
+                          },
+                          "status": "OK",
+                          "code": 200,
+                          "_postman_previewlanguage": "json",
+                          "header": [
+                            {
+                              "key": "Content-Type",
+                              "value": "application/json"
+                            }
+                          ],
+                          "cookie": [],
+                          "body": "{\n  \"id\": 10,\n  \"title\": \"Pothole on Via Roma\",\n  \"description\": \"string\",\n  \"category\": {\n    \"id\": 1,\n    \"name\": \"Roads and Urban Furniture\",\n    \"is_active\": true,\n    \"created_at\": \"2019-07-23T18:41:51.756Z\"\n  },\n  \"status\": \"pending_approval\",\n  \"is_anonymous\": true,\n  \"reporter\": {\n    \"id\": 159,\n    \"display_name\": \"Marco Citizen\",\n    \"role\": \"admin\"\n  },\n  \"latitude\": 45.0678,\n  \"longitude\": 7.6825,\n  \"photos\": [\n    {\n      \"id\": 4950,\n      \"file_path\": \"string\",\n      \"url\": \"string\",\n      \"original_filename\": \"string\",\n      \"content_type\": \"image/jpeg\"\n    },\n    {\n      \"id\": 491,\n      \"file_path\": \"string\",\n      \"url\": \"string\",\n      \"original_filename\": \"string\",\n      \"content_type\": \"image/jpeg\"\n    }\n  ],\n  \"followers_count\": 3037,\n  \"is_followed_by_current_user\": true,\n  \"is_public\": false,\n  \"can_access_messages\": false,\n  \"status_history\": [\n    {\n      \"id\": 6033,\n      \"previous_status\": \"rejected\",\n      \"new_status\": \"rejected\",\n      \"changed_by\": {\n        \"id\": 497,\n        \"display_name\": \"Marco Citizen\",\n        \"role\": \"admin\"\n      },\n      \"created_at\": \"2019-12-18T21:20:19.750Z\",\n      \"note\": \"string\"\n    },\n    {\n      \"id\": 4941,\n      \"previous_status\": \"in_progress\",\n      \"new_status\": \"in_progress\",\n      \"changed_by\": {\n        \"id\": 9399,\n        \"display_name\": \"Marco Citizen\",\n        \"role\": \"operator\"\n      },\n      \"created_at\": \"1974-06-12T05:58:58.426Z\",\n      \"note\": \"string\"\n    }\n  ],\n  \"created_at\": \"1953-12-15T11:33:53.921Z\",\n  \"rejection_reason\": \"string\",\n  \"updated_at\": \"1989-08-22T07:21:23.239Z\",\n  \"messages\": [\n    {\n      \"id\": 2365,\n      \"report_id\": 8171,\n      \"body\": \"string\",\n      \"sender\": {\n        \"id\": 8598,\n        \"display_name\": \"Marco Citizen\",\n        \"role\": \"citizen\"\n      },\n      \"recipient\": {\n        \"id\": 6581,\n        \"display_name\": \"Marco Citizen\",\n        \"role\": \"admin\"\n      },\n      \"created_at\": \"2016-06-28T01:32:11.028Z\"\n    },\n    {\n      \"id\": 9803,\n      \"report_id\": 6045,\n      \"body\": \"string\",\n      \"sender\": {\n        \"id\": 6667,\n        \"display_name\": \"Marco Citizen\",\n        \"role\": \"operator\"\n      },\n      \"recipient\": {\n        \"id\": 6444,\n        \"display_name\": \"Marco Citizen\",\n        \"role\": \"operator\"\n      },\n      \"created_at\": \"1993-06-09T19:27:47.507Z\"\n    }\n  ]\n}"
+                        },
+                        {
+                          "name": "Authentication required.",
+                          "originalRequest": {
+                            "method": "POST",
+                            "header": [
+                              {
+                                "key": "Accept",
+                                "value": "application/json"
+                              }
+                            ],
+                            "url": {
+                              "raw": "{{baseUrl}}/operator/reports/:report_id/assign",
+                              "host": [
+                                "{{baseUrl}}"
+                              ],
+                              "path": [
+                                "operator",
+                                "reports",
+                                ":report_id",
+                                "assign"
+                              ],
+                              "variable": [
+                                {
+                                  "key": "report_id",
+                                  "value": "6011"
+                                }
+                              ]
+                            }
+                          },
+                          "status": "Unauthorized",
+                          "code": 401,
+                          "_postman_previewlanguage": "json",
+                          "header": [
+                            {
+                              "key": "Content-Type",
+                              "value": "application/json"
+                            }
+                          ],
+                          "cookie": [],
+                          "body": "{\n  \"error\": \"string\"\n}"
+                        },
+                        {
+                          "name": "Operator or admin role required.",
+                          "originalRequest": {
+                            "method": "POST",
+                            "header": [
+                              {
+                                "key": "Accept",
+                                "value": "application/json"
+                              }
+                            ],
+                            "url": {
+                              "raw": "{{baseUrl}}/operator/reports/:report_id/assign",
+                              "host": [
+                                "{{baseUrl}}"
+                              ],
+                              "path": [
+                                "operator",
+                                "reports",
+                                ":report_id",
+                                "assign"
+                              ],
+                              "variable": [
+                                {
+                                  "key": "report_id",
+                                  "value": "6011"
+                                }
+                              ]
+                            }
+                          },
+                          "status": "Forbidden",
+                          "code": 403,
+                          "_postman_previewlanguage": "json",
+                          "header": [
+                            {
+                              "key": "Content-Type",
+                              "value": "application/json"
+                            }
+                          ],
+                          "cookie": [],
+                          "body": "{\n  \"error\": \"string\"\n}"
+                        },
+                        {
+                          "name": "Report not found.",
+                          "originalRequest": {
+                            "method": "POST",
+                            "header": [
+                              {
+                                "key": "Accept",
+                                "value": "application/json"
+                              }
+                            ],
+                            "url": {
+                              "raw": "{{baseUrl}}/operator/reports/:report_id/assign",
+                              "host": [
+                                "{{baseUrl}}"
+                              ],
+                              "path": [
+                                "operator",
+                                "reports",
+                                ":report_id",
+                                "assign"
+                              ],
+                              "variable": [
+                                {
+                                  "key": "report_id",
+                                  "value": "6011"
+                                }
+                              ]
+                            }
+                          },
+                          "status": "Not Found",
+                          "code": 404,
+                          "_postman_previewlanguage": "json",
+                          "header": [
+                            {
+                              "key": "Content-Type",
+                              "value": "application/json"
+                            }
+                          ],
+                          "cookie": [],
+                          "body": "{\n  \"error\": \"string\"\n}"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Authentication required",
+                      "event": [
+                        {
+                          "listen": "prerequest",
+                          "script": {
+                            "exec": [
+                              "pm.sendRequest({\r",
+                              "    url: pm.environment.get('baseUrl') + '/auth/logout',\r",
+                              "    method: 'POST'\r",
+                              "}, function () {});"
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        },
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "pm.test('status 401 - validation error', function () {\r",
+                              "    pm.response.to.have.status(401);\r",
+                              "});\r",
+                              "\r",
+                              "pm.test('error body has error field', function () {\r",
+                              "    pm.response.to.be.json;\r",
+                              "    pm.expect(pm.response.json()).to.have.property('error');\r",
+                              "    pm.expect(pm.response.json().error).to.be.a('string');\r",
+                              "});"
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                          "raw": "{{baseUrl}}/operator/reports/:report_id/assign",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "operator",
+                            "reports",
+                            ":report_id",
+                            "assign"
+                          ],
+                          "variable": [
+                            {
+                              "key": "report_id",
+                              "value": "1"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Operator-admin-role-required",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "pm.test('status 403 - validation error', function () {\r",
+                              "    pm.response.to.have.status(403);\r",
+                              "});\r",
+                              "\r",
+                              "pm.test('error body has error field', function () {\r",
+                              "    pm.response.to.be.json;\r",
+                              "    pm.expect(pm.response.json()).to.have.property('error');\r",
+                              "    pm.expect(pm.response.json().error).to.be.a('string');\r",
+                              "});"
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        },
+                        {
+                          "listen": "prerequest",
+                          "script": {
+                            "exec": [
+                              "pm.sendRequest({\r",
+                              "    url: pm.environment.get('baseUrl') + '/auth/login',\r",
+                              "    method: 'POST',\r",
+                              "    header: { 'Content-Type': 'application/json' },\r",
+                              "    body: {\r",
+                              "        mode: 'raw',\r",
+                              "        raw: JSON.stringify({\r",
+                              "            identifier: pm.environment.get('citizen_email'),\r",
+                              "            password: pm.environment.get('citizen_password')\r",
+                              "        })\r",
+                              "    }\r",
+                              "}, function () {});"
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                          "raw": "{{baseUrl}}/operator/reports/:report_id/assign",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "operator",
+                            "reports",
+                            ":report_id",
+                            "assign"
+                          ],
+                          "variable": [
+                            {
+                              "key": "report_id",
+                              "value": "1"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Report-not-found",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "pm.test(\"Status code is 404\", () => {\r",
+                              "    pm.response.to.have.status(404);\r",
+                              "});\r",
+                              "\r",
+                              "pm.test('error body has error field', function () {\r",
+                              "    pm.response.to.be.json;\r",
+                              "    pm.expect(pm.response.json()).to.have.property('error');\r",
+                              "    pm.expect(pm.response.json().error).to.be.a('string');\r",
+                              "});\r",
+                              ""
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        },
+                        {
+                          "listen": "prerequest",
+                          "script": {
+                            "exec": [
+                              "pm.sendRequest({\r",
+                              "    url: pm.environment.get('baseUrl') + '/auth/login',\r",
+                              "    method: 'POST',\r",
+                              "    header: { 'Content-Type': 'application/json' },\r",
+                              "    body: {\r",
+                              "        mode: 'raw',\r",
+                              "        raw: JSON.stringify({\r",
+                              "            identifier: pm.environment.get('operator_email'),\r",
+                              "            password: pm.environment.get('operator_password')\r",
+                              "        })\r",
+                              "    }\r",
+                              "}, function () {});"
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                          "raw": "{{baseUrl}}/operator/reports/:report_id/assign",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "operator",
+                            "reports",
+                            ":report_id",
+                            "assign"
+                          ],
+                          "variable": [
+                            {
+                              "key": "report_id",
+                              "value": "99999"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                },
+                {
+                  "name": "status",
+                  "item": [
+                    {
+                      "name": "Update the status of a report.",
+                      "event": [
+                        {
+                          "listen": "prerequest",
+                          "script": {
+                            "exec": [
+                              "pm.environment.set('new_note', 'nota del ' + Date.now());\r",
+                              "\r",
+                              "\r",
+                              "pm.sendRequest({\r",
+                              "    url: pm.environment.get('baseUrl') + '/auth/login',\r",
+                              "    method: 'POST',\r",
+                              "    header: { 'Content-Type': 'application/json' },\r",
+                              "    body: {\r",
+                              "        mode: 'raw',\r",
+                              "        raw: JSON.stringify({\r",
+                              "            identifier: pm.environment.get('operator_email'),\r",
+                              "            password: pm.environment.get('operator_password')\r",
+                              "        })\r",
+                              "    }\r",
+                              "}, function () {});"
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        },
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "// Verifica che lo status code sia 200\r",
+                              "pm.test(\"Status code is 200\", function () {\r",
+                              "    pm.response.to.have.status(200);\r",
+                              "});\r",
+                              "\r",
+                              "// Verifica che la segnalazione restituita sia quella corretta\r",
+                              "pm.test(\"Report ID matches\", function () {\r",
+                              "    var jsonData = pm.response.json();\r",
+                              "    pm.expect(jsonData.id).to.be.a('number');\r",
+                              "    console.log(\"Assegnato il report: \" + jsonData.title);\r",
+                              "});\r",
+                              "\r",
+                              "// Verifica che lo stato sia coerente (se l'assegnazione cambia lo stato)\r",
+                              "pm.test(\"Check status consistency\", function () {\r",
+                              "    var jsonData = pm.response.json();\r",
+                              "    pm.expect(jsonData.status).to.exist;\r",
+                              "});"
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "POST",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n  \"status\": \"Assigned\",\n  \"note\": \"{{new_note}}\"\n}",
+                          "options": {
+                            "raw": {
+                              "headerFamily": "json",
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{baseUrl}}/operator/reports/:report_id/status",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "operator",
+                            "reports",
+                            ":report_id",
+                            "status"
+                          ],
+                          "variable": [
+                            {
+                              "key": "report_id",
+                              "value": "1"
+                            }
+                          ]
+                        }
+                      },
+                      "response": [
+                        {
+                          "name": "Status updated.",
+                          "originalRequest": {
+                            "method": "POST",
+                            "header": [
+                              {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                              },
+                              {
+                                "key": "Accept",
+                                "value": "application/json"
+                              }
+                            ],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "{\n  \"status\": \"in_progress\",\n  \"note\": \"string\"\n}",
+                              "options": {
+                                "raw": {
+                                  "headerFamily": "json",
+                                  "language": "json"
+                                }
+                              }
+                            },
+                            "url": {
+                              "raw": "{{baseUrl}}/operator/reports/:report_id/status",
+                              "host": [
+                                "{{baseUrl}}"
+                              ],
+                              "path": [
+                                "operator",
+                                "reports",
+                                ":report_id",
+                                "status"
+                              ],
+                              "variable": [
+                                {
+                                  "key": "report_id",
+                                  "value": "6011"
+                                }
+                              ]
+                            }
+                          },
+                          "status": "OK",
+                          "code": 200,
+                          "_postman_previewlanguage": "json",
+                          "header": [
+                            {
+                              "key": "Content-Type",
+                              "value": "application/json"
+                            }
+                          ],
+                          "cookie": [],
+                          "body": "{\n  \"id\": 10,\n  \"title\": \"Pothole on Via Roma\",\n  \"description\": \"string\",\n  \"category\": {\n    \"id\": 1,\n    \"name\": \"Roads and Urban Furniture\",\n    \"is_active\": true,\n    \"created_at\": \"2019-07-23T18:41:51.756Z\"\n  },\n  \"status\": \"pending_approval\",\n  \"is_anonymous\": true,\n  \"reporter\": {\n    \"id\": 159,\n    \"display_name\": \"Marco Citizen\",\n    \"role\": \"admin\"\n  },\n  \"latitude\": 45.0678,\n  \"longitude\": 7.6825,\n  \"photos\": [\n    {\n      \"id\": 4950,\n      \"file_path\": \"string\",\n      \"url\": \"string\",\n      \"original_filename\": \"string\",\n      \"content_type\": \"image/jpeg\"\n    },\n    {\n      \"id\": 491,\n      \"file_path\": \"string\",\n      \"url\": \"string\",\n      \"original_filename\": \"string\",\n      \"content_type\": \"image/jpeg\"\n    }\n  ],\n  \"followers_count\": 3037,\n  \"is_followed_by_current_user\": true,\n  \"is_public\": false,\n  \"can_access_messages\": false,\n  \"status_history\": [\n    {\n      \"id\": 6033,\n      \"previous_status\": \"rejected\",\n      \"new_status\": \"rejected\",\n      \"changed_by\": {\n        \"id\": 497,\n        \"display_name\": \"Marco Citizen\",\n        \"role\": \"admin\"\n      },\n      \"created_at\": \"2019-12-18T21:20:19.750Z\",\n      \"note\": \"string\"\n    },\n    {\n      \"id\": 4941,\n      \"previous_status\": \"in_progress\",\n      \"new_status\": \"in_progress\",\n      \"changed_by\": {\n        \"id\": 9399,\n        \"display_name\": \"Marco Citizen\",\n        \"role\": \"operator\"\n      },\n      \"created_at\": \"1974-06-12T05:58:58.426Z\",\n      \"note\": \"string\"\n    }\n  ],\n  \"created_at\": \"1953-12-15T11:33:53.921Z\",\n  \"rejection_reason\": \"string\",\n  \"updated_at\": \"1989-08-22T07:21:23.239Z\",\n  \"messages\": [\n    {\n      \"id\": 2365,\n      \"report_id\": 8171,\n      \"body\": \"string\",\n      \"sender\": {\n        \"id\": 8598,\n        \"display_name\": \"Marco Citizen\",\n        \"role\": \"citizen\"\n      },\n      \"recipient\": {\n        \"id\": 6581,\n        \"display_name\": \"Marco Citizen\",\n        \"role\": \"admin\"\n      },\n      \"created_at\": \"2016-06-28T01:32:11.028Z\"\n    },\n    {\n      \"id\": 9803,\n      \"report_id\": 6045,\n      \"body\": \"string\",\n      \"sender\": {\n        \"id\": 6667,\n        \"display_name\": \"Marco Citizen\",\n        \"role\": \"operator\"\n      },\n      \"recipient\": {\n        \"id\": 6444,\n        \"display_name\": \"Marco Citizen\",\n        \"role\": \"operator\"\n      },\n      \"created_at\": \"1993-06-09T19:27:47.507Z\"\n    }\n  ]\n}"
+                        },
+                        {
+                          "name": "Validation error.",
+                          "originalRequest": {
+                            "method": "POST",
+                            "header": [
+                              {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                              },
+                              {
+                                "key": "Accept",
+                                "value": "application/json"
+                              }
+                            ],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "{\n  \"status\": \"in_progress\",\n  \"note\": \"string\"\n}",
+                              "options": {
+                                "raw": {
+                                  "headerFamily": "json",
+                                  "language": "json"
+                                }
+                              }
+                            },
+                            "url": {
+                              "raw": "{{baseUrl}}/operator/reports/:report_id/status",
+                              "host": [
+                                "{{baseUrl}}"
+                              ],
+                              "path": [
+                                "operator",
+                                "reports",
+                                ":report_id",
+                                "status"
+                              ],
+                              "variable": [
+                                {
+                                  "key": "report_id",
+                                  "value": "6011"
+                                }
+                              ]
+                            }
+                          },
+                          "status": "Bad Request",
+                          "code": 400,
+                          "_postman_previewlanguage": "json",
+                          "header": [
+                            {
+                              "key": "Content-Type",
+                              "value": "application/json"
+                            }
+                          ],
+                          "cookie": [],
+                          "body": "{\n  \"error\": \"string\"\n}"
+                        },
+                        {
+                          "name": "Authentication required.",
+                          "originalRequest": {
+                            "method": "POST",
+                            "header": [
+                              {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                              },
+                              {
+                                "key": "Accept",
+                                "value": "application/json"
+                              }
+                            ],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "{\n  \"status\": \"in_progress\",\n  \"note\": \"string\"\n}",
+                              "options": {
+                                "raw": {
+                                  "headerFamily": "json",
+                                  "language": "json"
+                                }
+                              }
+                            },
+                            "url": {
+                              "raw": "{{baseUrl}}/operator/reports/:report_id/status",
+                              "host": [
+                                "{{baseUrl}}"
+                              ],
+                              "path": [
+                                "operator",
+                                "reports",
+                                ":report_id",
+                                "status"
+                              ],
+                              "variable": [
+                                {
+                                  "key": "report_id",
+                                  "value": "6011"
+                                }
+                              ]
+                            }
+                          },
+                          "status": "Unauthorized",
+                          "code": 401,
+                          "_postman_previewlanguage": "json",
+                          "header": [
+                            {
+                              "key": "Content-Type",
+                              "value": "application/json"
+                            }
+                          ],
+                          "cookie": [],
+                          "body": "{\n  \"error\": \"string\"\n}"
+                        },
+                        {
+                          "name": "Operator or admin role required.",
+                          "originalRequest": {
+                            "method": "POST",
+                            "header": [
+                              {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                              },
+                              {
+                                "key": "Accept",
+                                "value": "application/json"
+                              }
+                            ],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "{\n  \"status\": \"in_progress\",\n  \"note\": \"string\"\n}",
+                              "options": {
+                                "raw": {
+                                  "headerFamily": "json",
+                                  "language": "json"
+                                }
+                              }
+                            },
+                            "url": {
+                              "raw": "{{baseUrl}}/operator/reports/:report_id/status",
+                              "host": [
+                                "{{baseUrl}}"
+                              ],
+                              "path": [
+                                "operator",
+                                "reports",
+                                ":report_id",
+                                "status"
+                              ],
+                              "variable": [
+                                {
+                                  "key": "report_id",
+                                  "value": "6011"
+                                }
+                              ]
+                            }
+                          },
+                          "status": "Forbidden",
+                          "code": 403,
+                          "_postman_previewlanguage": "json",
+                          "header": [
+                            {
+                              "key": "Content-Type",
+                              "value": "application/json"
+                            }
+                          ],
+                          "cookie": [],
+                          "body": "{\n  \"error\": \"string\"\n}"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Validation error",
+                      "event": [
+                        {
+                          "listen": "prerequest",
+                          "script": {
+                            "exec": [
+                              "pm.environment.set('new_note', 'nota del ' + Date.now());\r",
+                              "\r",
+                              "\r",
+                              "pm.sendRequest({\r",
+                              "    url: pm.environment.get('baseUrl') + '/auth/login',\r",
+                              "    method: 'POST',\r",
+                              "    header: { 'Content-Type': 'application/json' },\r",
+                              "    body: {\r",
+                              "        mode: 'raw',\r",
+                              "        raw: JSON.stringify({\r",
+                              "            identifier: pm.environment.get('operator_email'),\r",
+                              "            password: pm.environment.get('operator_password')\r",
+                              "        })\r",
+                              "    }\r",
+                              "}, function () {});"
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        },
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "pm.test('status 400 - validation error', function () {\r",
+                              "    pm.response.to.have.status(400);\r",
+                              "});\r",
+                              "\r",
+                              "pm.test('error body has error field', function () {\r",
+                              "    pm.response.to.be.json;\r",
+                              "    pm.expect(pm.response.json()).to.have.property('error');\r",
+                              "    pm.expect(pm.response.json().error).to.be.a('string');\r",
+                              "});"
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                          "raw": "{{baseUrl}}/operator/reports/:report_id/status",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "operator",
+                            "reports",
+                            ":report_id",
+                            "status"
+                          ],
+                          "variable": [
+                            {
+                              "key": "report_id",
+                              "value": "1"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Authentication required",
+                      "event": [
+                        {
+                          "listen": "prerequest",
+                          "script": {
+                            "exec": [
+                              "pm.sendRequest({\r",
+                              "    url: pm.environment.get('baseUrl') + '/auth/logout',\r",
+                              "    method: 'POST'\r",
+                              "}, function () {});"
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        },
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "pm.test('status 401 - validation error', function () {\r",
+                              "    pm.response.to.have.status(401);\r",
+                              "});\r",
+                              "\r",
+                              "pm.test('error body has error field', function () {\r",
+                              "    pm.response.to.be.json;\r",
+                              "    pm.expect(pm.response.json()).to.have.property('error');\r",
+                              "    pm.expect(pm.response.json().error).to.be.a('string');\r",
+                              "});"
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n  \"status\": \"Assigned\",\r\n  \"note\": \"{{new_note}}\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{baseUrl}}/operator/reports/:report_id/status",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "operator",
+                            "reports",
+                            ":report_id",
+                            "status"
+                          ],
+                          "variable": [
+                            {
+                              "key": "report_id",
+                              "value": "1"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Operator-adim-role-required",
+                      "event": [
+                        {
+                          "listen": "prerequest",
+                          "script": {
+                            "exec": [
+                              "pm.environment.set('new_note', 'nota del ' + Date.now());\r",
+                              "\r",
+                              "\r",
+                              "pm.sendRequest({\r",
+                              "    url: pm.environment.get('baseUrl') + '/auth/login',\r",
+                              "    method: 'POST',\r",
+                              "    header: { 'Content-Type': 'application/json' },\r",
+                              "    body: {\r",
+                              "        mode: 'raw',\r",
+                              "        raw: JSON.stringify({\r",
+                              "            identifier: pm.environment.get('citizen_email'),\r",
+                              "            password: pm.environment.get('citizen_password')\r",
+                              "        })\r",
+                              "    }\r",
+                              "}, function () {});"
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        },
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "pm.test('status 403 - validation error', function () {\r",
+                              "    pm.response.to.have.status(403);\r",
+                              "});\r",
+                              "\r",
+                              "pm.test('error body has error field', function () {\r",
+                              "    pm.response.to.be.json;\r",
+                              "    pm.expect(pm.response.json()).to.have.property('error');\r",
+                              "    pm.expect(pm.response.json().error).to.be.a('string');\r",
+                              "});"
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                          "raw": "{{baseUrl}}/operator/reports/:report_id/status",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "operator",
+                            "reports",
+                            ":report_id",
+                            "status"
+                          ],
+                          "variable": [
+                            {
+                              "key": "report_id",
+                              "value": "1"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }

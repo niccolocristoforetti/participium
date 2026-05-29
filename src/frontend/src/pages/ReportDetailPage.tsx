@@ -22,7 +22,6 @@ export function ReportDetailPage() {
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-
   async function loadReport(): Promise<void> {
     if (!reportId) {
       setError('Missing report id.');

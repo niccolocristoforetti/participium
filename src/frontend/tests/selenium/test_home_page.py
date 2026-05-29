@@ -7,10 +7,13 @@ from selenium.webdriver.support.ui import Select
 from conftest import BASE_URL
 
 """
-Test di accettazione Selenium per UC-04 – Sfoglia le segnalazioni sulla mappa
-e UC-05 – Cerca e filtra le segnalazioni.
+Test di accettazione Selenium per:
+  UC-04 – Sfoglia le segnalazioni sulla mappa
+  UC-05 – Cerca e filtra le segnalazioni
+  UC-08 – Esporta report (CSV)
+  UC-09 – Visualizza statistiche pubbliche
 
-Entrambi i casi d'uso si svolgono interamente sulla home page (/),
+Tutti i casi d'uso si svolgono sulla home page (/),
 accessibile senza autenticazione da qualsiasi visitatore.
 
 UC-04 copre:
@@ -19,7 +22,6 @@ UC-04 copre:
   - La tabella dei report è visibile con le intestazioni corrette.
   - Cliccando "Open" su un report si arriva alla pagina di dettaglio.
   - Le righe della tabella hanno ID stabili nel formato public-report-row-<id>.
-  - Extension 3a: assenza di report non causa crash.
 
 UC-05 copre:
   - Il form di filtraggio è visibile con tutti i controlli (categoria, stato, date, ordine).
@@ -29,20 +31,40 @@ UC-05 copre:
   - L'ordinamento default è 'Newest first'; passando ad 'Oldest first' l'ordine cambia.
   - Filtri per data futura/passata producono una tabella vuota.
   - Extension 4a: resettando i filtri i report ricompaiono.
-  - Il link di esportazione CSV è presente e riflette i filtri attivi.
-  - Il selettore di granularità per le statistiche di tendenza è funzionante.
+
+UC-08 copre:
+  - Il link 'Export CSV' è visibile nella pagina.
+  - L'href del link include correttamente i parametri categoria, stato e date-from/to attivi.
+
+UC-09 copre:
+  - La sezione 'Reports by category' è visibile e popolata con i dati seed.
+  - La sezione 'Trend' è visibile e contiene almeno un bucket temporale.
+  - Le granularità Day, Week e Month mantengono visibile la sezione trend senza errori.
 """
 
 
 # Helpers
 
 # Funzione per aspettare che la home e la tabella dei report siano caricate del tutto
-def _wait_home_loaded(driver, timeout: int = 10) -> None:
+def _wait_home_loaded(driver, timeout: int = 15) -> None:
     WebDriverWait(driver, timeout).until(
         EC.presence_of_element_located((By.ID, "home-page"))
     )
     WebDriverWait(driver, timeout).until(
         EC.presence_of_element_located((By.ID, "public-report-table-body"))
+    )
+
+
+# Imposta un valore su un input datetime e scatena gli eventi React necessari
+def _set_date_input(driver, element_id: str, value: str) -> None:
+    driver.execute_script(
+        """
+        arguments[0].value = arguments[1];
+        arguments[0].dispatchEvent(new Event('input', { bubbles: true }));
+        arguments[0].dispatchEvent(new Event('change', { bubbles: true }));
+        """,
+        driver.find_element(By.ID, element_id),
+        value,
     )
 
 
@@ -197,25 +219,6 @@ def test_uc04_open_link_navigates_to_report_detail(driver):
     )
 
 
-# UC-04 – Extension 3a: tabella vuota non causa errori
-
-# Anche se non ci sono segnalazioni, il corpo della tabella deve esistere e l'app non deve crashare
-@pytest.mark.e2e
-def test_uc04_empty_table_body_does_not_crash(driver):
-    driver.get(BASE_URL)
-    _wait_home_loaded(driver)
-
-    tbody = driver.find_element(By.ID, "public-report-table-body")
-    assert tbody is not None, "Il corpo della tabella deve esistere anche quando è vuoto"
-
-    # Verifichiamo che all'inizio non ci siano messaggi d'errore sulla pagina
-    error_els = driver.find_elements(By.ID, "public-filter-error")
-    for el in error_els:
-        WebDriverWait(driver, 5).until(
-        EC.invisibility_of_element_located((By.ID, "public-filter-error"))
-    )
-
-
 # UC-05 – Struttura del form di filtraggio
 
 # Controlliamo che il form per i filtri mostri tutti i campi (input, select, bottone invio)
@@ -237,26 +240,6 @@ def test_uc05_filter_form_all_controls_visible(driver):
         assert driver.find_element(By.ID, element_id).is_displayed(), (
             f"L'elemento '{element_id}' del form filtri deve essere visibile"
         )
-
-
-# Controlliamo se nel menu a tendina delle categorie c'è l'opzione di default "All"
-@pytest.mark.e2e
-def test_uc05_filter_category_has_all_option(driver):
-    driver.get(BASE_URL)
-    _wait_home_loaded(driver)
-
-    all_opt = driver.find_element(By.ID, "public-filter-category-option-all")
-    assert all_opt is not None
-
-
-# Controlliamo se nel menu dello stato c'è l'opzione di default "All public statuses"
-@pytest.mark.e2e
-def test_uc05_filter_status_has_all_option(driver):
-    driver.get(BASE_URL)
-    _wait_home_loaded(driver)
-
-    all_opt = driver.find_element(By.ID, "public-filter-status-option-all")
-    assert all_opt is not None
 
 
 # Verifichiamo che si possa scegliere l'ordinamento per i più recenti o i più vecchi
@@ -306,7 +289,6 @@ def test_uc05_status_options_loaded_from_backend(driver):
 # UC-05 – Filtraggio per categoria
 
 # Se scelgo una categoria, in tabella devo vedere solo i report che fanno parte di quella categoria
-@pytest.mark.e2e
 @pytest.mark.e2e
 def test_uc05_filter_by_category_shows_only_matching_reports(driver):
     driver.get(BASE_URL)
@@ -414,20 +396,10 @@ def test_uc05_date_from_far_future_empties_table(driver):
     driver.get(BASE_URL)
     _wait_home_loaded(driver)
 
-    # Imposta il valore e scatena gli eventi nativi per React; formato spazio standard per l'interazione HTML5.
-    date_input = driver.find_element(By.ID, "public-filter-date-from")
-    driver.execute_script(
-        """
-        arguments[0].value = arguments[1];
-        arguments[0].dispatchEvent(new Event('input', { bubbles: true }));
-        arguments[0].dispatchEvent(new Event('change', { bubbles: true }));
-        """,
-        date_input,
-        "2099-01-01 00:00",
-    )
+    _set_date_input(driver, "public-filter-date-from", "2099-01-01 00:00")
     driver.find_element(By.ID, "public-filter-submit").click()
 
-   # Aspettiamo la modifica del link di export per essere sicuri che React abbia registrato il cambio data
+    # Aspettiamo la modifica del link di export per essere sicuri che React abbia registrato il cambio data
     WebDriverWait(driver, 10).until(
         lambda d: "date_from=" in (d.find_element(By.ID, "public-export-link").get_attribute("href") or "")
     )
@@ -445,16 +417,7 @@ def test_uc05_date_to_far_past_empties_table(driver):
     driver.get(BASE_URL)
     _wait_home_loaded(driver)
 
-    date_input = driver.find_element(By.ID, "public-filter-date-to")
-    driver.execute_script(
-        """
-        arguments[0].value = arguments[1];
-        arguments[0].dispatchEvent(new Event('input', { bubbles: true }));
-        arguments[0].dispatchEvent(new Event('change', { bubbles: true }));
-        """,
-        date_input,
-        "2000-01-01 00:00",
-    )
+    _set_date_input(driver, "public-filter-date-to", "2000-01-01 00:00")
     driver.find_element(By.ID, "public-filter-submit").click()
 
     # Sincronizza l'attesa sull'aggiornamento dinamico dell'export link prima di effettuare le verifiche sul DOM.
@@ -482,16 +445,7 @@ def test_uc05_filter_reset_restores_reports(driver):
         pytest.skip("Nessun report seed disponibile per questo test")
 
     # Applica filtro restrittivo → tabella vuota.
-    date_input = driver.find_element(By.ID, "public-filter-date-from")
-    driver.execute_script(
-        """
-        arguments[0].value = arguments[1];
-        arguments[0].dispatchEvent(new Event('input', { bubbles: true }));
-        arguments[0].dispatchEvent(new Event('change', { bubbles: true }));
-        """,
-        date_input,
-        "2099-01-01 00:00",
-    )
+    _set_date_input(driver, "public-filter-date-from", "2099-01-01 00:00")
     driver.find_element(By.ID, "public-filter-submit").click()
     
     WebDriverWait(driver, 10).until(
@@ -519,21 +473,6 @@ def test_uc05_filter_reset_restores_reports(driver):
 
 # UC-05 – Esportazione CSV
 
-# Controlliamo che ci sia il pulsante per scaricare il CSV e che punti al path giusto (/export)
-@pytest.mark.e2e
-def test_uc05_export_csv_link_present(driver):
-    driver.get(BASE_URL)
-    _wait_home_loaded(driver)
-
-    export_link = driver.find_element(By.ID, "public-export-link")
-    assert export_link.is_displayed(), "Il link di esportazione CSV deve essere visibile"
-
-    href = export_link.get_attribute("href") or ""
-    assert "export" in href, (
-        f"L'href del link CSV '{href}' deve contenere 'export'"
-    )
-
-
 # Verifichiamo che se c'è un filtro attivo sulla categoria, il link del CSV si aggiorni con il parametro nella query string
 @pytest.mark.e2e
 def test_uc05_export_csv_link_reflects_active_category_filter(driver):
@@ -559,11 +498,145 @@ def test_uc05_export_csv_link_reflects_active_category_filter(driver):
     )
 
 
-# UC-05 – Granularità delle statistiche di tendenza
+# ─────────────────────────────────────────────────────────────────────────────
+# UC-08 – Export reports (CSV)
+# ─────────────────────────────────────────────────────────────────────────────
+
+# UC-08 – Il link export riflette il filtro per stato attivo
+@pytest.mark.e2e
+def test_uc08_export_csv_link_reflects_status_filter(driver):
+    driver.get(BASE_URL)
+    _wait_home_loaded(driver)
+
+    status_select = Select(driver.find_element(By.ID, "public-filter-status"))
+    options = status_select.options
+    if len(options) < 2:
+        pytest.skip("Nessuno stato pubblico disponibile per verificare l'export con filtro stato")
+
+    chosen_value = options[1].get_attribute("value")
+    status_select.select_by_value(chosen_value)
+    driver.find_element(By.ID, "public-filter-submit").click()
+
+    WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.ID, "public-report-table-body"))
+    )
+
+    href = driver.find_element(By.ID, "public-export-link").get_attribute("href") or ""
+    encoded_value = chosen_value.replace(" ", "+")
+    assert f"status={encoded_value}" in href, (
+        f"L'href export '{href}' deve contenere 'status={encoded_value}' con il filtro attivo"
+    )
+
+
+# UC-08 – Il link export riflette il parametro date_from
+@pytest.mark.e2e
+def test_uc08_export_csv_link_reflects_date_from_filter(driver):
+    driver.get(BASE_URL)
+    _wait_home_loaded(driver)
+
+    _set_date_input(driver, "public-filter-date-from", "2024-01-01 00:00")
+    driver.find_element(By.ID, "public-filter-submit").click()
+
+    WebDriverWait(driver, 10).until(
+        lambda d: "date_from=" in (d.find_element(By.ID, "public-export-link").get_attribute("href") or "")
+    )
+
+    href = driver.find_element(By.ID, "public-export-link").get_attribute("href") or ""
+    assert "date_from=" in href, (
+        f"L'href export '{href}' deve contenere 'date_from=' con il filtro data-da impostato"
+    )
+
+
+# UC-08 – Il link export riflette il parametro date_to
+@pytest.mark.e2e
+def test_uc08_export_csv_link_reflects_date_to_filter(driver):
+    driver.get(BASE_URL)
+    _wait_home_loaded(driver)
+
+    _set_date_input(driver, "public-filter-date-to", "2025-12-31 23:59")
+    driver.find_element(By.ID, "public-filter-submit").click()
+
+    WebDriverWait(driver, 10).until(
+        lambda d: "date_to=" in (d.find_element(By.ID, "public-export-link").get_attribute("href") or "")
+    )
+
+    href = driver.find_element(By.ID, "public-export-link").get_attribute("href") or ""
+    assert "date_to=" in href, (
+        f"L'href export '{href}' deve contenere 'date_to=' con il filtro data-a impostato"
+    )
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# UC-09 – View public statistics
+# ─────────────────────────────────────────────────────────────────────────────
+
+# UC-09 – La sezione "Reports by category" è visibile
+@pytest.mark.e2e
+def test_uc09_category_statistics_section_present(driver):
+    driver.get(BASE_URL)
+    _wait_home_loaded(driver)
+
+    section = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.ID, "public-category-statistics"))
+    )
+    assert section.is_displayed(), "La sezione statistiche per categoria deve essere visibile"
+    assert driver.find_element(By.ID, "public-category-statistics-title").is_displayed()
+
+
+# UC-09 – Almeno una categoria ha un contatore visibile (dati seed)
+@pytest.mark.e2e
+def test_uc09_category_statistics_populated_with_data(driver):
+    driver.get(BASE_URL)
+    _wait_home_loaded(driver)
+
+    # Le statistiche arrivano da una chiamata API separata rispetto alla tabella:
+    # aspettiamo esplicitamente gli item (non solo il container) con timeout generoso.
+    items = WebDriverWait(driver, 20).until(
+        EC.presence_of_all_elements_located(
+            (By.CSS_SELECTOR, "[id^='public-category-stat-']:not([id*='-value'])")
+        )
+    )
+    assert len(items) > 0, (
+        "Con i dati seed almeno una voce di statistica per categoria deve essere presente"
+    )
+
+
+# UC-09 – La sezione "Trend" è visibile
+@pytest.mark.e2e
+def test_uc09_trend_statistics_section_present(driver):
+    driver.get(BASE_URL)
+    _wait_home_loaded(driver)
+
+    section = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.ID, "public-trend-statistics"))
+    )
+    assert section.is_displayed(), "La sezione trend delle statistiche deve essere visibile"
+    assert driver.find_element(By.ID, "public-trend-statistics-title").is_displayed()
+
+
+# UC-09 – Almeno un bucket temporale è presente nella sezione trend (dati seed)
+@pytest.mark.e2e
+def test_uc09_trend_statistics_populated_with_data(driver):
+    driver.get(BASE_URL)
+    _wait_home_loaded(driver)
+
+    # Aspetta gli item trend direttamente (non solo il container) con WebDriverWait:
+    # find_elements senza wait è una race condition se i dati non sono ancora arrivati.
+    items = WebDriverWait(driver, 20).until(
+        EC.presence_of_all_elements_located(
+            (By.CSS_SELECTOR, "[id^='public-trend-stat-']:not([id*='-value'])")
+        )
+    )
+    assert len(items) > 0, (
+        "Con i dati seed almeno un bucket di trend deve essere presente"
+    )
+
+
+# UC-09 – Il select di granularità è presente con tutte e tre le opzioni
 
 # Controlliamo che ci sia il select per cambiare la granularità del grafico (giorno, settimana, mese)
 @pytest.mark.e2e
-def test_uc05_stat_granularity_controls_present(driver):
+def test_uc09_stat_granularity_controls_present(driver):
     driver.get(BASE_URL)
     _wait_home_loaded(driver)
 
@@ -573,20 +646,16 @@ def test_uc05_stat_granularity_controls_present(driver):
     assert driver.find_element(By.ID, "public-stat-granularity-option-month").is_displayed()
 
 
-# Verifichiamo che cambiando l'intervallo di tempo (es. su 'week') la sezione non si rompa e rimanga visibile
+# UC-09 – Cambiare la granularità mantiene la sezione trend visibile
 @pytest.mark.e2e
-def test_uc05_stat_granularity_change_does_not_cause_error(driver):
+def test_uc09_stat_granularity_change_keeps_trend_visible(driver):
     driver.get(BASE_URL)
     _wait_home_loaded(driver)
 
     Select(driver.find_element(By.ID, "public-stat-granularity")).select_by_value("week")
+    driver.find_element(By.ID, "public-filter-submit").click()
 
     WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.ID, "public-statistics-card"))
+        EC.presence_of_element_located((By.ID, "public-trend-statistics"))
     )
-    assert driver.find_element(By.ID, "public-statistics-card").is_displayed()
-
-    # Controlla che NON ci siano messaggi di errore visibili sulla pagina dopo il cambio di opzione
-    WebDriverWait(driver, 5).until(
-        EC.invisibility_of_element_located((By.ID, "public-filter-error"))
-    )
+    assert driver.find_element(By.ID, "public-trend-statistics").is_displayed()

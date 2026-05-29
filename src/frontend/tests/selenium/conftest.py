@@ -4,6 +4,11 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+
+def pytest_configure(config):
+    config.addinivalue_line("markers", "e2e: end-to-end UI tests executed with Selenium")
+    config.addinivalue_line("markers", "implementation_bug: documents an implementation bug revealed by a failing test")
+
 BASE_URL = "http://localhost:5173"
 
 

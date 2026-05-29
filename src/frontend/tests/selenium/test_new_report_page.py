@@ -23,13 +23,12 @@ from selenium.webdriver.support import expected_conditions as EC
 from conftest import BASE_URL, login_as
 
 
-
 # Helpers
 
 def _unique_title() -> str:
     return f"Selenium report {int(time.time() * 1000)}"
 
-#Scrive una sequenza di byte JPEG minima e valida in un file temporaneo e ne restituisce il percorso.
+
 def _make_temp_image(suffix: str = ".jpg") -> str:
     minimal_jpeg = (
         b"\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x00\x00\x01\x00\x01\x00\x00"
@@ -56,26 +55,25 @@ def _make_temp_image(suffix: str = ".jpg") -> str:
     return path
 
 
-
 # UC-03 – Controllo Accessi
 
-# I visitatori non autenticati non possono raggiungere direttamente /reports/new.
 @pytest.mark.e2e
 def test_new_report_page_requires_authentication(driver):
     driver.get(f"{BASE_URL}/reports/new")
-    # The ProtectedRoute should redirect away from /reports/new.
     WebDriverWait(driver, 10).until(lambda d: "/reports/new" not in d.current_url)
     assert "/reports/new" not in driver.current_url, (
         "Unauthenticated user should be redirected away from the report creation page"
     )
 
 
+# UC-03 – Struttura della pagina
 
-# UC-03 – struttura della pagina
-#Il form di creazione segnalazione mostra tutti i campi richiesti dopo il login.
 @pytest.mark.e2e
 def test_new_report_page_loads(driver):
     login_as(driver, "citizen@example.com", "Citizen123!")
+    WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.ID, "dashboard-page"))
+    )
     driver.get(f"{BASE_URL}/reports/new")
     WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.ID, "new-report-page"))
@@ -89,27 +87,19 @@ def test_new_report_page_loads(driver):
     assert driver.find_element(By.ID, "report-anonymous").is_displayed()
     assert driver.find_element(By.ID, "report-photos").is_displayed()
     assert driver.find_element(By.ID, "new-report-submit").is_displayed()
-
-#La sezione della mappa per la selezione della posizione è presente nella pagina del form
-@pytest.mark.e2e
-def test_new_report_map_section_present(driver):
-    login_as(driver, "citizen@example.com", "Citizen123!")
-    driver.get(f"{BASE_URL}/reports/new")
-
-    WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.ID, "new-report-map-section"))
-    )
     assert driver.find_element(By.ID, "new-report-map-section").is_displayed()
 
 
 # UC-03 – Flusso completo
 
-#L'invio di una segnalazione valida reindirizza il cittadino alla pagina di dettaglio.
 @pytest.mark.e2e
 def test_new_report_submit_redirects_to_detail(driver):
     photo_path = _make_temp_image()
     try:
         login_as(driver, "citizen@example.com", "Citizen123!")
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "dashboard-page"))
+        )
         driver.get(f"{BASE_URL}/reports/new")
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.ID, "new-report-form"))
@@ -122,17 +112,9 @@ def test_new_report_submit_redirects_to_detail(driver):
         driver.find_element(By.ID, "report-description").send_keys(
             "Segnalazione di test automatizzata con Selenium, si prega di ignorare."
         )
-
-        # Categoria: la prima opzione disponibile è pre-selezionata.
-
-        # Posizione: i valori predefiniti (centro di Torino) sono già pre-compilati.
-
-        # Allega una foto valida.
         driver.find_element(By.ID, "report-photos").send_keys(photo_path)
-
         driver.find_element(By.ID, "new-report-submit").click()
 
-        # Il sistema crea la segnalazione e naviga verso la sua pagina di dettaglio.
         WebDriverWait(driver, 15).until(
             lambda d: "/reports/" in d.current_url and "/reports/new" not in d.current_url
         )
@@ -142,14 +124,19 @@ def test_new_report_submit_redirects_to_detail(driver):
     finally:
         os.unlink(photo_path)
 
-#La segnalazione inviata appare nella lista delle segnalazioni personali del cittadino nella dashboard.
+
 @pytest.mark.e2e
 def test_new_report_appears_in_dashboard(driver):
     photo_path = _make_temp_image()
     try:
         login_as(driver, "citizen@example.com", "Citizen123!")
-        driver.get(f"{BASE_URL}/reports/new")
+        # Aspetta la dashboard per confermare che la sessione sia attiva prima di
+        # navigare alla rotta protetta — evita la race condition dell'AuthContext.
         WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "dashboard-page"))
+        )
+        driver.get(f"{BASE_URL}/reports/new")
+        WebDriverWait(driver, 15).until(
             EC.presence_of_element_located((By.ID, "new-report-form"))
         )
 
@@ -165,12 +152,10 @@ def test_new_report_appears_in_dashboard(driver):
             lambda d: "/reports/" in d.current_url and "/reports/new" not in d.current_url
         )
 
-        # Naviga nella dashboard e cerca il titolo della segnalazione.
         driver.get(f"{BASE_URL}/dashboard")
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.ID, "dashboard-page"))
         )
-        # Aspettiamo esplicitamente che il testo del titolo della nuova segnalazione compaia nella pagina
         WebDriverWait(driver, 10).until(
             lambda d: title in d.page_source,
             message=f"La segnalazione creata '{title}' non è comparsa asincronamente nella dashboard"
@@ -181,9 +166,9 @@ def test_new_report_appears_in_dashboard(driver):
     finally:
         os.unlink(photo_path)
 
+
 # UC-03 – Estensione: opzione anonima
 
-#Una segnalazione contrassegnata come anonima può essere inviata senza errori."
 @pytest.mark.e2e
 def test_new_report_anonymous_flag_submits_successfully(driver):
     photo_path = _make_temp_image()
@@ -224,10 +209,12 @@ def test_new_report_anonymous_flag_submits_successfully(driver):
 
 @pytest.mark.e2e
 def test_new_report_more_than_three_photos_shows_error(driver):
-    #Caricare più di tre foto mostra un messaggio di errore lato client.
     photos = [_make_temp_image() for _ in range(4)]
     try:
         login_as(driver, "citizen@example.com", "Citizen123!")
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "dashboard-page"))
+        )
         driver.get(f"{BASE_URL}/reports/new")
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.ID, "new-report-form"))
@@ -238,17 +225,14 @@ def test_new_report_more_than_three_photos_shows_error(driver):
         driver.find_element(By.ID, "report-description").clear()
         driver.find_element(By.ID, "report-description").send_keys("Test per numero eccessivo di foto.")
 
-        # send_keys("\n") per i percorsi uniti da un ritorno a capo per gli input di tipo file multipli
-        driver.find_element(By.ID, "report-photos").send_keys(
-            "\n".join(photos)
-        )
+        # send_keys con percorsi separati da "\n" per input file con selezione multipla
+        driver.find_element(By.ID, "report-photos").send_keys("\n".join(photos))
 
-        # Il controllo lato client si attiva subito dopo la selezione, quindi verifichiamo la presenza dell'elemento di errore.
+        # Il controllo lato client si attiva subito dopo la selezione, prima del submit
         error = WebDriverWait(driver, 5).until(
             EC.presence_of_element_located((By.ID, "new-report-error"))
         )
         assert error.is_displayed(), "Messaggio di errore quando vengono selezionate più di 3 foto"
-        # Solo 3 foto sono trattenute dal sistema.
         selected_count_el = driver.find_element(By.ID, "new-report-selected-photos")
         assert "3" in selected_count_el.text, (
             "Devono mantenersi solo 3 foto dopo averne selezionate 4"
@@ -258,19 +242,19 @@ def test_new_report_more_than_three_photos_shows_error(driver):
             os.unlink(p)
 
 
-
 # UC-03 – Estensione 6a: blocco dei campi obbligatori mancanti
 
-#L'invio senza un titolo non crea la segnalazione (validazione del browser).
 @pytest.mark.e2e
 def test_new_report_missing_title_blocked(driver):
     login_as(driver, "citizen@example.com", "Citizen123!")
+    WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.ID, "dashboard-page"))
+    )
     driver.get(f"{BASE_URL}/reports/new")
     WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.ID, "new-report-form"))
     )
 
-    # Lascia il titolo vuoto e compila il resto.
     driver.find_element(By.ID, "report-title").clear()
     driver.find_element(By.ID, "report-description").send_keys("Descrizione senza titolo.")
     driver.find_element(By.ID, "new-report-submit").click()

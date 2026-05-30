@@ -62,7 +62,7 @@ def test_new_report_page_requires_authentication(driver):
     driver.get(f"{BASE_URL}/reports/new")
     WebDriverWait(driver, 10).until(lambda d: "/reports/new" not in d.current_url)
     assert "/reports/new" not in driver.current_url, (
-        "Unauthenticated user should be redirected away from the report creation page"
+        "L'utente non autenticato deve essere reindirizzato fuori dalla pagina di creazione del report."
     )
 
 

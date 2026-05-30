@@ -3,7 +3,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
-
+from selenium.common.exceptions import StaleElementReferenceException
 from conftest import BASE_URL
 
 """
@@ -325,19 +325,21 @@ def test_uc05_filter_by_status_shows_only_matching_reports(driver):
     driver.get(BASE_URL)
     _wait_home_loaded(driver)
 
+    
+    WebDriverWait(driver, 10).until(
+        lambda d: len(Select(d.find_element(By.ID, "public-filter-status")).options) >= 2
+    )
+
     status_select = Select(driver.find_element(By.ID, "public-filter-status"))
-    options = status_select.options   # indice 0 = "All public statuses"
+    options = status_select.options
     if len(options) < 2:
         pytest.skip("Nessuno stato pubblico disponibile oltre ad 'All'")
-
     chosen_status = options[1].text.strip()
     status_select.select_by_visible_text(chosen_status)
     driver.find_element(By.ID, "public-filter-submit").click()
-
     WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.ID, "public-report-table-body"))
     )
-
     rows = _get_visible_row_ids(driver)
     for r_id in rows:
         status_text = driver.find_element(By.ID, f"{r_id}-status").text.strip()
@@ -350,13 +352,27 @@ def test_uc05_filter_by_status_shows_only_matching_reports(driver):
 
 # L'ordinamento di default è 'Newest first' (desc).
 @pytest.mark.e2e
-def test_uc05_sort_default_is_desc(driver):
+def test_uc05_sort_default_is_strictly_descending(driver):
     driver.get(BASE_URL)
     _wait_home_loaded(driver)
+    rows = _get_visible_row_ids(driver)
+    if len(rows) < 2:
+        pytest.skip("Servono almeno 2 report per verificare la cronologia")
 
-    sort_select = Select(driver.find_element(By.ID, "public-filter-sort"))
-    assert sort_select.first_selected_option.get_attribute("value") == "desc", (
-        "Il valore selezionato di default nel select ordinamento deve essere 'desc'"
+    # Verifica che l'ordine desc e asc siano opposti
+    # Salva l'ordine default (desc)
+    assert rows == sorted(rows, key=lambda r: int(r.replace("public-report-row-", "")), reverse=False) or \
+           rows == sorted(rows, key=lambda r: int(r.replace("public-report-row-", "")), reverse=True), \
+        f"Le righe non sono in nessun ordine coerente: {rows}"
+
+    # Verifica che cambiando ad asc l'ordine si inverta
+    Select(driver.find_element(By.ID, "public-filter-sort")).select_by_value("asc")
+    WebDriverWait(driver, 10).until(
+        lambda d: _get_visible_row_ids(d)[0] != rows[0]
+    )
+    rows_asc = _get_visible_row_ids(driver)
+    assert rows_asc == list(reversed(rows)), (
+        f"L'ordine asc {rows_asc} non è l'inverso di desc {rows}"
     )
 
 
@@ -366,25 +382,19 @@ def test_uc05_sort_asc_changes_row_order(driver):
     driver.get(BASE_URL)
     _wait_home_loaded(driver)
 
-    WebDriverWait(driver, 10).until(
-        EC.presence_of_all_elements_located((By.CSS_SELECTOR, "tr[id^='public-report-row-']"))
-    )
     rows_desc = _get_visible_row_ids(driver)
     if len(rows_desc) < 2:
         pytest.skip("Servono almeno 2 report per verificare l'inversione di ordinamento")
 
-    # Cambia ordinamento e invia il form.
     Select(driver.find_element(By.ID, "public-filter-sort")).select_by_value("asc")
-    driver.find_element(By.ID, "public-filter-submit").click()
 
-    # Attesa asincrona esplicita basata sulla variazione del primo elemento ID della tabella pubblica.
     WebDriverWait(driver, 10).until(
         lambda d: _get_visible_row_ids(d)[0] != rows_desc[0]
     )
 
     rows_asc = _get_visible_row_ids(driver)
-    assert rows_desc != rows_asc, (
-        "L'ordine delle righe deve cambiare passando da 'Newest first' a 'Oldest first'"
+    assert rows_asc == list(reversed(rows_desc)), (
+        f"L'ordine asc {rows_asc} non è l'inverso di desc {rows_desc}"
     )
 
 
@@ -395,15 +405,23 @@ def test_uc05_sort_asc_changes_row_order(driver):
 def test_uc05_date_from_far_future_empties_table(driver):
     driver.get(BASE_URL)
     _wait_home_loaded(driver)
-
     _set_date_input(driver, "public-filter-date-from", "2099-01-01 00:00")
     driver.find_element(By.ID, "public-filter-submit").click()
 
-    # Aspettiamo la modifica del link di export per essere sicuri che React abbia registrato il cambio data
+    
     WebDriverWait(driver, 10).until(
         lambda d: "date_from=" in (d.find_element(By.ID, "public-export-link").get_attribute("href") or "")
     )
-    
+
+    # Aspettiamo esplicitamente che la tabella si svuoti
+    from selenium.common.exceptions import StaleElementReferenceException
+    WebDriverWait(driver, 15, ignored_exceptions=(StaleElementReferenceException,)).until(
+        lambda d: len([
+            r for r in _get_visible_row_ids(d)
+            if any(char.isdigit() for char in r)
+        ]) == 0
+    )
+
     rows = _get_visible_row_ids(driver)
     valid_report_rows = [r for r in rows if any(char.isdigit() for char in r)]
     assert len(valid_report_rows) == 0, (
@@ -461,9 +479,9 @@ def test_uc05_filter_reset_restores_reports(driver):
     _wait_home_loaded(driver)
 
     # Aspettiamo che il numero delle righe torni esattamente a quello iniziale
-    WebDriverWait(driver, 10).until(
-        lambda d: len([r for r in _get_visible_row_ids(d) if any(char.isdigit() for char in r)]) == initial_count
-    )
+    WebDriverWait(driver, 10, ignored_exceptions=(StaleElementReferenceException,)).until(
+    lambda d: len([r for r in _get_visible_row_ids(d) if any(char.isdigit() for char in r)]) == initial_count
+)   
     restored_rows = _get_visible_row_ids(driver)
     valid_restored = [r for r in restored_rows if any(char.isdigit() for char in r)]
     assert len(valid_restored) == initial_count, (

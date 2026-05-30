@@ -336,10 +336,14 @@ def test_uc05_filter_by_status_shows_only_matching_reports(driver):
         pytest.skip("Nessuno stato pubblico disponibile oltre ad 'All'")
     chosen_status = options[1].text.strip()
     status_select.select_by_visible_text(chosen_status)
-    driver.find_element(By.ID, "public-filter-submit").click()
-    WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.ID, "public-report-table-body"))
+    
+    WebDriverWait(driver, 10, ignored_exceptions=(StaleElementReferenceException,)).until(
+    lambda d: all(
+        d.find_element(By.ID, f"{r}-status").text.strip() == chosen_status
+        for r in _get_visible_row_ids(d)
+        if any(char.isdigit() for char in r)
     )
+)
     rows = _get_visible_row_ids(driver)
     for r_id in rows:
         status_text = driver.find_element(By.ID, f"{r_id}-status").text.strip()
@@ -403,18 +407,26 @@ def test_uc05_sort_asc_changes_row_order(driver):
 # Se mettiamo come data massima il 2000, la tabella deve svuotarsi perché i report sono tutti successivi
 @pytest.mark.e2e
 def test_uc05_date_from_far_future_empties_table(driver):
+    from selenium.common.exceptions import StaleElementReferenceException
     driver.get(BASE_URL)
     _wait_home_loaded(driver)
+
+    initial_rows = len([r for r in _get_visible_row_ids(driver) if any(char.isdigit() for char in r)])
+    if initial_rows == 0:
+        pytest.skip("Nessun report seed disponibile per questo test")
+
     _set_date_input(driver, "public-filter-date-from", "2099-01-01 00:00")
     driver.find_element(By.ID, "public-filter-submit").click()
 
-    
+    # Aspetta che l'href del CSV rifletta il filtro date_from
     WebDriverWait(driver, 10).until(
         lambda d: "date_from=" in (d.find_element(By.ID, "public-export-link").get_attribute("href") or "")
     )
 
-    # Aspettiamo esplicitamente che la tabella si svuoti
-    from selenium.common.exceptions import StaleElementReferenceException
+    # Clicca di nuovo submit per forzare il re-render
+    driver.find_element(By.ID, "public-filter-submit").click()
+
+    # Aspetta che la tabella si svuoti
     WebDriverWait(driver, 15, ignored_exceptions=(StaleElementReferenceException,)).until(
         lambda d: len([
             r for r in _get_visible_row_ids(d)

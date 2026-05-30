@@ -19,8 +19,8 @@ from participium.services.report_service import ReportService
 @pytest.fixture
 def seed_public_reports_data():
     """
-    Crea un DB SQLite in-memory e lo popola con un dataset variegato per i report pubblici.
-    Risolve il vincolo NOT NULL inserendo coordinate fittizie ma strutturalmente valide.
+    Crea un DB SQLite in-memory e lo popola con un dataset per i report pubblici.
+    Risolve il vincolo NOT NULL inserendo coordinate  valide.
     - Utente reporter (id=1) per soddisfare i vincoli di integrità referenziale
     - Categoria 1 (Attiva) e Categoria 2 (Attiva)
     - Report 1: Categoria 1, Status ASSIGNED, Data: 2024-06-01

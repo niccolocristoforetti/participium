@@ -209,14 +209,13 @@ def test_up10_duplicate_username(seed_update_profile_data) -> None:
 
 
 # Boundary: campi vuoti
-# L'implementazione tratta le stringhe vuote come falsy (if username:),quindi non aggiorna il campo. 
 # I test che si aspettavano l'aggiornamento sono marcati xfail.
 
 
-# UPB1 – Username stringa vuota: l'impl. non aggiorna (stringa vuota è falsy)
+# UPB1 – Username stringa vuota
 @pytest.mark.xfail(
     strict=True,
-    reason="L'implementazione tratta username='' come falsy e non aggiorna il campo",
+    reason="L'implementazione tratta username='' e non aggiorna il campo",
 )
 def test_upb1_empty_username(seed_update_profile_data) -> None:
     service, user, _ = seed_update_profile_data
@@ -229,7 +228,7 @@ def test_upb1_empty_username(seed_update_profile_data) -> None:
 # UPB2 – first_name stringa vuota: stessa logica
 @pytest.mark.xfail(
     strict=True,
-    reason="L'implementazione tratta first_name='' come falsy e non aggiorna il campo",
+    reason="L'implementazione tratta first_name='' e non aggiorna il campo",
 )
 def test_upb2_empty_first_name(seed_update_profile_data) -> None:
     service, user, _ = seed_update_profile_data
@@ -242,7 +241,7 @@ def test_upb2_empty_first_name(seed_update_profile_data) -> None:
 # UPB3 – last_name stringa vuota: stessa logica
 @pytest.mark.xfail(
     strict=True,
-    reason="L'implementazione tratta last_name='' come falsy e non aggiorna il campo",
+    reason="L'implementazione tratta last_name='' e non aggiorna il campo",
 )
 def test_upb3_empty_last_name(seed_update_profile_data) -> None:
     service, user, _ = seed_update_profile_data

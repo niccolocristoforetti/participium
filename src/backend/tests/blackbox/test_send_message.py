@@ -44,8 +44,7 @@ def seed_send_message_data(db_session):
     db_session.add(report_with_reporter)
     db_session.flush()
 
-    # Evento di storia con operatore: permette a _resolve_recipient di trovare
-    # un destinatario quando il mittente è un cittadino (REPORTER)
+    #permette a _resolve_recipient di trovare un destinatario quando il mittente è un cittadino
     db_session.add(ReportStatusHistory(
         report_id=report_with_reporter.id,
         previous_status=None,
@@ -72,7 +71,7 @@ def seed_send_message_data(db_session):
     }
 
 
-# MSG1 – Happy path: reporter invia messaggio, destinatario risolvibile
+# MSG1 –  reporter invia messaggio, destinatario risolvibile
 def test_msg1_reporter_sends_message(seed_send_message_data, messaging_service) -> None:
     data = seed_send_message_data
     from participium.models.message import Message
@@ -137,7 +136,7 @@ def test_msg5_no_resolvable_recipient(seed_send_message_data, messaging_service)
         )
 
 
-# MSG6 – Happy path: operatore invia messaggio, reporter è il destinatario
+# MSG6 –  operatore invia messaggio, reporter è il destinatario
 def test_msg6_operator_sends_message(seed_send_message_data, messaging_service) -> None:
     data = seed_send_message_data
     from participium.models.message import Message

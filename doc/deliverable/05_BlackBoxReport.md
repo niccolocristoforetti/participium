@@ -484,7 +484,7 @@ Il contratto impone minimo 1 e massimo 3 foto con filename.
 | TC-ID | reporter | category_id | title | description | latitude | longitude | photos | is_anonymous | Expected | Fixture | EC covered |
 | :---- | :------- | :---------- | :---- | :---------- | :------- | :-------- | :----- | :----------- | :------- | :------ | :--------- |
 | CRB1 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `45.0` | `9.0` | 2 foto (entrambe senza filename) | `False` | `ValidationError` | utente attivo, categoria attiva | EC1 × EC6 × EC8 × EC13 |
-| CRB2 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `45.0` | `9.0` | 1 foto valida (minimo) | `False` | `Report` | utente attivo, categoria attiva | EC1 × EC6 × EC8 × EC12 |
+| CR1 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `45.0` | `9.0` | 1 foto valida (minimo) | `False` | `Report` | utente attivo, categoria attiva | EC1 × EC6 × EC8 × EC12 |
 | CRB3 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `45.0` | `9.0` | 3 foto valide (massimo) | `False` | `Report` | utente attivo, categoria attiva | EC1 × EC6 × EC8 × EC12 |
 | CRB4 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `45.0` | `9.0` | 4 foto valide (oltre massimo) | `False` | `ValidationError` | utente attivo, categoria attiva | EC1 × EC6 × EC8 × EC14 |  
 | CRB5 | utente valido | `1` | `"Buca"` | `"Descrizione"` | `45.0` | `9.0` | [ ] (0 foto, lista vuota) | `False` | `ValidationError` | utente attivo, categoria attiva | EC1 × EC6 × EC8 × EC13 |

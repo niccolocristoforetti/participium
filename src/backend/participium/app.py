@@ -21,16 +21,13 @@ def create_app(settings: Settings | None = None) -> Flask:
     app.config["SETTINGS"] = settings
     app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
     app.config["SESSION_COOKIE_HTTPONLY"] = True
-
     CORS(
         app,
         resources={r"/api/*": {"origins": [settings.frontend_origin]}},
         supports_credentials=True,
     )
-
     open_connection()
     app.extensions["container"] = AppContainer(settings)
-
     if settings.auto_init_db:
         with app.app_context():
             create_all()
@@ -38,7 +35,9 @@ def create_app(settings: Settings | None = None) -> Flask:
                 seed_reference_data(get_session())
             if settings.bootstrap_demo_data:
                 seed_demo_data(get_session(), settings.media_root)
-
+            from participium.database import session as db_session
+            if db_session._connection is not None:
+                db_session._connection.commit()
     init_swagger(app)
     register_blueprints(app)
     _register_request_hooks(app)

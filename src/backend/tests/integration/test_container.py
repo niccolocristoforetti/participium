@@ -249,9 +249,10 @@ def test_ct15_bundle_isolation(container, db_session_for_container) -> None:
     assert bundle_a.auth is not bundle_b.auth
 
 #CT16 – Verifica il recupero del container tramite l'estensione current_app di Flask
-def test_ct16_current_app_container_extension(container) -> None:
+def test_ct16_current_app_container_extension(container, db_session_for_container) -> None:
     mock_app = MagicMock()
     mock_app.extensions = {"container": container}
-    with patch("participium.container.current_app", mock_app):
+    with patch("participium.container.current_app", mock_app), \
+         patch("participium.container.get_session", return_value=db_session_for_container):
         result = get_controllers()
         assert isinstance(result, ControllerBundle)

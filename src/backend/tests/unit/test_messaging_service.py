@@ -127,6 +127,37 @@ class TestEnsureAccess:
         assert "do not have access" in str(exc_info.value)
 
 
+class TestListMessages:
+    """Test suite per il metodo list_messages."""
+
+    def test_list_messages_returns_repository_result(
+        self, messaging_service, mock_message_repository,
+    ):
+        """list_messages() verifica l'accesso e delega al repository."""
+        # Arrange
+        report = _make_report(reporter_id=10)
+        citizen = _make_user(user_id=10, role=Role.CITIZEN)
+        msg = Mock(spec=Message)
+        mock_message_repository.list_for_report.return_value = [msg]
+
+        # Act
+        result = messaging_service.list_messages(report, citizen)
+
+        # Assert
+        mock_message_repository.list_for_report.assert_called_once_with(report.id)
+        assert result == [msg]
+
+    def test_list_messages_raises_for_unauthorized_user(self, messaging_service):
+        """list_messages() solleva AuthorizationError per utente non autorizzato."""
+        # Arrange
+        report = _make_report(reporter_id=10)
+        stranger = _make_user(user_id=99, role=Role.CITIZEN)
+
+        # Act & Assert
+        with pytest.raises(AuthorizationError):
+            messaging_service.list_messages(report, stranger)
+
+
 class TestSendMessage:
     """Test suite per il metodo send_message."""
 

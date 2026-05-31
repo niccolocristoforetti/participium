@@ -53,10 +53,6 @@ class TestAdminUsers:
         assert resp.status_code == 400
 
     def test_update_user_deactivate(self, admin_client, seeded_admin):
-        users = admin_client.get("/api/v1/admin/users").get_json()
-        admin_user = next(u for u in users if u["role"] == "admin")
-        user_id = admin_user["id"]
-
         other_resp = admin_client.post(
             "/api/v1/admin/users",
             json={
@@ -142,6 +138,9 @@ class TestAdminCategories:
 
 
 class TestAdminPendingReports:
+    # L'admin accede ai pending report tramite la stessa rotta dell'operatore:
+    # l'OperatorController distingue il ruolo internamente (Role.ADMIN → tutti i pending,
+    # Role.OPERATOR → solo quelli della propria categoria).
     def test_admin_can_access_pending_reports(self, admin_client, citizen_client, seeded_category):
         create_report(citizen_client, seeded_category, title="Pending")
         resp = admin_client.get("/api/v1/operator/reports/pending")
@@ -161,4 +160,10 @@ class TestAdminStats:
     def test_admin_gets_stats(self, admin_client):
         resp = admin_client.get("/api/v1/admin/stats")
         assert resp.status_code == 200
-        assert isinstance(resp.get_json(), dict)
+        data = resp.get_json()
+        assert isinstance(data, dict)
+        assert len(data) > 0, "Le statistiche admin non devono essere un dizionario vuoto"
+        # Chiavi restituite da StatisticsService.admin_statistics()
+        assert "reports_by_status" in data, (
+            f"Chiave 'reports_by_status' mancante nelle statistiche admin: {list(data.keys())}"
+        )

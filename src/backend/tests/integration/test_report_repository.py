@@ -34,9 +34,9 @@ from participium.models.report import Report, ReportFollower, ReportPhoto, Repor
 from sqlalchemy import select
 
 
-# ---------------------------------------------------------------------------
+
 # Helper
-# ---------------------------------------------------------------------------
+
 
 def _make_report(title: str = "Test Report", category_id: int = 1, **kwargs) -> Report:
     """Factory che produce un Report con i campi obbligatori valorizzati."""
@@ -51,7 +51,7 @@ def _make_report(title: str = "Test Report", category_id: int = 1, **kwargs) -> 
 
 
 # Fixtures locale
-@pytest.fixture(scope="function")
+@pytest.fixture
 def base_report(db_session):
     """Report base già persistito, usato come precondizione nei test sui follower."""
     report = _make_report(title="Base Report", status=ReportStatus.PENDING_APPROVAL)
@@ -262,14 +262,13 @@ def test_list_reports_sort_asc(report_repository, db_session):
 
 
 @pytest.mark.integration
-def test_list_reports_public_only_filters_by_public_statuses(
+def test_list_reports_public_only_true_filters_by_public_statuses(
     report_repository, db_session, monkeypatch
 ):
-    """list_reports(public_only=True/False) filtra correttamente in base a PUBLIC_VISIBLE_STATUSES.
+    """list_reports(public_only=True) restituisce solo i report con status in PUBLIC_VISIBLE_STATUSES.
 
     Patchando la costante nel modulo che la importa, il test è indipendente
-    dai valori reali di produzione e verifica entrambi i branch dello stesso flag
-    senza duplicare il setup.
+    dai valori reali di produzione.
     """
     monkeypatch.setattr(
         "participium.repositories.report_repository.PUBLIC_VISIBLE_STATUSES",
@@ -281,13 +280,29 @@ def test_list_reports_public_only_filters_by_public_statuses(
     db_session.add_all([r_public, r_private])
     db_session.commit()
 
-    # public_only=True: solo i report con status in PUBLIC_VISIBLE_STATUSES
     public_results = report_repository.list_reports(public_only=True)
+
     assert len(public_results) == 1
     assert public_results[0].status == ReportStatus.IN_PROGRESS
 
-    # public_only=False: tutti i report indipendentemente dallo status
+
+@pytest.mark.integration
+def test_list_reports_public_only_false_returns_all_reports(
+    report_repository, db_session, monkeypatch
+):
+    """list_reports(public_only=False) restituisce tutti i report indipendentemente dallo status."""
+    monkeypatch.setattr(
+        "participium.repositories.report_repository.PUBLIC_VISIBLE_STATUSES",
+        [ReportStatus.IN_PROGRESS],
+    )
+
+    r_public  = _make_report(title="Public",  status=ReportStatus.IN_PROGRESS)
+    r_private = _make_report(title="Private", status=ReportStatus.PENDING_APPROVAL)
+    db_session.add_all([r_public, r_private])
+    db_session.commit()
+
     all_results = report_repository.list_reports(public_only=False)
+
     assert len(all_results) == 2
 
 

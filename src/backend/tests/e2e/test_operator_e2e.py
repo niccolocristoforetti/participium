@@ -22,10 +22,11 @@ class TestPendingReports:
         assert resp.get_json() == []
 
     def test_operator_sees_pending_reports(self, operator_client, citizen_client, seeded_category):
-        _create_report(citizen_client, seeded_category)
+        report_id = _create_report(citizen_client, seeded_category).get_json()["id"]
         resp = operator_client.get("/api/v1/operator/reports/pending")
         assert resp.status_code == 200
-        assert len(resp.get_json()) == 1
+        pending_ids = [r["id"] for r in resp.get_json()]
+        assert report_id in pending_ids
 
 
 class TestAssignedReports:

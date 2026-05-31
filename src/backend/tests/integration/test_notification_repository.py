@@ -49,13 +49,11 @@ def test_add_assigns_primary_key(notification_repository, db_session):
 
 @pytest.mark.integration
 def test_add_returns_the_notification_object(notification_repository, db_session):
-    """add() restituisce l'oggetto notifica (il type hint dice None, ma il codice fa return)."""
+    """add() restituisce l'oggetto notifica nonostante l'annotazione di ritorno sia None."""
     n = _make_notification(user_id=1)
 
     result = notification_repository.add(n)
     db_session.commit()
-    # Il metodo esegue ``return notification`` nonostante l'annotazione sia None.
-    # Il test documenta il comportamento reale dell'implementazione.
     assert result is n
 
 

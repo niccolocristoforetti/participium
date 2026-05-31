@@ -60,8 +60,7 @@ def test_add_persists_all_fields(category_repository, db_session):
 
 
 @pytest.mark.integration
-def test_add_default_is_active_is_true(category_repository, db_session):
-    """Il valore di default di is_active è True quando non viene passato esplicitamente."""
+def test_category_model_default_is_active_is_true(category_repository, db_session):
     cat = Category(name="DefaultAttiva")
     category_repository.add(cat)
     db_session.commit()

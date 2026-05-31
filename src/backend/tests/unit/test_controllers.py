@@ -36,7 +36,15 @@ class TestOperatorControllerDashboard:
         ctrl.build_dashboard(_user(Role.ADMIN))
         ctrl.report_service.list_pending_reports.assert_called_once_with({})
 
-    def test_citizen_gets_empty_pending_reports(self):
+    def test_operator_gets_pending_reports_with_category_filter(self):
+        """Role.OPERATOR: list_pending_reports viene chiamato con category_id nel filtro."""
+        ctrl = self._controller()
+        operator = _user(Role.OPERATOR, category_id=5)
+        ctrl.build_dashboard(operator)
+        ctrl.report_service.list_pending_reports.assert_called_once_with({"category_id": 5})
+
+    def test_other_role_gets_empty_pending_reports_without_call(self):
+        """Ruolo diverso da ADMIN/OPERATOR: list_pending_reports non viene chiamato."""
         ctrl = self._controller()
         result = ctrl.build_dashboard(_user(Role.CITIZEN))
         assert result.pending_reports == []

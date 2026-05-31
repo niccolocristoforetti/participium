@@ -134,8 +134,11 @@ class TestExportReports:
 
     def test_export_csv_contains_header(self, client):
         resp = client.get("/api/v1/reports/export")
-        content = resp.data.decode()
-        assert "id" in content
+        first_line = resp.data.decode().splitlines()[0]
+        # Verifica che la prima riga sia effettivamente l'header del CSV
+        assert first_line.startswith("id"), f"Header CSV inatteso: '{first_line}'"
+        assert "title" in first_line
+        assert "status" in first_line
 
 
 class TestFollowUnfollow:
@@ -204,12 +207,16 @@ class TestPublicStats:
         resp = client.get("/api/v1/stats/public")
         assert resp.status_code == 200
         data = resp.get_json()
-        assert "total" in data or isinstance(data, dict)
+        assert isinstance(data, dict)
+        assert "total_reports" in data, f"Chiave 'total_reports' mancante nelle statistiche pubbliche: {data}"
 
     def test_public_stats_with_granularity_week(self, client):
         resp = client.get("/api/v1/stats/public?granularity=week")
         assert resp.status_code == 200
 
     def test_public_stats_unknown_granularity_falls_back_to_day(self, client):
-        resp = client.get("/api/v1/stats/public?granularity=invalid")
-        assert resp.status_code == 200
+        # Verifica che una granularità non valida produca lo stesso risultato di 'day'
+        resp_invalid = client.get("/api/v1/stats/public?granularity=invalid")
+        resp_day = client.get("/api/v1/stats/public?granularity=day")
+        assert resp_invalid.status_code == 200
+        assert resp_invalid.get_json() == resp_day.get_json()

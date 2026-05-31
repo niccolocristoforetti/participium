@@ -100,7 +100,8 @@ class TestRegisterUser:
 
         # Assert
         # Deve rimuovere il trailing slash e aggiungere solo uno
-        assert verification_url.count("//") == 1  # Solo http://
+        assert verification_url.startswith("http://localhost:3000/verify/")
+        assert "verify//" not in verification_url
 
     def test_register_user_missing_all_required_fields(self, auth_service):
         """Errore se mancano tutti i campi obbligatori."""

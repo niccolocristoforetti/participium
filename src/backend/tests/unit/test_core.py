@@ -47,7 +47,7 @@ class TestEnsureTransitionAllowed:
             ensure_transition_allowed(ReportStatus.ASSIGNED, ReportStatus.PENDING_APPROVAL)
 
     def test_self_transition_always_allowed(self):
-        assert ensure_transition_allowed(ReportStatus.RESOLVED, ReportStatus.RESOLVED) is True
+        assert ensure_transition_allowed(ReportStatus.PENDING_APPROVAL, ReportStatus.PENDING_APPROVAL) is True
 
 
 # utils.py
@@ -147,6 +147,13 @@ class TestSerializeReporter:
         result = _serialize_reporter(report, viewer=other)
         assert result["display_name"] == "Anonymous Citizen"
         assert result["id"] is None
+
+    def test_anonymous_report_reporter_sees_own_report(self):
+        """Il reporter stesso vede i propri dati anche su report anonimo (reporter_id == viewer.id)."""
+        reporter = _make_user(user_id=5, role=Role.CITIZEN)
+        report = _make_report(is_anonymous=True, reporter=reporter, reporter_id=5)
+        result = _serialize_reporter(report, viewer=reporter)
+        assert result["id"] == 5
 
 
 # auth.py — login_required e roles_required

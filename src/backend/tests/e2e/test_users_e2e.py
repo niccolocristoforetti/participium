@@ -45,7 +45,8 @@ class TestUpdateMe:
     def test_duplicate_username_returns_400(self, client):
         register_and_verify(client, username="user_a", email="usera@test.com", password="pass")
         register_and_verify(client, username="user_b", email="userb@test.com", password="pass")
-        client.post("/api/v1/auth/login", json={"identifier": "usera@test.com", "password": "pass"})
+        login_resp = do_login(client, "usera@test.com", "pass")
+        assert login_resp.status_code == 200, "Login pre-condizione fallito: il test verifica la causa sbagliata"
         resp = client.put("/api/v1/users/me", json={"username": "user_b"})
         assert resp.status_code == 400
 
@@ -102,6 +103,50 @@ class TestMyReports:
         assert "My Report" in titles
 
 
+@pytest.fixture
+def notif_citizen_and_report(app, seeded_category):
+    """
+    Restituisce (citizen_client, report_id) dopo che un operatore ha assegnato
+    il report, generando così una notifica per il citizen.
+    """
+    citizen = app.test_client()
+    register_and_verify(citizen, username="notif_citizen", email="notif@test.com", password="notifpass")
+    assert do_login(citizen, "notif@test.com", "notifpass").status_code == 200
+
+    operator = app.test_client()
+    with app.app_context():
+        op = User(
+            username="notif_op",
+            first_name="Op",
+            last_name="User",
+            email="notifop@test.com",
+            password_hash=hash_password("oppass"),
+            role=Role.OPERATOR,
+            is_active=True,
+            is_email_verified=True,
+            category_id=seeded_category,
+        )
+        get_session().add(op)
+        get_session().commit()
+    assert do_login(operator, "notifop@test.com", "oppass").status_code == 200
+
+    report_id = citizen.post(
+        "/api/v1/reports",
+        data={
+            "title": "Notif Report",
+            "description": "desc",
+            "category_id": str(seeded_category),
+            "latitude": "45.0",
+            "longitude": "9.0",
+            "photos": photo(),
+        },
+        content_type="multipart/form-data",
+    ).get_json()["id"]
+
+    operator.post(f"/api/v1/operator/reports/{report_id}/assign")
+    return citizen, report_id
+
+
 class TestNotifications:
     def test_unauthenticated_returns_401(self, client):
         resp = client.get("/api/v1/users/me/notifications")
@@ -120,43 +165,13 @@ class TestNotifications:
         resp = client.post("/api/v1/users/me/notifications/1/read")
         assert resp.status_code == 401
 
-    def test_mark_notification_as_read_success(self, app, seeded_category):
-        citizen = app.test_client()
-        register_and_verify(citizen, username="notif_citizen", email="notif@test.com", password="notifpass")
-        do_login(citizen, "notif@test.com", "notifpass")
+    def test_notification_generated_after_report_assigned(self, notif_citizen_and_report):
+        citizen, _report_id = notif_citizen_and_report
+        notifications = citizen.get("/api/v1/users/me/notifications").get_json()
+        assert len(notifications) >= 1
 
-        operator = app.test_client()
-        with app.app_context():
-            op = User(
-                username="notif_op",
-                first_name="Op",
-                last_name="User",
-                email="notifop@test.com",
-                password_hash=hash_password("oppass"),
-                role=Role.OPERATOR,
-                is_active=True,
-                is_email_verified=True,
-                category_id=seeded_category,
-            )
-            get_session().add(op)
-            get_session().commit()
-        do_login(operator, "notifop@test.com", "oppass")
-
-        report_id = citizen.post(
-            "/api/v1/reports",
-            data={
-                "title": "Notif Report",
-                "description": "desc",
-                "category_id": str(seeded_category),
-                "latitude": "45.0",
-                "longitude": "9.0",
-                "photos": photo(),
-            },
-            content_type="multipart/form-data",
-        ).get_json()["id"]
-
-        operator.post(f"/api/v1/operator/reports/{report_id}/assign")
-
+    def test_mark_notification_as_read_success(self, notif_citizen_and_report):
+        citizen, _report_id = notif_citizen_and_report
         notifications = citizen.get("/api/v1/users/me/notifications").get_json()
         assert len(notifications) >= 1
         notif_id = notifications[0]["id"]

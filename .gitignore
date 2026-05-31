@@ -24,6 +24,7 @@ src/.env
 src/backend/.env
 src/frontend/.env
 !src/backend/.env
+instance/
 src/instance/
 src/backend/instance/
 src/backend/participium/static/uploads/

@@ -50,6 +50,27 @@ class TestAppStartup:
     def test_auto_init_false_skips_db_setup(self, app_no_init):
         assert app_no_init is not None
 
+    def test_auto_init_skips_commit_when_connection_is_none(self, monkeypatch, tmp_path):
+        """Branch 39->41 di app.py: se _connection è None dopo create_all il commit
+        viene saltato. Il check è un guard difensivo irraggiungibile in condizioni normali
+        (open_connection imposta sempre _connection prima), quindi si azzera via mock."""
+        import participium.app as app_module
+        import participium.database.session as db_session_module
+
+        original_create_all = app_module.create_all
+
+        def create_all_and_clear():
+            original_create_all()
+            db_session_module._connection = None
+
+        monkeypatch.setattr(app_module, "create_all", create_all_and_clear)
+
+        app = _make_app(monkeypatch, tmp_path)
+        try:
+            assert app is not None
+        finally:
+            close_connection()
+
 
 class TestRequestHooks:
     def test_inactive_user_session_is_cleared(self, client, app):

@@ -25,10 +25,7 @@ from participium.models.enums import NotificationType, Role
 from participium.models.token import EmailVerificationToken
 
 
-# ---------------------------------------------------------------------------
 # Helper
-# ---------------------------------------------------------------------------
-
 def _make_user(username: str, email: str, **kwargs) -> User:
     """Costruisce un User con i campi obbligatori e valori di default sensati."""
     return User(
@@ -41,10 +38,7 @@ def _make_user(username: str, email: str, **kwargs) -> User:
     )
 
 
-# ---------------------------------------------------------------------------
 # add()
-# ---------------------------------------------------------------------------
-
 @pytest.mark.integration
 def test_add_assigns_primary_key(user_repository, db_session):
     """add() persiste l'utente: dopo il commit l'id è valorizzato."""
@@ -87,10 +81,7 @@ def test_add_default_values(user_repository, db_session):
     assert user.email_notifications_enabled is True
 
 
-# ---------------------------------------------------------------------------
 # get_by_id()
-# ---------------------------------------------------------------------------
-
 @pytest.mark.integration
 def test_get_by_id_returns_correct_user(user_repository, db_session):
     """get_by_id() recupera l'utente con l'id corretto."""
@@ -113,10 +104,7 @@ def test_get_by_id_returns_none_for_missing_user(user_repository):
     assert user_repository.get_by_id(999) is None
 
 
-# ---------------------------------------------------------------------------
 # get_by_email()
-# ---------------------------------------------------------------------------
-
 @pytest.mark.integration
 def test_get_by_email_returns_correct_user(user_repository, db_session):
     """get_by_email() restituisce l'utente con quell'indirizzo email."""
@@ -137,10 +125,7 @@ def test_get_by_email_returns_none_when_not_found(user_repository):
     assert user_repository.get_by_email("nobody@example.com") is None
 
 
-# ---------------------------------------------------------------------------
 # get_by_username()
-# ---------------------------------------------------------------------------
-
 @pytest.mark.integration
 def test_get_by_username_returns_correct_user(user_repository, db_session):
     """get_by_username() restituisce l'utente con quel nome utente."""
@@ -161,10 +146,7 @@ def test_get_by_username_returns_none_when_not_found(user_repository):
     assert user_repository.get_by_username("nessuno") is None
 
 
-# ---------------------------------------------------------------------------
 # get_by_username_or_email()
-# ---------------------------------------------------------------------------
-
 @pytest.mark.integration
 def test_get_by_username_or_email_found_by_username(user_repository, db_session):
     """get_by_username_or_email() trova l'utente cercando per username."""
@@ -199,10 +181,7 @@ def test_get_by_username_or_email_returns_none_when_not_found(user_repository):
     assert user_repository.get_by_username_or_email("inesistente") is None
 
 
-# ---------------------------------------------------------------------------
 # list_all()
-# ---------------------------------------------------------------------------
-
 @pytest.mark.integration
 def test_list_all_returns_empty_list_when_no_users(user_repository):
     """list_all() restituisce una lista vuota quando non ci sono utenti."""
@@ -237,10 +216,7 @@ def test_list_all_orders_by_created_at_desc(user_repository, db_session):
     assert results[1].username == "user_old"
 
 
-# ---------------------------------------------------------------------------
 # delete()
-# ---------------------------------------------------------------------------
-
 @pytest.mark.integration
 def test_delete_removes_user_and_does_not_affect_others(user_repository, db_session):
     """delete() rimuove l'utente target mantenendo intatti gli altri.
@@ -263,10 +239,7 @@ def test_delete_removes_user_and_does_not_affect_others(user_repository, db_sess
     assert len(user_repository.list_all()) == 1
 
 
-# ---------------------------------------------------------------------------
 # Comportamento del Modello: Cascade Delete
-# ---------------------------------------------------------------------------
-
 @pytest.mark.integration
 def test_delete_user_cascades_to_notifications_and_tokens(
     user_repository, notification_repository, token_repository, db_session

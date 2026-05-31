@@ -193,7 +193,7 @@ def test_ct8_repository_types(bundle, key, expected_type) -> None:
 
 
 
-# Cablaggio service → controller 
+# Cablaggio service -> controller 
 
 
 # CT9 – AuthController riceve un AuthService

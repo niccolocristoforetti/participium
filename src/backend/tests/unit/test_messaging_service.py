@@ -11,9 +11,7 @@ from participium.models.report import Report
 from participium.models.user import User
 
 
-# ---------------------------------------------------------------------------
 # Helper
-# ---------------------------------------------------------------------------
 
 def _make_user(*, user_id=1, role=Role.CITIZEN, category_id=None):
     """Helper per creare un Mock di User con attributi di ruolo."""

@@ -20,9 +20,7 @@ def _user(role: Role, category_id: int | None = None) -> User:
     return User(id=1, username="test", role=role, is_active=True, category_id=category_id)
 
 
-# ---------------------------------------------------------------------------
 # OperatorController
-# ---------------------------------------------------------------------------
 
 class TestOperatorControllerDashboard:
     def _controller(self):
@@ -45,9 +43,7 @@ class TestOperatorControllerDashboard:
         ctrl.report_service.list_pending_reports.assert_not_called()
 
 
-# ---------------------------------------------------------------------------
 # UserController
-# ---------------------------------------------------------------------------
 
 class TestUserControllerAdminMethods:
     def _controller(self):
@@ -75,9 +71,7 @@ class TestUserControllerAdminMethods:
         ctrl.user_service.update_user.assert_called_once_with(1, {"first_name": "Updated"})
 
 
-# ---------------------------------------------------------------------------
 # AdminController
-# ---------------------------------------------------------------------------
 
 class TestAdminControllerCategories:
     def _controller(self):
@@ -114,9 +108,7 @@ class TestAdminControllerCategories:
         assert result == {}
 
 
-# ---------------------------------------------------------------------------
 # AuthController
-# ---------------------------------------------------------------------------
 
 class TestAuthController:
     def _controller(self):
@@ -142,9 +134,7 @@ class TestAuthController:
         ctrl.auth_service.authenticate.assert_called_once_with("user@example.com", "Pass1!")
 
 
-# ---------------------------------------------------------------------------
 # ReportController
-# ---------------------------------------------------------------------------
 
 class TestReportController:
     def _controller(self):
@@ -217,9 +207,7 @@ class TestReportController:
         ctrl.messaging_service.send_message.assert_called_once_with(report, sender, "hello")
 
 
-# ---------------------------------------------------------------------------
 # StatisticsController
-# ---------------------------------------------------------------------------
 
 class TestStatisticsController:
     def _controller(self):

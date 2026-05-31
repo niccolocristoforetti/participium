@@ -12,9 +12,7 @@ from participium.models.user import User
 from participium.services.report_service import ReportService
 
 
-# ---------------------------------------------------------------------------
 # Helper
-# ---------------------------------------------------------------------------
 
 def _make_user(*, user_id=1, role=Role.CITIZEN, category_id=None):
     """Helper per creare un Mock di User."""
@@ -38,9 +36,7 @@ def _make_report(*, report_id=1, status=ReportStatus.PENDING_APPROVAL,
     return report
 
 
-# ---------------------------------------------------------------------------
 # get_accessible_report
-# ---------------------------------------------------------------------------
 
 class TestGetAccessibleReport:
     """Test suite per il metodo get_accessible_report."""
@@ -145,9 +141,7 @@ class TestGetAccessibleReport:
             report_service.get_accessible_report(1, user=stranger)
 
 
-# ---------------------------------------------------------------------------
 # follow / unfollow
-# ---------------------------------------------------------------------------
 
 class TestFollowReport:
     """Test suite per follow_report e unfollow_report."""
@@ -197,9 +191,7 @@ class TestFollowReport:
         mock_report_repository.remove_follower.assert_not_called()
 
 
-# ---------------------------------------------------------------------------
 # assign_report
-# ---------------------------------------------------------------------------
 
 class TestAssignReport:
     """Test suite per il metodo assign_report."""
@@ -216,9 +208,7 @@ class TestAssignReport:
         assert "Only operators or admins" in str(exc_info.value)
 
 
-# ---------------------------------------------------------------------------
 # export_rows
-# ---------------------------------------------------------------------------
 
 class TestExportRows:
     """Test suite per il metodo export_rows."""
@@ -263,9 +253,7 @@ class TestExportRows:
         assert rows == []
 
 
-# ---------------------------------------------------------------------------
 # _recipients
-# ---------------------------------------------------------------------------
 
 class TestRecipients:
     """Test suite per il metodo statico _recipients."""
@@ -319,9 +307,7 @@ class TestRecipients:
         assert recipients == []
 
 
-# ---------------------------------------------------------------------------
 # _ensure_operator_category_access
-# ---------------------------------------------------------------------------
 
 class TestEnsureOperatorCategoryAccess:
     """Test suite per il metodo statico _ensure_operator_category_access."""

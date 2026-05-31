@@ -1,4 +1,3 @@
-#aaaaaaaaaaaaa
 """
 Test di integrazione per NotificationRepository.
 
@@ -24,10 +23,7 @@ from participium.models.enums import NotificationType
 from participium.models.notification import Notification
 
 
-# ---------------------------------------------------------------------------
 # Helpers
-# ---------------------------------------------------------------------------
-
 def _make_notification(user_id: int, **kwargs) -> Notification:
     """Factory che produce una Notification con valori di default sensati."""
     defaults = dict(
@@ -39,10 +35,7 @@ def _make_notification(user_id: int, **kwargs) -> Notification:
     return Notification(user_id=user_id, **defaults)
 
 
-# ---------------------------------------------------------------------------
 # add()
-# ---------------------------------------------------------------------------
-
 @pytest.mark.integration
 def test_add_assigns_primary_key(notification_repository, db_session):
     """add() persiste la notifica: dopo il commit l'id è valorizzato."""
@@ -61,7 +54,6 @@ def test_add_returns_the_notification_object(notification_repository, db_session
 
     result = notification_repository.add(n)
     db_session.commit()
-
     # Il metodo esegue ``return notification`` nonostante l'annotazione sia None.
     # Il test documenta il comportamento reale dell'implementazione.
     assert result is n
@@ -89,10 +81,7 @@ def test_add_persists_all_fields(notification_repository, db_session):
     assert n.is_read is False
 
 
-# ---------------------------------------------------------------------------
 # get_by_id()
-# ---------------------------------------------------------------------------
-
 @pytest.mark.integration
 def test_get_by_id_returns_correct_notification(notification_repository, db_session):
     """get_by_id() recupera la notifica con l'id corretto."""
@@ -114,10 +103,7 @@ def test_get_by_id_returns_none_for_unknown_id(notification_repository):
     assert notification_repository.get_by_id(99999) is None
 
 
-# ---------------------------------------------------------------------------
 # list_for_user()
-# ---------------------------------------------------------------------------
-
 @pytest.mark.integration
 def test_list_for_user_returns_only_that_users_notifications(notification_repository, db_session):
     """list_for_user() non include notifiche di altri utenti."""
@@ -160,10 +146,7 @@ def test_list_for_user_returns_empty_list_for_user_without_notifications(notific
     assert notification_repository.list_for_user(99999) == []
 
 
-# ---------------------------------------------------------------------------
 # list_unread_message_notifications()
-# ---------------------------------------------------------------------------
-
 @pytest.mark.integration
 def test_list_unread_message_notifications_excludes_read(notification_repository, db_session):
     """Esclude le notifiche di tipo MESSAGE già lette."""
@@ -235,10 +218,7 @@ def test_list_unread_message_notifications_returns_empty_when_none(notification_
     assert results == []
 
 
-# ---------------------------------------------------------------------------
 # delete_for_user()
-# ---------------------------------------------------------------------------
-
 @pytest.mark.integration
 def test_delete_for_user_removes_all_notifications_of_that_user(notification_repository, db_session):
     """delete_for_user() elimina tutte le notifiche dell'utente specificato."""

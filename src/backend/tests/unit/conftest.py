@@ -3,10 +3,7 @@ from __future__ import annotations
 from unittest.mock import Mock
 
 import pytest
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 
-from participium.models.base import Base
 from participium.services.auth_service import AuthService
 from participium.services.category_service import CategoryService
 from participium.services.messaging_service import MessagingService
@@ -14,27 +11,6 @@ from participium.services.notification_service import NotificationService
 from participium.services.report_service import ReportService
 from participium.services.statistics_service import StatisticsService
 from participium.services.user_service import UserService
-
-
-@pytest.fixture
-def in_memory_session():
-    """
-    Fixture per creare una sessione SQLAlchemy in-memory per test unitari.
-    
-    Crea un database SQLite in-memoria, prepara tutte le tabelle,
-    e le ripulisce dopo il test.
-    """
-    engine = create_engine("sqlite:///:memory:", echo=False)
-    Base.metadata.create_all(engine)
-    SessionLocal = sessionmaker(bind=engine)
-
-    session = SessionLocal()
-    yield session
-    
-    # Cleanup
-    session.close()
-    Base.metadata.drop_all(engine)
-    engine.dispose()
 
 
 # ====== Fixtures for AuthService ======

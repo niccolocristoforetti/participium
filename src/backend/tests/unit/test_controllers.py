@@ -13,7 +13,7 @@ from participium.controllers.user_controller import UserController
 from participium.models.enums import Role
 from participium.models.user import User
 
-pytestmark = pytest.mark.whitebox
+pytestmark = pytest.mark.unit
 
 
 def _user(role: Role, category_id: int | None = None) -> User:

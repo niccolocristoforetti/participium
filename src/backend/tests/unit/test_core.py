@@ -20,7 +20,7 @@ from participium.models.enums import ReportStatus, Role
 from participium.models.report import Report
 from participium.models.user import User
 
-pytestmark = pytest.mark.whitebox
+pytestmark = pytest.mark.unit
 
 
 # exceptions.py

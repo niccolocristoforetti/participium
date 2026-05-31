@@ -1,4 +1,3 @@
-#aaaaaaaaaaaaa
 """
 Test di integrazione per TokenRepository.
 
@@ -25,10 +24,7 @@ import sqlalchemy.exc
 from participium.models.token import EmailVerificationToken
 
 
-# ---------------------------------------------------------------------------
 # Helper
-# ---------------------------------------------------------------------------
-
 def _make_token(user_id: int, token_str: str, **kwargs) -> EmailVerificationToken:
     """Crea un EmailVerificationToken con scadenza futura di default."""
     return EmailVerificationToken(
@@ -46,10 +42,7 @@ def _truncate_to_second(dt: datetime) -> datetime:
     return dt.replace(microsecond=0)
 
 
-# ---------------------------------------------------------------------------
 # add()
-# ---------------------------------------------------------------------------
-
 @pytest.mark.integration
 def test_add_assigns_primary_key(token_repository, db_session):
     """add() persiste il token: dopo il commit l'id è valorizzato."""
@@ -84,10 +77,7 @@ def test_add_default_is_used_is_false(token_repository, db_session):
     assert t.is_used is False
 
 
-# ---------------------------------------------------------------------------
 # get_by_token()
-# ---------------------------------------------------------------------------
-
 @pytest.mark.integration
 def test_get_by_token_returns_correct_token(token_repository, db_session):
     """get_by_token() recupera il token tramite la stringa token."""
@@ -109,10 +99,7 @@ def test_get_by_token_returns_none_when_not_found(token_repository):
     assert token_repository.get_by_token("does-not-exist") is None
 
 
-# ---------------------------------------------------------------------------
 # Campo is_used — comportamento reale del service
-# ---------------------------------------------------------------------------
-
 @pytest.mark.integration
 def test_is_used_can_be_set_to_true(token_repository, db_session):
     """is_used può essere impostato a True per marcare il token come consumato.
@@ -132,10 +119,7 @@ def test_is_used_can_be_set_to_true(token_repository, db_session):
     assert updated.is_used is True
 
 
-# ---------------------------------------------------------------------------
 # Campo expires_at
-# ---------------------------------------------------------------------------
-
 @pytest.mark.integration
 def test_expires_at_is_persisted_correctly(token_repository, db_session):
     """expires_at viene persistito e recuperato con il valore corretto.
@@ -154,10 +138,7 @@ def test_expires_at_is_persisted_correctly(token_repository, db_session):
     assert _truncate_to_second(fetched.expires_at) == _truncate_to_second(expiry)
 
 
-# ---------------------------------------------------------------------------
-# Vincolo UNIQUE su token
-# ---------------------------------------------------------------------------
-
+# Vincol UNIQUE su token
 @pytest.mark.integration
 def test_add_duplicate_token_string_raises_integrity_error(token_repository, db_session):
     """Il vincolo UNIQUE su token.token viene rispettato: due token con la
@@ -173,10 +154,7 @@ def test_add_duplicate_token_string_raises_integrity_error(token_repository, db_
         db_session.commit()
 
 
-# ---------------------------------------------------------------------------
 # list_for_user()
-# ---------------------------------------------------------------------------
-
 @pytest.mark.integration
 def test_list_for_user_returns_only_that_users_tokens(token_repository, db_session):
     """list_for_user() filtra correttamente per user_id."""

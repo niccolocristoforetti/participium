@@ -1,4 +1,3 @@
-#aaaaaaaaaaaaa
 """
 Test di integrazione per ReportRepository.
 
@@ -36,7 +35,7 @@ from sqlalchemy import select
 
 
 # ---------------------------------------------------------------------------
-# HELPERS
+# Helper
 # ---------------------------------------------------------------------------
 
 def _make_report(title: str = "Test Report", category_id: int = 1, **kwargs) -> Report:
@@ -51,10 +50,7 @@ def _make_report(title: str = "Test Report", category_id: int = 1, **kwargs) -> 
     )
 
 
-# ---------------------------------------------------------------------------
-# FIXTURE LOCALE
-# ---------------------------------------------------------------------------
-
+# Fixtures locale
 @pytest.fixture(scope="function")
 def base_report(db_session):
     """Report base già persistito, usato come precondizione nei test sui follower."""
@@ -64,10 +60,7 @@ def base_report(db_session):
     return report
 
 
-# ---------------------------------------------------------------------------
 # add() — verifica ritorno e persistenza
-# ---------------------------------------------------------------------------
-
 @pytest.mark.integration
 def test_add_assigns_primary_key(report_repository, db_session):
     """add() persiste il report: dopo il commit l'id è valorizzato."""
@@ -102,10 +95,7 @@ def test_add_default_status_is_pending_approval(report_repository, db_session):
     assert report.status == ReportStatus.PENDING_APPROVAL
 
 
-# ---------------------------------------------------------------------------
 # add_photo() / add_status_entry() / add_follower() — metodi autonomi
-# ---------------------------------------------------------------------------
-
 @pytest.mark.integration
 def test_add_photo_persists_and_is_accessible_via_report(report_repository, base_report, db_session):
     """add_photo() persiste la foto associata al report."""
@@ -156,10 +146,7 @@ def test_add_follower_persists_follower(report_repository, base_report, db_sessi
     assert fetched.followers[0].user_id == 42
 
 
-# ---------------------------------------------------------------------------
 # get_by_id()
-# ---------------------------------------------------------------------------
-
 @pytest.mark.integration
 def test_get_by_id_returns_report_with_all_relations(report_repository, db_session):
     """get_by_id() carica il report con foto, storico e follower via _detail_options."""
@@ -191,10 +178,7 @@ def test_get_by_id_returns_none_for_missing_report(report_repository):
     assert report_repository.get_by_id(999) is None
 
 
-# ---------------------------------------------------------------------------
 # get_follower() / remove_follower() / list_followers()
-# ---------------------------------------------------------------------------
-
 @pytest.mark.integration
 def test_get_follower_returns_follower_when_exists(report_repository, base_report, db_session):
     """get_follower() trova il follower corretto per (report_id, user_id)."""
@@ -245,10 +229,7 @@ def test_remove_follower_deletes_follower_from_database(report_repository, base_
     assert report_repository.get_follower(base_report.id, 5) is None
 
 
-# ---------------------------------------------------------------------------
 # list_reports() — un test per ogni branch del filtro
-# ---------------------------------------------------------------------------
-
 @pytest.mark.integration
 def test_list_reports_no_filter_returns_all_sorted_desc(report_repository, db_session):
     """list_reports() senza filtri restituisce tutti i report in ordine DESC per created_at."""
@@ -394,10 +375,7 @@ def test_list_reports_all_filters_combined(report_repository, db_session, monkey
     assert results[0].title == "Match"
 
 
-# ---------------------------------------------------------------------------
 # list_all()
-# ---------------------------------------------------------------------------
-
 @pytest.mark.integration
 def test_list_all_returns_all_reports(report_repository, base_report):
     """list_all() è un alias di list_reports(public_only=False)."""
@@ -413,10 +391,7 @@ def test_list_all_returns_empty_when_no_reports(report_repository):
     assert report_repository.list_all() == []
 
 
-# ---------------------------------------------------------------------------
 # list_user_reports()
-# ---------------------------------------------------------------------------
-
 @pytest.mark.integration
 def test_list_user_reports_returns_only_that_users_reports(report_repository, db_session):
     """list_user_reports() filtra per reporter_id."""
@@ -452,10 +427,7 @@ def test_list_user_reports_returns_empty_for_unknown_user(report_repository):
     assert report_repository.list_user_reports(999) == []
 
 
-# ---------------------------------------------------------------------------
 # list_pending() — un test per ogni branch
-# ---------------------------------------------------------------------------
-
 @pytest.mark.integration
 def test_list_pending_returns_only_pending_sorted_asc(report_repository, db_session):
     """list_pending() senza filtri restituisce solo i PENDING_APPROVAL, dal più vecchio."""
@@ -547,10 +519,7 @@ def test_list_pending_all_filters_combined(report_repository, db_session):
     assert results[0].title == "Match"
 
 
-# ---------------------------------------------------------------------------
 # list_for_category() — branch con e senza category_id
-# ---------------------------------------------------------------------------
-
 @pytest.mark.integration
 def test_list_for_category_with_id_excludes_pending_and_filters_category(
     report_repository, db_session
@@ -586,10 +555,7 @@ def test_list_for_category_with_none_returns_all_non_pending(report_repository, 
     assert "Pend" not in titles
 
 
-# ---------------------------------------------------------------------------
 # list_operator_reports() — tutti e tre i branch
-# ---------------------------------------------------------------------------
-
 @pytest.mark.integration
 def test_list_operator_reports_operator_with_category_id(report_repository, db_session):
     """Con Role.OPERATOR e category_id valorizzato, filtra per quella categoria."""
@@ -640,10 +606,7 @@ def test_list_operator_reports_admin_ignores_category(report_repository, db_sess
     assert "C1_P" not in titles
 
 
-# ---------------------------------------------------------------------------
 # Comportamento del Modello: Cascade Delete
-# ---------------------------------------------------------------------------
-
 @pytest.mark.integration
 def test_delete_report_cascades_to_children(report_repository, base_report, db_session):
     """Eliminando un report vengono rimossi in cascata foto, storico, follower e messaggi.

@@ -1,4 +1,3 @@
-#aaaaaaaaaaaaa
 """
 Test di integrazione per CategoryRepository.
 
@@ -22,19 +21,12 @@ import sqlalchemy.exc
 from participium.models.category import Category
 
 
-# ---------------------------------------------------------------------------
-# Helper
-# ---------------------------------------------------------------------------
-
 def _make_category(name: str, is_active: bool = True, **kwargs) -> Category:
     """Factory che produce una Category con i campi obbligatori valorizzati."""
     return Category(name=name, is_active=is_active, **kwargs)
 
 
-# ---------------------------------------------------------------------------
 # add()
-# ---------------------------------------------------------------------------
-
 @pytest.mark.integration
 def test_add_assigns_primary_key(category_repository, db_session):
     """add() persiste la categoria: dopo il commit l'id è valorizzato."""
@@ -90,10 +82,7 @@ def test_add_duplicate_name_raises_integrity_error(category_repository, db_sessi
         db_session.commit()
 
 
-# ---------------------------------------------------------------------------
 # get_by_id()
-# ---------------------------------------------------------------------------
-
 @pytest.mark.integration
 def test_get_by_id_returns_correct_category(category_repository, db_session):
     """get_by_id() recupera la categoria con l'id corretto."""
@@ -113,10 +102,7 @@ def test_get_by_id_returns_none_for_missing_id(category_repository):
     assert category_repository.get_by_id(9999) is None
 
 
-# ---------------------------------------------------------------------------
 # get_by_name()
-# ---------------------------------------------------------------------------
-
 @pytest.mark.integration
 def test_get_by_name_returns_correct_category(category_repository, db_session):
     """get_by_name() recupera la categoria con quel nome."""
@@ -144,10 +130,7 @@ def test_get_by_name_is_case_sensitive(category_repository, db_session):
     assert category_repository.get_by_name("waste") is None
 
 
-# ---------------------------------------------------------------------------
 # list_all()
-# ---------------------------------------------------------------------------
-
 @pytest.mark.integration
 def test_list_all_returns_empty_list_when_no_categories(category_repository):
     """list_all() restituisce una lista vuota quando non ci sono categorie."""

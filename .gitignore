@@ -30,4 +30,3 @@ src/backend/instance/
 src/backend/participium/static/uploads/
 *.db
 
-priv/

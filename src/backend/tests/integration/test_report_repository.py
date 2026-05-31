@@ -1,4 +1,3 @@
-#aaaaaaaaaaaaa
 """
 Test di integrazione per ReportRepository.
 

@@ -9,9 +9,7 @@ from participium.models.enums import ReportStatus
 from participium.services.statistics_service import StatisticsService
 
 
-# ---------------------------------------------------------------------------
 # Helper
-# ---------------------------------------------------------------------------
 
 _UNSET = object()
 

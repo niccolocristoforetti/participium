@@ -23,9 +23,7 @@ from participium.models.user import User
 pytestmark = pytest.mark.whitebox
 
 
-# ---------------------------------------------------------------------------
 # exceptions.py
-# ---------------------------------------------------------------------------
 
 class TestDomainError:
     def test_custom_status_code_is_stored(self):
@@ -37,9 +35,7 @@ class TestDomainError:
         assert err.status_code == 400
 
 
-# ---------------------------------------------------------------------------
 # status_flow.py
-# ---------------------------------------------------------------------------
 
 class TestEnsureTransitionAllowed:
     def test_valid_transition_returns_true(self):
@@ -54,9 +50,7 @@ class TestEnsureTransitionAllowed:
         assert ensure_transition_allowed(ReportStatus.RESOLVED, ReportStatus.RESOLVED) is True
 
 
-# ---------------------------------------------------------------------------
 # utils.py
-# ---------------------------------------------------------------------------
 
 class TestParseDate:
     def test_none_returns_none(self):
@@ -76,9 +70,7 @@ class TestParseDate:
             parse_date("not-a-date")
 
 
-# ---------------------------------------------------------------------------
 # serialization.py — _serialize_party
-# ---------------------------------------------------------------------------
 
 class TestSerializeParty:
     def test_none_user_returns_deleted_user(self):
@@ -88,9 +80,7 @@ class TestSerializeParty:
         assert result["role"] is None
 
 
-# ---------------------------------------------------------------------------
 # serialization.py — _serialize_reporter
-# ---------------------------------------------------------------------------
 
 def _make_report(*, is_anonymous=False, reporter=None, reporter_id=None, category_id=1):
     report = Mock(spec=Report)
@@ -159,9 +149,7 @@ class TestSerializeReporter:
         assert result["id"] is None
 
 
-# ---------------------------------------------------------------------------
 # auth.py — login_required e roles_required
-# ---------------------------------------------------------------------------
 
 class TestAuthDecorators:
     def test_login_required_redirects_on_non_api_path(self):
@@ -200,9 +188,7 @@ class TestAuthDecorators:
             assert resp.status_code == 401
 
 
-# ---------------------------------------------------------------------------
 # security.py
-# ---------------------------------------------------------------------------
 
 class TestSecurity:
     def test_hash_password_returns_different_string(self):

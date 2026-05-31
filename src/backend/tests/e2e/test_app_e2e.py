@@ -85,9 +85,25 @@ class TestRequestHooks:
         resp = client.get("/api/v1/users/me")
         assert resp.status_code == 401
 
+    def test_teardown_handles_rollback_exception(self, client, monkeypatch):
+        from unittest.mock import MagicMock
+        mock_sl = MagicMock()
+        mock_sl.return_value.rollback.side_effect = Exception("rollback failed")
+        monkeypatch.setattr("participium.database.session.SessionLocal", mock_sl)
+        resp = client.get("/api/v1/health")
+        assert resp.status_code == 200
+
 
 class TestErrorHandlers:
     def test_unknown_route_returns_404(self, client):
         resp = client.get("/api/v1/this-route-does-not-exist")
         assert resp.status_code == 404
         assert resp.get_json()["error"] == "Resource not found."
+
+    def test_domain_error_handler_handles_rollback_exception(self, client, monkeypatch):
+        from unittest.mock import MagicMock
+        mock_sl = MagicMock()
+        mock_sl.return_value.rollback.side_effect = Exception("rollback failed")
+        monkeypatch.setattr("participium.database.session.SessionLocal", mock_sl)
+        resp = client.get("/api/v1/auth/verify/invalidtoken")
+        assert resp.status_code == 400

@@ -1,11 +1,8 @@
 from __future__ import annotations
-
 import os
-
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Connection
 from sqlalchemy.orm import Session, scoped_session, sessionmaker
-
 from participium.models.base import Base
 
 __all__ = [
@@ -20,25 +17,27 @@ __all__ = [
 
 SessionLocal = scoped_session(sessionmaker(autoflush=False, expire_on_commit=False))
 _connection: Connection | None = None
+_engine = None
 
 
 def open_connection() -> Connection:
-    global _connection
+    global _connection, _engine
     close_connection()
-    engine = create_engine(_database_url_from_env(), future=True)
-    _connection = engine.connect()
-    SessionLocal.configure(bind=_connection)
+    _engine = create_engine(_database_url_from_env(), future=True)
+    _connection = _engine.connect()
+    SessionLocal.configure(bind=_engine)
     return _connection
 
 
 def close_connection() -> None:
-    global _connection
+    global _connection, _engine
     SessionLocal.remove()
     if _connection is not None:
-        engine = _connection.engine
         _connection.close()
-        engine.dispose()
         _connection = None
+    if _engine is not None:
+        _engine.dispose()
+        _engine = None
     SessionLocal.configure(bind=None)
 
 
@@ -55,9 +54,9 @@ def remove_session() -> None:
 
 
 def create_all() -> None:
-    if _connection is None:
+    if _engine is None:
         raise RuntimeError("Database connection is not open.")
-    Base.metadata.create_all(bind=_connection)
+    Base.metadata.create_all(bind=_engine)
 
 
 def _database_url_from_env() -> str:

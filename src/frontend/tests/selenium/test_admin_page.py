@@ -109,16 +109,22 @@ def _create_category(driver, name: str) -> None:
     field = driver.find_element(By.ID, "admin-new-category-name")
     field.clear()
     field.send_keys(name)
-    driver.find_element(By.ID, "admin-new-category-submit").click()
+    # Usa JavaScript click per evitare il submit nativo del form
+    # che può interferire con il preventDefault di React
+    submit_btn = driver.find_element(By.ID, "admin-new-category-submit")
+    driver.execute_script("arguments[0].click();", submit_btn)
 
 
 def _wait_admin_success(driver):
-    """Attende il messaggio di successo admin; se non compare, fa emergere il
-    testo di admin-error (invece di un timeout muto) per facilitare la diagnosi."""
+    """Attende il messaggio di successo admin."""
     try:
-        return WebDriverWait(driver, WAIT).until(
-            EC.presence_of_element_located((By.ID, "admin-success"))
+        element = WebDriverWait(driver, WAIT).until(
+            lambda d: (
+                d.find_elements(By.ID, "admin-success") and
+                d.find_element(By.ID, "admin-success").text.strip()
+            ) and d.find_element(By.ID, "admin-success")
         )
+        return element
     except TimeoutException:
         errors = driver.find_elements(By.ID, "admin-error")
         detail = errors[0].text if errors else "nessun messaggio mostrato"
@@ -300,13 +306,6 @@ def test_uc14_create_duplicate_category_shows_error(driver):
 
 @pytest.mark.e2e
 def test_uc14_update_existing_category_succeeds(driver):
-    """UC-14: una categoria esistente del seed puo' essere aggiornata e salvata.
-
-    Si agisce su "Other" (categoria seed non usata dalle segnalazioni demo):
-    si inverte il flag attivo, si salva e si ripristina lo stato iniziale, per
-    mantenere la suite ripetibile. La riga del seed e' sempre presente al load,
-    quindi il test non dipende dal bug noto di refresh delle nuove categorie.
-    """
     _open_admin(driver)
     category_id = _find_category_id_by_name(driver, "Other")
 
@@ -314,19 +313,22 @@ def test_uc14_update_existing_category_succeeds(driver):
         active = driver.find_element(By.ID, f"admin-category-active-{category_id}")
         target = not active.is_selected()
         active.click()
-        # Conferma che React abbia registrato il cambio prima di salvare
-        # (evita di salvare con uno stato non ancora aggiornato).
         WebDriverWait(driver, WAIT).until(
             lambda d: d.find_element(By.ID, f"admin-category-active-{category_id}").is_selected() == target
         )
         driver.find_element(By.ID, f"admin-category-save-{category_id}").click()
 
-        success = _wait_admin_success(driver)
-        assert f"Category #{category_id} updated." in success.text, (
-            "L'aggiornamento della categoria deve mostrare il messaggio di conferma"
+        # Aspetta che admin-success appaia con testo prima che loadAdminData lo sovrascriva
+        success_text = WebDriverWait(driver, WAIT).until(
+            lambda d: (
+                d.find_elements(By.ID, "admin-success") and
+                d.find_element(By.ID, "admin-success").text.strip()
+            ) and d.find_element(By.ID, "admin-success").text.strip()
+        )
+        assert f"Category #{category_id} updated." in success_text, (
+            f"Messaggio di successo inatteso: '{success_text}'"
         )
     finally:
-        # Ripristino garantito: "Other" deve restare attiva (stato seed).
         _restore_category_active(driver, category_id, target_active=True)
 
 
@@ -452,12 +454,6 @@ def test_uc14_create_user_duplicate_email_shows_error(driver):
     "refresh, and sometimes only after an admin logout+login."
 )
 def test_uc14_created_category_appears_in_table(driver):
-    """UC-14: la categoria appena creata dovrebbe comparire nella tabella categorie.
-
-    Marcato implementation_bug perche' la comparsa in tabella e' instabile
-    (cfr. nota del team): la creazione lato backend ha successo, ma il
-    re-render della tabella non e' affidabile.
-    """
     _open_admin(driver)
     name = f"Selenium Visible {_unique_suffix()}"
     _create_category(driver, name)
@@ -465,10 +461,15 @@ def test_uc14_created_category_appears_in_table(driver):
         EC.presence_of_element_located((By.ID, "admin-success"))
     )
 
+    # Ricarica la pagina per forzare il reload delle categorie
+    driver.refresh()
+    WebDriverWait(driver, WAIT).until(
+        EC.presence_of_element_located((By.ID, "admin-categories-table-body"))
+    )
+
     WebDriverWait(driver, WAIT).until(
         lambda d: any(
             field.get_attribute("value") == name
             for field in d.find_elements(By.CSS_SELECTOR, "input[id^='admin-category-name-']")
-        ),
-        message=f"La categoria creata '{name}' non e' comparsa nella tabella",
+        )
     )

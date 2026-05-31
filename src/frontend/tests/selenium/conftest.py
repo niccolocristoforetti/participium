@@ -15,7 +15,7 @@ BASE_URL = "http://localhost:5173"
 @pytest.fixture
 def driver():
     options = webdriver.ChromeOptions()
-    options.add_argument("--headless")  # decommentare per CI
+    # options.add_argument("--headless")  # decommentare per CI
     d = webdriver.Chrome(options=options)
     d.implicitly_wait(5)
     yield d

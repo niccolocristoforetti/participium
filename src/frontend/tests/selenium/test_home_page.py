@@ -410,22 +410,22 @@ def test_uc05_date_from_far_future_empties_table(driver):
     from selenium.common.exceptions import StaleElementReferenceException
     driver.get(BASE_URL)
     _wait_home_loaded(driver)
-
+ 
     initial_rows = len([r for r in _get_visible_row_ids(driver) if any(char.isdigit() for char in r)])
     if initial_rows == 0:
         pytest.skip("Nessun report seed disponibile per questo test")
-
+ 
     _set_date_input(driver, "public-filter-date-from", "2099-01-01 00:00")
     driver.find_element(By.ID, "public-filter-submit").click()
-
+ 
     # Aspetta che l'href del CSV rifletta il filtro date_from
     WebDriverWait(driver, 10).until(
         lambda d: "date_from=" in (d.find_element(By.ID, "public-export-link").get_attribute("href") or "")
     )
-
+ 
     # Clicca di nuovo submit per forzare il re-render
     driver.find_element(By.ID, "public-filter-submit").click()
-
+ 
     # Aspetta che la tabella si svuoti
     WebDriverWait(driver, 15, ignored_exceptions=(StaleElementReferenceException,)).until(
         lambda d: len([
@@ -433,12 +433,14 @@ def test_uc05_date_from_far_future_empties_table(driver):
             if any(char.isdigit() for char in r)
         ]) == 0
     )
-
+ 
     rows = _get_visible_row_ids(driver)
     valid_report_rows = [r for r in rows if any(char.isdigit() for char in r)]
     assert len(valid_report_rows) == 0, (
         f"Con 'Date from' nel 2099 la tabella deve essere vuota, trovati: {valid_report_rows}"
     )
+ 
+ 
 
 
 # 'Date to' impostato al 2000-01-01 produce una tabella vuota.

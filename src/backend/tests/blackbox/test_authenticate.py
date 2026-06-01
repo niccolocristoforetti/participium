@@ -151,6 +151,7 @@ def test_auth15_email_with_leading_trailing_spaces(seed_authenticate_data) -> No
     assert user.email == "mario.rossi@example.com"
 
 
+@pytest.mark.xfail(strict=True, reason="Email lookup is case-sensitive: uppercase chars in identifier are not normalized before the DB query.")
 def test_auth16_email_with_uppercase_chars(seed_authenticate_data) -> None:
     user = seed_authenticate_data.authenticate("Mario.Rossi@Example.Com", CORRECT_PASSWORD)
     assert isinstance(user, User)

@@ -40,12 +40,11 @@ def init_swagger(app):
 def _definitions() -> dict:
     role_enum = ["citizen", "operator", "admin"]
     report_status_enum = [
-        "Pending Approval",
-        "Assigned",
-        "In Progress",
-        "Suspended",
-        "Rejected",
-        "Resolved",
+        "pending_approval",
+        "rejected",
+        "assigned",
+        "in_progress",
+        "resolved",
     ]
 
     return {

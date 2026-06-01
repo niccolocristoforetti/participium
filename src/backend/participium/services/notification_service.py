@@ -60,7 +60,7 @@ class NotificationService:
         self.notification_repository.add(notification)
         if user.email_notifications_enabled:
             try:
-                self.email_gateway.send(recipient=user.email, subject=title, body=body)
+                self.email_gateway.send(user.email, title, body)
             except Exception:
                 logger.exception("Email notification delivery failed for user_id=%s", user.id)
         return notification

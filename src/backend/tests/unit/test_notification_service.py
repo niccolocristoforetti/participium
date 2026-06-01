@@ -51,7 +51,7 @@ class TestCreateNotification:
         # Assert
         assert result is not None
         mock_notification_repository.add.assert_called_once()
-        mock_email_gateway.send.assert_called_once_with(recipient="user@test.com", subject="Title", body="Body")
+        mock_email_gateway.send.assert_called_once_with("user@test.com", "Title", "Body")
 
     def test_create_notification_skips_email_when_disabled(
         self, notification_service, mock_email_gateway,

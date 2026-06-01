@@ -49,7 +49,7 @@ ADMIN_EMAIL = "admin@example.com"
 ADMIN_PASSWORD = "Admin123!"
 
 # Attesa generosa: ambiente potenzialmente lento + login completo per ogni test.
-WAIT = 20
+WAIT = 15
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -101,6 +101,9 @@ def _open_admin(driver) -> None:
     )
     WebDriverWait(driver, WAIT).until(
         EC.presence_of_element_located((By.ID, "admin-categories-table-body"))
+    )
+    WebDriverWait(driver, WAIT).until(
+        EC.presence_of_element_located((By.ID, "admin-statistics-section"))
     )
 
 
@@ -348,6 +351,11 @@ def test_uc14_create_user_shows_success(driver):
     driver.find_element(By.ID, "admin-new-user-last-name").send_keys("User")
     driver.find_element(By.ID, "admin-new-user-email").send_keys(email)
     driver.find_element(By.ID, "admin-new-user-password").send_keys("Test1234!")
+    # referenceData (che popola il select ruoli) può arrivare dopo admin-statistics-section:
+    # aspetta almeno un'opzione prima di tentare select_by_value.
+    WebDriverWait(driver, WAIT).until(
+        EC.presence_of_element_located((By.CSS_SELECTOR, "#admin-new-user-role option[value]"))
+    )
     # Ruolo cittadino: nessuna categoria richiesta, flusso piu' deterministico.
     Select(driver.find_element(By.ID, "admin-new-user-role")).select_by_value("citizen")
     # Conferma che React abbia applicato il cambio di ruolo prima di inviare.

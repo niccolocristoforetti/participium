@@ -452,11 +452,13 @@ def test_uc05_date_to_far_past_empties_table(driver):
     WebDriverWait(driver, 10).until(
         lambda d: "date_to=" in (d.find_element(By.ID, "public-export-link").get_attribute("href") or "")
     )
-    
-    rows = _get_visible_row_ids(driver)
-    valid_report_rows = [r for r in rows if any(char.isdigit() for char in r)]
-    assert len(valid_report_rows) == 0, (
-        f"Con 'Date to' nel 2000 la tabella deve essere vuota, trovati: {valid_report_rows}"
+
+    # Aspetta che la tabella si stabilizzi (nessuna riga con numeri nel ID)
+    # usando ignored_exceptions per gestire StaleElementReferenceException
+    # causato da re-render React durante la lettura dei row ID.
+    from selenium.common.exceptions import StaleElementReferenceException
+    WebDriverWait(driver, 10, ignored_exceptions=(StaleElementReferenceException,)).until(
+        lambda d: len([r for r in _get_visible_row_ids(d) if any(char.isdigit() for char in r)]) == 0
     )
 
 

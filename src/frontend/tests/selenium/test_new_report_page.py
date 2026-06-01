@@ -71,11 +71,19 @@ def test_new_report_page_requires_authentication(driver):
 @pytest.mark.e2e
 def test_new_report_page_loads(driver):
     login_as(driver, "citizen@example.com", "Citizen123!")
+    # Aspetta dashboard completa prima di navigare alla rotta protetta.
+    # NewReportPage.tsx non ha condizionali sul render: se non appare,
+    # React ha reindirizzato perché AuthContext non aveva ancora propagato
+    # la sessione. La soluzione è aspettare che la dashboard sia pienamente
+    # interattiva (logout-button visibile = AuthContext pronto) prima di navigare.
     WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.ID, "dashboard-page"))
     )
-    driver.get(f"{BASE_URL}/reports/new")
     WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.ID, "logout-button"))
+    )
+    driver.get(f"{BASE_URL}/reports/new")
+    WebDriverWait(driver, 15).until(
         EC.presence_of_element_located((By.ID, "new-report-page"))
     )
     assert driver.find_element(By.ID, "new-report-form").is_displayed()
@@ -156,7 +164,12 @@ def test_new_report_appears_in_dashboard(driver):
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.ID, "dashboard-page"))
         )
+        # Forza un refresh per assicurarsi che React carichi i dati aggiornati dal backend
+        driver.refresh()
         WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "dashboard-page"))
+        )
+        WebDriverWait(driver, 15).until(
             lambda d: title in d.page_source,
             message=f"La segnalazione creata '{title}' non è comparsa asincronamente nella dashboard"
         )

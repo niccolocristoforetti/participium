@@ -16,6 +16,19 @@ BASE_URL = "http://localhost:5173"
 def driver():
     options = webdriver.ChromeOptions()
     # options.add_argument("--headless")  # decommentare per CI
+
+    # Disabilita il Password Manager di Chrome: il popup "Cambia la password"
+    # (breach detection) e il prompt di salvataggio credenziali bloccano Selenium
+    # perché l'overlay impedisce i click sugli elementi della pagina.
+    prefs = {
+        "credentials_enable_service": False,
+        "profile.password_manager_enabled": False,
+        "profile.password_manager_leak_detection": False,
+    }
+    options.add_experimental_option("prefs", prefs)
+    options.add_argument("--disable-save-password-bubble")
+    options.add_argument("--password-store=basic")
+
     d = webdriver.Chrome(options=options)
     d.implicitly_wait(5)
     yield d

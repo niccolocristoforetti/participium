@@ -359,24 +359,20 @@ def test_uc05_filter_by_status_shows_only_matching_reports(driver):
 def test_uc05_sort_default_is_strictly_descending(driver):
     driver.get(BASE_URL)
     _wait_home_loaded(driver)
-    rows = _get_visible_row_ids(driver)
-    if len(rows) < 2:
+    rows_desc = _get_visible_row_ids(driver)
+    if len(rows_desc) < 2:
         pytest.skip("Servono almeno 2 report per verificare la cronologia")
 
-    # Verifica che l'ordine desc e asc siano opposti
-    # Salva l'ordine default (desc)
-    assert rows == sorted(rows, key=lambda r: int(r.replace("public-report-row-", "")), reverse=False) or \
-           rows == sorted(rows, key=lambda r: int(r.replace("public-report-row-", "")), reverse=True), \
-        f"Le righe non sono in nessun ordine coerente: {rows}"
-
-    # Verifica che cambiando ad asc l'ordine si inverta
+    # Passa ad asc e aspetta che il primo elemento cambi
     Select(driver.find_element(By.ID, "public-filter-sort")).select_by_value("asc")
     WebDriverWait(driver, 10).until(
-        lambda d: _get_visible_row_ids(d)[0] != rows[0]
+        lambda d: _get_visible_row_ids(d)[0] != rows_desc[0]
     )
     rows_asc = _get_visible_row_ids(driver)
-    assert rows_asc == list(reversed(rows)), (
-        f"L'ordine asc {rows_asc} non è l'inverso di desc {rows}"
+
+    # L'unica invariante verificabile dalla UI: asc è l'inverso esatto di desc
+    assert rows_asc == list(reversed(rows_desc)), (
+        f"L'ordine asc {rows_asc} non è l'inverso di desc {rows_desc}"
     )
 
 

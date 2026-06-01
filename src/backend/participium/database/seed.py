@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
 from pathlib import Path
 
 from participium.config.constants import DEFAULT_CATEGORIES
@@ -39,7 +38,6 @@ def _ensure_demo_photo(media_root, filename: str) -> str:
 
 def seed_demo_data(session, media_root=None):
     categories = {category.name: category for category in session.query(Category).all()}
-
     users = {
         "citizen@example.com": {
             "username": "citizen",
@@ -70,7 +68,7 @@ def seed_demo_data(session, media_root=None):
     for email, payload in users.items():
         if session.query(User).filter_by(email=email).first():
             continue
-        cat = categories.get(payload["category_name"]) if payload["category_name"] else None
+        category = categories.get(payload["category_name"]) if payload["category_name"] else None
         session.add(
             User(
                 username=payload["username"],
@@ -79,14 +77,13 @@ def seed_demo_data(session, media_root=None):
                 email=email,
                 password_hash=hash_password(payload["password"]),
                 role=payload["role"],
-                category_id=cat.id if cat else None,
+                category_id=category.id if category else None,
                 is_active=True,
                 is_email_verified=True,
                 email_notifications_enabled=True,
             )
         )
     session.commit()
-    session.expire_all()
 
     if session.query(Report).count() > 0:
         return
@@ -105,7 +102,6 @@ def seed_demo_data(session, media_root=None):
         status=ReportStatus.PENDING_APPROVAL,
         reporter_id=citizen.id,
         category_id=category.id,
-        created_at=datetime(2024, 1, 1, 10, 0, 0, tzinfo=timezone.utc),
     )
     public_report = Report(
         title="Pothole on Via Roma",
@@ -116,20 +112,8 @@ def seed_demo_data(session, media_root=None):
         status=ReportStatus.RESOLVED,
         reporter_id=citizen.id,
         category_id=category.id,
-        created_at=datetime(2024, 6, 1, 10, 0, 0, tzinfo=timezone.utc),
     )
-    public_report_2 = Report(
-        title="Broken street light on Via Garibaldi",
-        description="Street light is not working since last week.",
-        latitude=45.0690,
-        longitude=7.6840,
-        is_anonymous=False,
-        status=ReportStatus.ASSIGNED,
-        reporter_id=citizen.id,
-        category_id=category.id,
-        created_at=datetime(2024, 3, 15, 10, 0, 0, tzinfo=timezone.utc),
-    )
-    session.add_all([pending, public_report, public_report_2])
+    session.add_all([pending, public_report])
     session.flush()
 
     demo_photo = _ensure_demo_photo(media_root, "demo-report-photo.svg")
@@ -147,15 +131,8 @@ def seed_demo_data(session, media_root=None):
                 original_filename="demo-report-photo.svg",
                 content_type="image/svg+xml",
             ),
-            ReportPhoto(
-                report_id=public_report_2.id,
-                file_path=demo_photo,
-                original_filename="demo-report-photo.svg",
-                content_type="image/svg+xml",
-            ),
         ]
     )
-    operator = session.query(User).filter_by(email="operator@example.com").first()
     session.add_all(
         [
             ReportStatusHistory(
@@ -173,46 +150,18 @@ def seed_demo_data(session, media_root=None):
                 changed_by_id=citizen.id,
             ),
             ReportStatusHistory(
-                report_id=public_report_2.id,
-                previous_status=None,
-                new_status=ReportStatus.PENDING_APPROVAL,
-                note="Demo report submitted.",
-                changed_by_id=citizen.id,
-            ),
-            ReportStatusHistory(
-                report_id=public_report_2.id,
-                previous_status=ReportStatus.PENDING_APPROVAL,
-                new_status=ReportStatus.ASSIGNED,
-                note="Accepted for category 'Roads and Urban Furniture'.",
-                changed_by_id=operator.id,
-            ),
-            ReportStatusHistory(
-                report_id=public_report_2.id,
-                previous_status=None,
-                new_status=ReportStatus.PENDING_APPROVAL,
-                note="Demo report submitted.",
-                changed_by_id=citizen.id,
-            ),
-            ReportStatusHistory(
-                report_id=public_report_2.id,
-                previous_status=ReportStatus.PENDING_APPROVAL,
-                new_status=ReportStatus.ASSIGNED,
-                note="Accepted for category 'Roads and Urban Furniture'.",
-                changed_by_id=operator.id,
-            ),
-            ReportStatusHistory(
                 report_id=public_report.id,
                 previous_status=ReportStatus.PENDING_APPROVAL,
                 new_status=ReportStatus.ASSIGNED,
                 note="Accepted for category 'Roads and Urban Furniture'.",
-                changed_by_id=operator.id,
+                changed_by_id=session.query(User).filter_by(email="operator@example.com").first().id,
             ),
             ReportStatusHistory(
                 report_id=public_report.id,
                 previous_status=ReportStatus.ASSIGNED,
                 new_status=ReportStatus.RESOLVED,
                 note="Repair completed.",
-                changed_by_id=operator.id,
+                changed_by_id=session.query(User).filter_by(email="operator@example.com").first().id,
             ),
         ]
     )

@@ -21,22 +21,24 @@ def create_app(settings: Settings | None = None) -> Flask:
     app.config["SETTINGS"] = settings
     app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
     app.config["SESSION_COOKIE_HTTPONLY"] = True
+
     CORS(
         app,
         resources={r"/api/*": {"origins": [settings.frontend_origin]}},
         supports_credentials=True,
     )
+
     open_connection()
     app.extensions["container"] = AppContainer(settings)
+
     if settings.auto_init_db:
         with app.app_context():
             create_all()
             if settings.bootstrap_reference_data:
                 seed_reference_data(get_session())
-                get_session().commit()
             if settings.bootstrap_demo_data:
                 seed_demo_data(get_session(), settings.media_root)
-                get_session().commit()
+
     init_swagger(app)
     register_blueprints(app)
     _register_request_hooks(app)
@@ -58,22 +60,12 @@ def _register_request_hooks(app: Flask) -> None:
 
     @app.teardown_appcontext
     def teardown(_exception=None):
-        from participium.database.session import SessionLocal
-        try:
-            SessionLocal().rollback()
-        except Exception:
-            pass
         remove_session()
 
 
 def _register_error_handlers(app: Flask) -> None:
     @app.errorhandler(DomainError)
     def handle_domain_error(error: DomainError):
-        try:
-            from participium.database.session import SessionLocal
-            SessionLocal().rollback()
-        except Exception:
-            pass
         return jsonify({"error": str(error)}), error.status_code
 
     @app.errorhandler(404)

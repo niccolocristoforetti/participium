@@ -188,6 +188,58 @@ def test_uc10_operator_workflow(driver):
     assert "In Progress" in val_status_detail
     assert new_note in driver.page_source
 
+@pytest.mark.e2e
+def test_uc10_operator_suspended_workflow(driver):
+    """Test UC-10: transizione allo stato 'Suspended'."""
+    unique_title = f"Suspended Test {int(time.time())}"
+    report_id = _create_report_via_ui(driver, unique_title)
+
+    _login(driver, OPERATOR_EMAIL, OPERATOR_PASSWORD)
+    driver.get(f"{BASE_URL}/operator")
+    
+    # 1. Assegnazione
+    assign_btn_id = f"pending-report-assign-{report_id}"
+    WebDriverWait(driver, WAIT).until(EC.element_to_be_clickable((By.ID, assign_btn_id))).click()
+
+    # 2. Sospensione
+    WebDriverWait(driver, WAIT).until(EC.presence_of_element_located((By.ID, f"assigned-report-row-{report_id}")))
+    status_select = Select(driver.find_element(By.ID, f"assigned-report-status-{report_id}"))
+    status_select.select_by_visible_text("Suspended")
+    
+    suspension_note = "In attesa di pezzi di ricambio."
+    note_input = driver.find_element(By.ID, f"assigned-report-note-{report_id}")
+    _type(driver, note_input, suspension_note)
+    
+    driver.find_element(By.ID, f"assigned-report-update-{report_id}").click()
+    time.sleep(2) # Attesa async
+
+    driver.refresh()
+    WebDriverWait(driver, WAIT).until(
+        lambda d: Select(d.find_element(By.ID, f"assigned-report-status-{report_id}")).first_selected_option.text == "Suspended"
+    )
+    assert suspension_note not in driver.find_element(By.ID, f"assigned-report-note-{report_id}").get_attribute("value")
+
+@pytest.mark.e2e
+def test_operator_navigation_back_to_dashboard(driver):
+    """Verifica che ci sia un link per tornare alla dashboard operatore dal dettaglio (tramite topbar)."""
+    _login(driver, OPERATOR_EMAIL, OPERATOR_PASSWORD)
+    driver.get(f"{BASE_URL}/operator")
+    
+    # Prendi il primo link di dettaglio disponibile
+    detail_links = WebDriverWait(driver, WAIT).until(
+        EC.presence_of_all_elements_located((By.CSS_SELECTOR, "[id$='-open-detail']"))
+    )
+    detail_links[0].click()
+    
+    # Usa il link della topbar (nav-operator)
+    back_link = WebDriverWait(driver, WAIT).until(
+        EC.element_to_be_clickable((By.ID, "nav-operator"))
+    )
+    back_link.click()
+    
+    WebDriverWait(driver, WAIT).until(lambda d: d.current_url.endswith("/operator"))
+    assert "/operator" in driver.current_url
+
 # ─────────────────────────────────────────────────────────────────────────────
 # UC-10 – Gestisci segnalazione (Estensioni ed Edge Cases)
 # ─────────────────────────────────────────────────────────────────────────────
@@ -280,9 +332,79 @@ def test_uc10_rejection_requires_note(driver):
     except TimeoutException:
         pytest.fail("Nessun messaggio di errore mostrato quando si rifiuta senza nota.")
 
+@pytest.mark.e2e
+def test_operator_forbidden_from_admin(driver):
+    """Verifica che un operatore non possa accedere all'area admin."""
+    _login(driver, OPERATOR_EMAIL, OPERATOR_PASSWORD)
+    driver.get(f"{BASE_URL}/admin")
+    
+    # Dovrebbe essere reindirizzato o vedere un errore
+    WebDriverWait(driver, WAIT).until(lambda d: "/admin" not in d.current_url)
+    assert "/admin" not in driver.current_url
+    assert not driver.find_elements(By.ID, "admin-page")
+
+@pytest.mark.e2e
+def test_operator_cannot_access_unauthorized_report_detail(driver):
+    """Verifica che un operatore non possa accedere al dettaglio di un report di un'altra categoria via URL."""
+    unique_title = f"Secret Report {int(time.time())}"
+    
+    # 1. Crea report in "Waste"
+    _login(driver, CITIZEN_EMAIL, CITIZEN_PASSWORD)
+    driver.get(f"{BASE_URL}/reports/new")
+    img_path = _make_temp_image()
+    try:
+        driver.find_element(By.ID, "report-title").send_keys(unique_title)
+        driver.find_element(By.ID, "report-description").send_keys("Access control test.")
+        Select(driver.find_element(By.ID, "report-category")).select_by_visible_text("Waste")
+        driver.find_element(By.ID, "report-photos").send_keys(img_path)
+        driver.find_element(By.ID, "new-report-submit").click()
+        WebDriverWait(driver, WAIT).until(lambda d: "/reports/" in d.current_url)
+        report_url = driver.current_url
+    finally:
+        if os.path.exists(img_path):
+            os.unlink(img_path)
+
+    # 2. Logout e Login come Operatore ("Roads")
+    driver.get(f"{BASE_URL}/dashboard")
+    WebDriverWait(driver, WAIT).until(EC.element_to_be_clickable((By.ID, "logout-button"))).click()
+    _login(driver, OPERATOR_EMAIL, OPERATOR_PASSWORD)
+    
+    # 3. Tenta accesso diretto
+    driver.get(report_url)
+    
+    # Dovrebbe mostrare un messaggio di errore (report-detail-error)
+    error_el = WebDriverWait(driver, WAIT).until(
+        EC.presence_of_element_located((By.ID, "report-detail-error"))
+    )
+    assert "not have access" in error_el.text.lower() or "not found" in error_el.text.lower()
+
 # ─────────────────────────────────────────────────────────────────────────────
 # UC-11 – Invia messaggio al cittadino
 # ─────────────────────────────────────────────────────────────────────────────
+
+@pytest.mark.e2e
+def test_uc11_operator_empty_message_blocked(driver):
+    """Test UC-11 Edge Case: l'invio di un messaggio vuoto deve essere bloccato dall'attributo 'required'."""
+    _login(driver, OPERATOR_EMAIL, OPERATOR_PASSWORD)
+    driver.get(f"{BASE_URL}/operator")
+    
+    # Vai al dettaglio di un report esistente
+    detail_link = WebDriverWait(driver, WAIT).until(
+        EC.element_to_be_clickable((By.CSS_SELECTOR, "[id$='-open-detail']"))
+    )
+    detail_link.click()
+
+    # Verifica presenza attributo 'required'
+    body_input = WebDriverWait(driver, WAIT).until(EC.presence_of_element_located((By.ID, "report-message-body")))
+    assert body_input.get_attribute("required") == "true", "Il campo messaggio deve avere l'attributo HTML required"
+    
+    # Tenta invio senza testo e verifica che non ci siano cambiamenti (nessun messaggio aggiunto)
+    initial_msg_count = len(driver.find_elements(By.CSS_SELECTOR, "[id^='message-item-']"))
+    driver.find_element(By.ID, "report-message-submit").click()
+    
+    time.sleep(1) # Breve attesa per assicurarsi che non succeda nulla
+    current_msg_count = len(driver.find_elements(By.CSS_SELECTOR, "[id^='message-item-']"))
+    assert initial_msg_count == current_msg_count, "Non dovrebbe essere stato inviato alcun messaggio vuoto"
 
 @pytest.mark.e2e
 def test_uc11_operator_sends_message(driver):

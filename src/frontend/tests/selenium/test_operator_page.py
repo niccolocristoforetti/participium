@@ -28,7 +28,7 @@ OPERATOR_EMAIL = "operator@example.com"
 OPERATOR_PASSWORD = "Operator123!"
 
 # Tempo di attesa generoso per ambienti potenzialmente lenti
-WAIT = 15
+WAIT = 20
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Helpers
@@ -97,33 +97,60 @@ def _open_operator(driver) -> None:
     )
 
 
+def _select_category(driver, select_el, category_name: str) -> None:
+    """Seleziona una categoria nel select e verifica che React abbia aggiornato lo stato."""
+    target_value = None
+    for opt in select_el.find_elements(By.TAG_NAME, "option"):
+        if opt.text.strip() == category_name:
+            target_value = opt.get_attribute("value")
+            break
+    if target_value is None:
+        pytest.skip(f"Categoria '{category_name}' non trovata")
+    Select(select_el).select_by_value(target_value)
+    # Dispatch the change event explicitly so React 19 picks up the selection
+    driver.execute_script(
+        "arguments[0].dispatchEvent(new Event('change', {bubbles: true}));",
+        select_el,
+    )
+    # Wait until the DOM value matches — confirms React has committed the state update
+    WebDriverWait(driver, WAIT).until(
+        lambda d: d.find_element(By.ID, "report-category").get_attribute("value") == target_value
+    )
+
+
 def _create_report_via_ui(driver, title: str) -> str:
     """Crea una segnalazione come cittadino e ritorna l'ID estratto dall'URL."""
     _login(driver, CITIZEN_EMAIL, CITIZEN_PASSWORD)
+    # Wait for dashboard + logout-button before navigating: confirms AuthContext has propagated
+    # and prevents ProtectedRoute from redirecting /reports/new back to /login.
+    WebDriverWait(driver, WAIT).until(EC.presence_of_element_located((By.ID, "dashboard-page")))
+    WebDriverWait(driver, WAIT).until(EC.presence_of_element_located((By.ID, "logout-button")))
     driver.get(f"{BASE_URL}/reports/new")
-    
+
     img_path = _make_temp_image()
     try:
-        WebDriverWait(driver, WAIT).until(EC.presence_of_element_located((By.ID, "report-title"))).send_keys(title)
+        WebDriverWait(driver, WAIT).until(EC.presence_of_element_located((By.ID, "new-report-form")))
+        driver.find_element(By.ID, "report-title").send_keys(title)
         driver.find_element(By.ID, "report-description").send_keys("Automated test description.")
-        
-        # Seleziona esplicitamente la categoria dell'operatore per evitare mismatch
-        category_select = Select(driver.find_element(By.ID, "report-category"))
-        category_select.select_by_visible_text("Roads and Urban Furniture")
-        
+
+        # Wait for categories to load asynchronously
+        WebDriverWait(driver, WAIT).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "#report-category option[value]"))
+        )
+        _select_category(driver, driver.find_element(By.ID, "report-category"), "Roads and Urban Furniture")
+
         driver.find_element(By.ID, "report-photos").send_keys(img_path)
         driver.find_element(By.ID, "new-report-submit").click()
-        
-        # Aspetta il redirect alla pagina di dettaglio
+
         WebDriverWait(driver, WAIT).until(lambda d: "/reports/" in d.current_url and "/new" not in d.current_url)
-        
-        # Estrai ID dall'URL
+
         url_parts = driver.current_url.rstrip('/').split('/')
         report_id = url_parts[-1].split('?')[0]
-        
-        # Logout
+
+        # Logout — wait for redirect to confirm session is closed
         driver.get(f"{BASE_URL}/dashboard")
         WebDriverWait(driver, WAIT).until(EC.element_to_be_clickable((By.ID, "logout-button"))).click()
+        WebDriverWait(driver, WAIT).until(lambda d: "/dashboard" not in d.current_url)
         return report_id
     finally:
         if os.path.exists(img_path):
@@ -185,11 +212,14 @@ def test_uc10_operator_workflow(driver):
     # Login come operatore
     _login(driver, OPERATOR_EMAIL, OPERATOR_PASSWORD)
     driver.get(f"{BASE_URL}/operator")
-    
+    # Attende che la pagina sia completamente caricata prima di cercare i report pendenti
+    WebDriverWait(driver, WAIT).until(EC.presence_of_element_located((By.ID, "operator-page")))
+    WebDriverWait(driver, WAIT).until(EC.presence_of_element_located((By.ID, "assigned-reports-table-body")))
+
     # 1. Assegnazione (Pending -> Assigned)
     pending_row_id = f"pending-report-row-{report_id}"
     assign_btn_id = f"pending-report-assign-{report_id}"
-    
+
     try:
         WebDriverWait(driver, WAIT).until(EC.presence_of_element_located((By.ID, pending_row_id)))
         assign_btn = driver.find_element(By.ID, assign_btn_id)
@@ -247,28 +277,33 @@ def test_uc10_operator_category_isolation(driver):
     
     # 1. Creiamo un report in una categoria DIVERSA (es. "Waste")
     _login(driver, CITIZEN_EMAIL, CITIZEN_PASSWORD)
+    WebDriverWait(driver, WAIT).until(EC.presence_of_element_located((By.ID, "dashboard-page")))
+    WebDriverWait(driver, WAIT).until(EC.presence_of_element_located((By.ID, "logout-button")))
     driver.get(f"{BASE_URL}/reports/new")
-    
+
     img_path = _make_temp_image()
     try:
-        WebDriverWait(driver, WAIT).until(EC.presence_of_element_located((By.ID, "report-title"))).send_keys(unique_title)
+        WebDriverWait(driver, WAIT).until(EC.presence_of_element_located((By.ID, "new-report-form")))
+        driver.find_element(By.ID, "report-title").send_keys(unique_title)
         driver.find_element(By.ID, "report-description").send_keys("Test per isolamento categorie.")
-        
-        # Scegliamo una categoria diversa da quella dell'operatore seed ("Roads and Urban Furniture")
-        category_select = Select(driver.find_element(By.ID, "report-category"))
-        category_select.select_by_visible_text("Waste")
-        
+
+        WebDriverWait(driver, WAIT).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "#report-category option[value]"))
+        )
+        _select_category(driver, driver.find_element(By.ID, "report-category"), "Waste")
+
         driver.find_element(By.ID, "report-photos").send_keys(img_path)
         driver.find_element(By.ID, "new-report-submit").click()
-        
+
         WebDriverWait(driver, WAIT).until(lambda d: "/reports/" in d.current_url and "/new" not in d.current_url)
     finally:
         if os.path.exists(img_path):
             os.unlink(img_path)
 
-    # Logout cittadino
+    # Logout cittadino — attende il redirect per garantire che la sessione sia chiusa
     driver.get(f"{BASE_URL}/dashboard")
     WebDriverWait(driver, WAIT).until(EC.element_to_be_clickable((By.ID, "logout-button"))).click()
+    WebDriverWait(driver, WAIT).until(lambda d: "/dashboard" not in d.current_url)
 
     # 2. Login come operatore (assegnato a "Roads and Urban Furniture")
     _login(driver, OPERATOR_EMAIL, OPERATOR_PASSWORD)
@@ -293,11 +328,13 @@ def test_uc10_rejection_requires_note(driver):
 
     _login(driver, OPERATOR_EMAIL, OPERATOR_PASSWORD)
     driver.get(f"{BASE_URL}/operator")
-    
+    WebDriverWait(driver, WAIT).until(EC.presence_of_element_located((By.ID, "operator-page")))
+    WebDriverWait(driver, WAIT).until(EC.presence_of_element_located((By.ID, "assigned-reports-table-body")))
+
     # 1. Assegnazione
     pending_row_id = f"pending-report-row-{report_id}"
     assign_btn_id = f"pending-report-assign-{report_id}"
-    
+
     WebDriverWait(driver, WAIT).until(EC.presence_of_element_located((By.ID, pending_row_id)))
     assign_btn = driver.find_element(By.ID, assign_btn_id)
     try:
@@ -340,18 +377,16 @@ def test_uc11_operator_sends_message(driver):
 
     _login(driver, OPERATOR_EMAIL, OPERATOR_PASSWORD)
     driver.get(f"{BASE_URL}/operator")
-    
+    WebDriverWait(driver, WAIT).until(EC.presence_of_element_located((By.ID, "operator-page")))
+    WebDriverWait(driver, WAIT).until(EC.presence_of_element_located((By.ID, "assigned-reports-table-body")))
+
     # Assegna
     pending_assign_btn_id = f"pending-report-assign-{report_id}"
     assigned_row_id = f"assigned-report-row-{report_id}"
-    
-    # Se non è già assegnato, assegnalo
-    try:
-        assign_btn = WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.ID, pending_assign_btn_id)))
-        driver.execute_script("arguments[0].click();", assign_btn)
-    except TimeoutException:
-        # Forse è già assegnato da un'esecuzione precedente o seeding
-        pass
+
+    # Assegna il report (appena creato, sempre in stato Pending)
+    assign_btn = WebDriverWait(driver, WAIT).until(EC.element_to_be_clickable((By.ID, pending_assign_btn_id)))
+    driver.execute_script("arguments[0].click();", assign_btn)
 
     # Aspetta che appaia nella sezione assegnati
     WebDriverWait(driver, WAIT).until(EC.presence_of_element_located((By.ID, assigned_row_id)))

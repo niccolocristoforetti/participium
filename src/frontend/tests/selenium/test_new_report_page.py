@@ -154,6 +154,11 @@ def test_new_report_appears_in_dashboard(driver):
         driver.find_element(By.ID, "report-description").clear()
         driver.find_element(By.ID, "report-description").send_keys("Dashboard visibility test.")
         driver.find_element(By.ID, "report-photos").send_keys(photo_path)
+        # Aspetta che la categoria di default sia stata caricata prima di inviare:
+        # il select è `required` e in headless Chrome le API si resolvono dopo send_keys.
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "#report-category option[value]"))
+        )
         driver.find_element(By.ID, "new-report-submit").click()
 
         WebDriverWait(driver, 15).until(
@@ -161,12 +166,12 @@ def test_new_report_appears_in_dashboard(driver):
         )
 
         driver.get(f"{BASE_URL}/dashboard")
-        WebDriverWait(driver, 10).until(
+        WebDriverWait(driver, 15).until(
             EC.presence_of_element_located((By.ID, "dashboard-page"))
         )
         # Forza un refresh per assicurarsi che React carichi i dati aggiornati dal backend
         driver.refresh()
-        WebDriverWait(driver, 10).until(
+        WebDriverWait(driver, 15).until(
             EC.presence_of_element_located((By.ID, "dashboard-page"))
         )
         WebDriverWait(driver, 15).until(
@@ -208,6 +213,10 @@ def test_new_report_anonymous_flag_submits_successfully(driver):
         assert anon_checkbox.is_selected(), "La casella anonima dovrebbe essere spuntata prima dell'invio"
 
         driver.find_element(By.ID, "report-photos").send_keys(photo_path)
+        # Stesso wait categoria: il select è `required` e deve avere un valore prima dell'invio.
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "#report-category option[value]"))
+        )
         driver.find_element(By.ID, "new-report-submit").click()
 
         WebDriverWait(driver, 15).until(

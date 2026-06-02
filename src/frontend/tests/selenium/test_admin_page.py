@@ -107,15 +107,27 @@ def _open_admin(driver) -> None:
     )
 
 
+def _react_set_checkbox(driver, checkbox_element, checked: bool) -> None:
+    """Aggiorna un checkbox React-controlled in modo affidabile in headless Chrome.
+
+    Selenium's .click() non garantisce che l'onChange di React venga triggerato
+    (la DOM si aggiorna ma React può resettarla prima del prossimo render).
+    Il setter nativo + dispatchEvent è l'approccio standard React-testing.
+    """
+    driver.execute_script(
+        "Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'checked')"
+        ".set.call(arguments[0], arguments[1]);"
+        "arguments[0].dispatchEvent(new Event('change', { bubbles: true }));",
+        checkbox_element,
+        checked,
+    )
+
+
 def _create_category(driver, name: str) -> None:
     """Compila e invia il form di creazione categoria."""
     field = driver.find_element(By.ID, "admin-new-category-name")
-    field.clear()
-    field.send_keys(name)
-    # Usa JavaScript click per evitare il submit nativo del form
-    # che può interferire con il preventDefault di React
-    submit_btn = driver.find_element(By.ID, "admin-new-category-submit")
-    driver.execute_script("arguments[0].click();", submit_btn)
+    _type(driver, field, name)
+    driver.find_element(By.ID, "admin-new-category-submit").click()
 
 
 def _wait_admin_success(driver):
@@ -315,11 +327,14 @@ def test_uc14_update_existing_category_succeeds(driver):
     try:
         active = driver.find_element(By.ID, f"admin-category-active-{category_id}")
         target = not active.is_selected()
-        active.click()
+        _react_set_checkbox(driver, active, target)
         WebDriverWait(driver, WAIT).until(
             lambda d: d.find_element(By.ID, f"admin-category-active-{category_id}").is_selected() == target
         )
-        driver.find_element(By.ID, f"admin-category-save-{category_id}").click()
+        driver.execute_script(
+            "arguments[0].click();",
+            driver.find_element(By.ID, f"admin-category-save-{category_id}"),
+        )
 
         # Aspetta che admin-success appaia con testo prima che loadAdminData lo sovrascriva
         success_text = WebDriverWait(driver, WAIT).until(
@@ -414,11 +429,14 @@ def test_uc14_update_existing_user_succeeds(driver):
 
     try:
         target = not original_state
-        flag.click()
+        _react_set_checkbox(driver, flag, target)
         WebDriverWait(driver, WAIT).until(
             lambda d: d.find_element(By.ID, f"admin-user-email-notifications-{user_id}").is_selected() == target
         )
-        driver.find_element(By.ID, f"admin-user-save-{user_id}").click()
+        driver.execute_script(
+            "arguments[0].click();",
+            driver.find_element(By.ID, f"admin-user-save-{user_id}"),
+        )
 
         success = _wait_admin_success(driver)
         assert f"User #{user_id} updated." in success.text, (

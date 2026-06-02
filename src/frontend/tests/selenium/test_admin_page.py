@@ -95,6 +95,14 @@ def _open_admin(driver) -> None:
     WebDriverWait(driver, WAIT).until(
         EC.presence_of_element_located((By.ID, "admin-page"))
     )
+    # Conferma che l'AuthContext abbia propagato la sessione PRIMA di considerare
+    # la pagina pronta: senza questo, le POST/PUT admin possono partire prima che
+    # il token sia disponibile e il backend risponde 401 ("Authentication required"),
+    # facendo comparire admin-error invece di admin-success. Il logout-button è
+    # renderizzato solo quando la sessione autenticata è attiva.
+    WebDriverWait(driver, WAIT).until(
+        EC.presence_of_element_located((By.ID, "logout-button"))
+    )
     # I dati admin sono caricati in modo asincrono: attende le tabelle popolate.
     WebDriverWait(driver, WAIT).until(
         EC.presence_of_element_located((By.ID, "admin-users-table-body"))
@@ -104,6 +112,14 @@ def _open_admin(driver) -> None:
     )
     WebDriverWait(driver, WAIT).until(
         EC.presence_of_element_located((By.ID, "admin-statistics-section"))
+    )
+    # Le righe seed devono essere effettivamente popolate (la presenza del <tbody>
+    # vuoto non garantisce che i dati siano arrivati): attende almeno una riga utente,
+    # così le azioni successive operano su uno stato realmente caricato.
+    WebDriverWait(driver, WAIT).until(
+        EC.presence_of_element_located(
+            (By.CSS_SELECTOR, "input[id^='admin-user-email-']")
+        )
     )
 
 
@@ -131,21 +147,34 @@ def _create_category(driver, name: str) -> None:
 
 
 def _wait_admin_success(driver):
-    """Attende il messaggio di successo admin."""
+    """Attende il messaggio di successo admin.
+
+    Esce immediatamente con AssertionError se compare prima `admin-error`
+    (es. 401 "Authentication required"), invece di restare in attesa fino al
+    timeout. Cattura il testo di `admin-success` nell'istante in cui diventa
+    non vuoto per non perderlo se loadAdminData() ricarica e svuota il banner.
+    """
+    def _outcome(d):
+        errors = d.find_elements(By.ID, "admin-error")
+        if errors and errors[0].text.strip():
+            return ("error", errors[0].text.strip())
+        successes = d.find_elements(By.ID, "admin-success")
+        if successes and successes[0].text.strip():
+            return ("success", successes[0].text.strip())
+        return False
+
     try:
-        element = WebDriverWait(driver, WAIT).until(
-            lambda d: (
-                d.find_elements(By.ID, "admin-success") and
-                d.find_element(By.ID, "admin-success").text.strip()
-            ) and d.find_element(By.ID, "admin-success")
-        )
-        return element
+        kind, payload = WebDriverWait(driver, WAIT).until(_outcome)
     except TimeoutException:
-        errors = driver.find_elements(By.ID, "admin-error")
-        detail = errors[0].text if errors else "nessun messaggio mostrato"
         raise AssertionError(
-            f"Nessun messaggio di successo dopo il salvataggio. admin-error: {detail}"
+            "Nessun messaggio di successo dopo il salvataggio. admin-error: "
+            "nessun messaggio mostrato"
         )
+    if kind == "error":
+        raise AssertionError(
+            f"Nessun messaggio di successo dopo il salvataggio. admin-error: {payload}"
+        )
+    return payload
 
 
 def _find_user_id_by_email(driver, email: str) -> str:
@@ -300,7 +329,7 @@ def test_uc14_create_category_shows_success(driver):
     _create_category(driver, name)
 
     success = _wait_admin_success(driver)
-    assert "Category created." in success.text, (
+    assert "Category created." in success, (
         "La creazione della categoria deve mostrare il messaggio di conferma"
     )
 
@@ -325,24 +354,35 @@ def test_uc14_update_existing_category_succeeds(driver):
     category_id = _find_category_id_by_name(driver, "Other")
 
     try:
-        active = driver.find_element(By.ID, f"admin-category-active-{category_id}")
+        active_id = f"admin-category-active-{category_id}"
+        save_id = f"admin-category-save-{category_id}"
+        active = driver.find_element(By.ID, active_id)
         target = not active.is_selected()
-        _react_set_checkbox(driver, active, target)
+        # Ri-localizza l'elemento subito prima di toccarlo: un re-render di
+        # loadAdminData() puo' rendere stale il riferimento catturato sopra.
+        _react_set_checkbox(driver, driver.find_element(By.ID, active_id), target)
         WebDriverWait(driver, WAIT).until(
-            lambda d: d.find_element(By.ID, f"admin-category-active-{category_id}").is_selected() == target
+            lambda d: d.find_element(By.ID, active_id).is_selected() == target
         )
         driver.execute_script(
             "arguments[0].click();",
-            driver.find_element(By.ID, f"admin-category-save-{category_id}"),
+            driver.find_element(By.ID, save_id),
         )
 
-        # Aspetta che admin-success appaia con testo prima che loadAdminData lo sovrascriva
-        success_text = WebDriverWait(driver, WAIT).until(
-            lambda d: (
-                d.find_elements(By.ID, "admin-success") and
-                d.find_element(By.ID, "admin-success").text.strip()
-            ) and d.find_element(By.ID, "admin-success").text.strip()
-        )
+        # Cattura admin-success appena diventa non vuoto, fallendo subito se
+        # invece compare admin-error (es. 401), senza attendere il timeout pieno.
+        def _category_outcome(d):
+            errors = d.find_elements(By.ID, "admin-error")
+            if errors and errors[0].text.strip():
+                return ("error", errors[0].text.strip())
+            successes = d.find_elements(By.ID, "admin-success")
+            if successes and successes[0].text.strip():
+                return ("success", successes[0].text.strip())
+            return False
+
+        kind, payload = WebDriverWait(driver, WAIT).until(_category_outcome)
+        assert kind == "success", f"Salvataggio categoria fallito: admin-error: {payload}"
+        success_text = payload
         assert f"Category #{category_id} updated." in success_text, (
             f"Messaggio di successo inatteso: '{success_text}'"
         )
@@ -380,7 +420,7 @@ def test_uc14_create_user_shows_success(driver):
     driver.find_element(By.ID, "admin-new-user-submit").click()
 
     success = _wait_admin_success(driver)
-    assert "User created." in success.text, (
+    assert "User created." in success, (
         "La creazione dell'utente deve mostrare il messaggio di conferma"
     )
 
@@ -397,9 +437,27 @@ def test_uc14_create_operator_with_category_shows_success(driver):
     driver.find_element(By.ID, "admin-new-user-last-name").send_keys("Operator")
     driver.find_element(By.ID, "admin-new-user-email").send_keys(email)
     driver.find_element(By.ID, "admin-new-user-password").send_keys("Test1234!")
+    # Attende che le opzioni del ruolo siano popolate (referenceData asincrona)
+    # prima di selezionare: senza questo, select_by_value("operator") solleva
+    # NoSuchElementException ("Cannot locate option with value: operator").
+    WebDriverWait(driver, WAIT).until(
+        EC.presence_of_element_located(
+            (By.CSS_SELECTOR, "#admin-new-user-role option[value='operator']")
+        )
+    )
     Select(driver.find_element(By.ID, "admin-new-user-role")).select_by_value("operator")
+    # Conferma che React abbia applicato il ruolo prima di toccare la select categoria.
+    WebDriverWait(driver, WAIT).until(
+        lambda d: d.find_element(By.ID, "admin-new-user-role").get_attribute("value") == "operator"
+    )
 
-    # Per un operatore la select categoria si abilita: seleziona la prima reale.
+    # Per un operatore la select categoria si abilita e si popola in modo asincrono:
+    # attende che esista almeno un'opzione con valore reale prima di leggerne le options.
+    WebDriverWait(driver, WAIT).until(
+        EC.presence_of_element_located(
+            (By.CSS_SELECTOR, "#admin-new-user-category option[value]:not([value=''])")
+        )
+    )
     category_select = Select(driver.find_element(By.ID, "admin-new-user-category"))
     real_options = [
         opt for opt in category_select.options if (opt.get_attribute("value") or "").strip()
@@ -409,7 +467,7 @@ def test_uc14_create_operator_with_category_shows_success(driver):
 
     driver.find_element(By.ID, "admin-new-user-submit").click()
     success = _wait_admin_success(driver)
-    assert "User created." in success.text, (
+    assert "User created." in success, (
         "La creazione dell'operatore deve mostrare il messaggio di conferma"
     )
 
@@ -424,22 +482,25 @@ def test_uc14_update_existing_user_succeeds(driver):
     _open_admin(driver)
     user_id = _find_user_id_by_email(driver, "operator@example.com")
 
-    flag = driver.find_element(By.ID, f"admin-user-email-notifications-{user_id}")
-    original_state = flag.is_selected()
+    flag_id = f"admin-user-email-notifications-{user_id}"
+    save_id = f"admin-user-save-{user_id}"
+    original_state = driver.find_element(By.ID, flag_id).is_selected()
 
     try:
         target = not original_state
-        _react_set_checkbox(driver, flag, target)
+        # Ri-localizza prima di interagire: loadAdminData() puo' ri-renderizzare
+        # la tabella e invalidare il riferimento precedente (StaleElementReference).
+        _react_set_checkbox(driver, driver.find_element(By.ID, flag_id), target)
         WebDriverWait(driver, WAIT).until(
-            lambda d: d.find_element(By.ID, f"admin-user-email-notifications-{user_id}").is_selected() == target
+            lambda d: d.find_element(By.ID, flag_id).is_selected() == target
         )
         driver.execute_script(
             "arguments[0].click();",
-            driver.find_element(By.ID, f"admin-user-save-{user_id}"),
+            driver.find_element(By.ID, save_id),
         )
 
         success = _wait_admin_success(driver)
-        assert f"User #{user_id} updated." in success.text, (
+        assert f"User #{user_id} updated." in success, (
             "L'aggiornamento dell'utente deve mostrare il messaggio di conferma"
         )
     finally:
@@ -459,6 +520,11 @@ def test_uc14_create_user_duplicate_email_shows_error(driver):
     # Email gia' presente nel seed.
     driver.find_element(By.ID, "admin-new-user-email").send_keys("citizen@example.com")
     driver.find_element(By.ID, "admin-new-user-password").send_keys("Test1234!")
+    WebDriverWait(driver, WAIT).until(
+        EC.presence_of_element_located(
+            (By.CSS_SELECTOR, "#admin-new-user-role option[value='citizen']")
+        )
+    )
     Select(driver.find_element(By.ID, "admin-new-user-role")).select_by_value("citizen")
     driver.find_element(By.ID, "admin-new-user-submit").click()
 

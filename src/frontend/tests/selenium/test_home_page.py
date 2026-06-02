@@ -689,3 +689,79 @@ def test_uc09_stat_granularity_change_keeps_trend_visible(driver):
         EC.presence_of_element_located((By.ID, "public-trend-statistics"))
     )
     assert driver.find_element(By.ID, "public-trend-statistics").is_displayed()
+
+# UC-08 – Estensione 2a: result set vuoto, nessun export fuorviante
+
+@pytest.mark.e2e
+@pytest.mark.implementation_bug(
+    "HomePage.tsx does not implement the UC-08 Ext 2a guarantee: when the filtered "
+    "result set is empty, the frontend renders an empty <tbody> with no message and "
+    "keeps the 'Export CSV' link always active and clickable regardless of row count. "
+    "The minimum guarantee 'If no data is available, no misleading export is produced' "
+    "is unmet: the export link remains enabled on an empty result set."
+)
+@pytest.mark.xfail(
+    reason=(
+        "UC-08 Ext 2a not implemented in HomePage.tsx: empty result set shows no "
+        "warning and export link stays enabled. Implementation gap, not a test defect."
+    ),
+    strict=True,
+)
+def test_uc08_empty_result_set_blocks_export(driver):
+    """UC-08 Ext 2a: con result set vuoto il sistema segnala l'assenza di dati
+    esportabili oppure disabilita/nasconde l'export (nessun export fuorviante).
+
+    IMPLEMENTATION BUG: HomePage.tsx renderizza sempre il link 'Export CSV' come
+    <a href=...> attivo, indipendentemente dal numero di risultati, e non mostra
+    alcun messaggio "nessun report disponibile". Il frontend non implementa la
+    minimum guarantee di UC-08 Ext 2a. Il test è marcato xfail(strict=True): se
+    l'implementazione venisse corretta il test tornerebbe a passare automaticamente
+    e il marcatore dovrà essere rimosso.
+
+    Comportamento reale verificato: tabella vuota, export attivo → test fallisce.
+    Comportamento atteso dal requisito: messaggio empty oppure export disabilitato.
+    """
+    driver.get(BASE_URL)
+    _wait_home_loaded(driver)
+
+    initial_rows = len([r for r in _get_visible_row_ids(driver) if any(c.isdigit() for c in r)])
+    if initial_rows == 0:
+        pytest.skip("Nessun report seed disponibile: precondizione non soddisfatta")
+
+    # Filtro impossibile: svuota la tabella.
+    _set_date_input(driver, "public-filter-date-from", "2099-01-01 00:00")
+    driver.find_element(By.ID, "public-filter-submit").click()
+
+    # Attende che il filtro sia applicato (href del link export aggiornato).
+    WebDriverWait(driver, 10).until(
+        lambda d: "date_from=" in (
+            d.find_element(By.ID, "public-export-link").get_attribute("href") or ""
+        )
+    )
+    # Attende che la tabella risulti effettivamente vuota.
+    WebDriverWait(driver, 15, ignored_exceptions=(StaleElementReferenceException,)).until(
+        lambda d: len([r for r in _get_visible_row_ids(d) if any(c.isdigit() for c in r)]) == 0
+    )
+
+    # Verifica del requisito UC-08 Ext 2a (attualmente non soddisfatto):
+    # almeno una delle due forme valide deve essere presente:
+    #   (a) messaggio "nessun report" visibile (es. id="public-empty-message"), oppure
+    #   (b) link export assente, disabilitato (aria-disabled/disabled) o senza href azionabile.
+    empty_msg = driver.find_elements(By.ID, "public-empty-message")
+    export_links = driver.find_elements(By.ID, "public-export-link")
+
+    export_disabled = False
+    if export_links:
+        el = export_links[0]
+        aria_disabled = (el.get_attribute("aria-disabled") or "").lower() == "true"
+        has_disabled_attr = el.get_attribute("disabled") is not None
+        href = el.get_attribute("href") or ""
+        no_actionable_href = href.strip() in ("", "#")
+        export_disabled = aria_disabled or has_disabled_attr or no_actionable_href
+
+    empty_message_shown = bool(empty_msg) and empty_msg[0].is_displayed()
+
+    assert empty_message_shown or export_disabled or not export_links, (
+        "Con result set vuoto il sistema deve informare che non ci sono report "
+        "da esportare oppure disabilitare/nascondere il link di export"
+    )

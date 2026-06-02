@@ -285,3 +285,70 @@ def test_new_report_missing_title_blocked(driver):
     assert "/reports/new" in driver.current_url, (
         "L'invio del form è bloccato quando il campo del titolo è vuoto"
     )
+
+# UC-03 – Estensione 3a: location non selezionata
+
+@pytest.mark.e2e
+def test_new_report_missing_location_blocked(driver):
+    """UC-03 Ext 3a: senza una posizione selezionata la segnalazione non viene
+    creata (l'utente resta sul form oppure compare un errore di posizione mancante)."""
+    photo_path = _make_temp_image()
+    try:
+        login_as(driver, "citizen@example.com", "Citizen123!")
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "dashboard-page"))
+        )
+        driver.get(f"{BASE_URL}/reports/new")
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "new-report-form"))
+        )
+
+        # Compila i campi testuali validi.
+        driver.find_element(By.ID, "report-title").clear()
+        driver.find_element(By.ID, "report-title").send_keys(_unique_title())
+        driver.find_element(By.ID, "report-description").clear()
+        driver.find_element(By.ID, "report-description").send_keys(
+            "Segnalazione senza posizione: deve essere bloccata."
+        )
+        driver.find_element(By.ID, "report-photos").send_keys(photo_path)
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "#report-category option[value]"))
+        )
+
+        # Forza lat/long a vuoto tramite JS + eventi React, scavalcando un
+        # eventuale default pre-popolato dalla mappa.
+        for field_id in ("report-latitude", "report-longitude"):
+            driver.execute_script(
+                """
+                const el = arguments[0];
+                const setter = Object.getOwnPropertyDescriptor(
+                    window.HTMLInputElement.prototype, 'value').set;
+                setter.call(el, '');
+                el.dispatchEvent(new Event('input', { bubbles: true }));
+                el.dispatchEvent(new Event('change', { bubbles: true }));
+                """,
+                driver.find_element(By.ID, field_id),
+            )
+
+        driver.find_element(By.ID, "new-report-submit").click()
+
+        # Esito atteso: NON si arriva al dettaglio numerico.
+        # Accettiamo due forme valide del comportamento documentato:
+        #   (a) l'URL resta su /reports/new  (validazione HTML required o JS),
+        #   (b) compare un messaggio di errore dedicato alla posizione mancante.
+        def _blocked(d):
+            on_form = "/reports/new" in d.current_url
+            err = d.find_elements(By.ID, "new-report-error")
+            err_shown = bool(err) and err[0].is_displayed()
+            return on_form or err_shown
+
+        WebDriverWait(driver, 10).until(_blocked)
+
+        assert "/reports/new" in driver.current_url or driver.find_elements(
+            By.ID, "new-report-error"
+        ), (
+            "Senza posizione la segnalazione non deve essere creata: "
+            "atteso form mantenuto o messaggio di errore"
+        )
+    finally:
+        os.unlink(photo_path)

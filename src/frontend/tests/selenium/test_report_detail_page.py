@@ -178,11 +178,7 @@ def test_uc07_follow_button_hidden_for_visitor(driver):
     )
 
 
-@pytest.mark.implementation_bug(
-    "The follow button requires a double click to work: React 19 StrictMode fires "
-    "loadReport() twice on mount; the second call resolves after handleFollowToggle "
-    "and overwrites the updated state before Selenium can observe the change."
-)
+@pytest.mark.e2e
 @pytest.mark.implementation_bug(
     "The follow button requires a double click to work: React 19 StrictMode fires "
     "loadReport() twice on mount; the second call resolves after handleFollowToggle "

@@ -1,14 +1,16 @@
 """
-Test di accettazione Selenium per UC-03 – Invia segnalazione.
+Test di accettazione Selenium per:
+  UC-03 – Invia segnalazione
 
-Copre lo scenario principale di successo e le estensioni documentate:
-- la pagina del form è accessibile solo ai cittadini autenticati;
-- tutti i campi obbligatori del form sono visibili ed è presente la sezione della mappa di localizzazione;
-- una segnalazione valida può essere inviata e l'utente viene reindirizzato al dettaglio della segnalazione;
-- la segnalazione appena creata appare nella lista della dashboard personale del cittadino;
-- i campi obbligatori mancanti vengono bloccati al momento dell'invio;
-- più di tre foto allegate mostrano un messaggio di errore (controllo lato client);
-- la spunta anonima può essere attivata/disattivata e viene memorizzata correttamente.
+UC-03 copre:
+  - La pagina del form e' accessibile solo ai cittadini autenticati.
+  - Tutti i campi obbligatori del form sono visibili ed e' presente la sezione mappa di localizzazione.
+  - Una segnalazione valida puo' essere inviata e l'utente viene reindirizzato al dettaglio.
+  - La segnalazione appena creata appare nella dashboard personale del cittadino.
+  - L'opzione anonima puo' essere attivata e la segnalazione viene inviata con successo.
+  - Extension 6b: piu' di tre foto allegate mostrano un messaggio di errore lato client.
+  - Extension 6a: i campi obbligatori mancanti vengono bloccati al momento dell'invio.
+  - Extension 3a: senza una posizione selezionata la segnalazione non viene creata.
 """
 
 import os
@@ -23,12 +25,12 @@ from selenium.webdriver.support import expected_conditions as EC
 from conftest import BASE_URL, login_as
 
 
-# Helpers
-
+# UC-03: Helper che genera un titolo di segnalazione univoco
 def _unique_title() -> str:
     return f"Selenium report {int(time.time() * 1000)}"
 
 
+# UC-03: Helper che crea un file immagine JPEG minimale valido su disco
 def _make_temp_image(suffix: str = ".jpg") -> str:
     minimal_jpeg = (
         b"\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x00\x00\x01\x00\x01\x00\x00"
@@ -55,8 +57,7 @@ def _make_temp_image(suffix: str = ".jpg") -> str:
     return path
 
 
-# UC-03 – Controllo Accessi
-
+# UC-03: Verifica che un utente non autenticato venga reindirizzato fuori dal form di creazione
 @pytest.mark.e2e
 def test_new_report_page_requires_authentication(driver):
     driver.get(f"{BASE_URL}/reports/new")
@@ -66,16 +67,10 @@ def test_new_report_page_requires_authentication(driver):
     )
 
 
-# UC-03 – Struttura della pagina
-
+# UC-03: Verifica che il form mostri tutti i campi obbligatori e la sezione mappa
 @pytest.mark.e2e
 def test_new_report_page_loads(driver):
     login_as(driver, "citizen@example.com", "Citizen123!")
-    # Aspetta dashboard completa prima di navigare alla rotta protetta.
-    # NewReportPage.tsx non ha condizionali sul render: se non appare,
-    # React ha reindirizzato perché AuthContext non aveva ancora propagato
-    # la sessione. La soluzione è aspettare che la dashboard sia pienamente
-    # interattiva (logout-button visibile = AuthContext pronto) prima di navigare.
     WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.ID, "dashboard-page"))
     )
@@ -98,8 +93,7 @@ def test_new_report_page_loads(driver):
     assert driver.find_element(By.ID, "new-report-map-section").is_displayed()
 
 
-# UC-03 – Flusso completo
-
+# UC-03: Verifica che l'invio di una segnalazione valida reindirizzi alla pagina di dettaglio
 @pytest.mark.e2e
 def test_new_report_submit_redirects_to_detail(driver):
     photo_path = _make_temp_image()
@@ -133,13 +127,12 @@ def test_new_report_submit_redirects_to_detail(driver):
         os.unlink(photo_path)
 
 
+# UC-03: Verifica che la segnalazione appena creata compaia nella dashboard del cittadino
 @pytest.mark.e2e
 def test_new_report_appears_in_dashboard(driver):
     photo_path = _make_temp_image()
     try:
         login_as(driver, "citizen@example.com", "Citizen123!")
-        # Aspetta la dashboard per confermare che la sessione sia attiva prima di
-        # navigare alla rotta protetta — evita la race condition dell'AuthContext.
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.ID, "dashboard-page"))
         )
@@ -154,8 +147,6 @@ def test_new_report_appears_in_dashboard(driver):
         driver.find_element(By.ID, "report-description").clear()
         driver.find_element(By.ID, "report-description").send_keys("Dashboard visibility test.")
         driver.find_element(By.ID, "report-photos").send_keys(photo_path)
-        # Aspetta che la categoria di default sia stata caricata prima di inviare:
-        # il select è `required` e in headless Chrome le API si resolvono dopo send_keys.
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "#report-category option[value]"))
         )
@@ -169,7 +160,6 @@ def test_new_report_appears_in_dashboard(driver):
         WebDriverWait(driver, 15).until(
             EC.presence_of_element_located((By.ID, "dashboard-page"))
         )
-        # Forza un refresh per assicurarsi che React carichi i dati aggiornati dal backend
         driver.refresh()
         WebDriverWait(driver, 15).until(
             EC.presence_of_element_located((By.ID, "dashboard-page"))
@@ -185,15 +175,12 @@ def test_new_report_appears_in_dashboard(driver):
         os.unlink(photo_path)
 
 
-# UC-03 – Estensione: opzione anonima
-
+# UC-03: Verifica che l'opzione anonima possa essere attivata e la segnalazione inviata con successo
 @pytest.mark.e2e
 def test_new_report_anonymous_flag_submits_successfully(driver):
     photo_path = _make_temp_image()
     try:
         login_as(driver, "citizen@example.com", "Citizen123!")
-        # Aspetta la dashboard per confermare che la sessione sia attiva prima di
-        # navigare alla rotta protetta — evita la race condition dell'AuthContext.
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.ID, "dashboard-page"))
         )
@@ -213,7 +200,6 @@ def test_new_report_anonymous_flag_submits_successfully(driver):
         assert anon_checkbox.is_selected(), "La casella anonima dovrebbe essere spuntata prima dell'invio"
 
         driver.find_element(By.ID, "report-photos").send_keys(photo_path)
-        # Stesso wait categoria: il select è `required` e deve avere un valore prima dell'invio.
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "#report-category option[value]"))
         )
@@ -227,8 +213,7 @@ def test_new_report_anonymous_flag_submits_successfully(driver):
         os.unlink(photo_path)
 
 
-# UC-03 – Estensione 6b: più di tre foto attivano l'errore lato client
-
+# UC-03, Extension 6b: Verifica che piu' di tre foto attivino un errore lato client e ne mantengano solo tre
 @pytest.mark.e2e
 def test_new_report_more_than_three_photos_shows_error(driver):
     photos = [_make_temp_image() for _ in range(4)]
@@ -247,10 +232,8 @@ def test_new_report_more_than_three_photos_shows_error(driver):
         driver.find_element(By.ID, "report-description").clear()
         driver.find_element(By.ID, "report-description").send_keys("Test per numero eccessivo di foto.")
 
-        # send_keys con percorsi separati da "\n" per input file con selezione multipla
         driver.find_element(By.ID, "report-photos").send_keys("\n".join(photos))
 
-        # Il controllo lato client si attiva subito dopo la selezione, prima del submit
         error = WebDriverWait(driver, 5).until(
             EC.presence_of_element_located((By.ID, "new-report-error"))
         )
@@ -264,8 +247,7 @@ def test_new_report_more_than_three_photos_shows_error(driver):
             os.unlink(p)
 
 
-# UC-03 – Estensione 6a: blocco dei campi obbligatori mancanti
-
+# UC-03, Extension 6a: Verifica che un titolo mancante blocchi l'invio del form
 @pytest.mark.e2e
 def test_new_report_missing_title_blocked(driver):
     login_as(driver, "citizen@example.com", "Citizen123!")
@@ -281,17 +263,14 @@ def test_new_report_missing_title_blocked(driver):
     driver.find_element(By.ID, "report-description").send_keys("Descrizione senza titolo.")
     driver.find_element(By.ID, "new-report-submit").click()
 
-    # L'attributo HTML `required` a livello di browser impedisce l'invio; l'URL non deve cambiare.
     assert "/reports/new" in driver.current_url, (
         "L'invio del form è bloccato quando il campo del titolo è vuoto"
     )
 
-# UC-03 – Estensione 3a: location non selezionata
 
+# UC-03, Extension 3a: Verifica che senza una posizione selezionata la segnalazione non venga creata
 @pytest.mark.e2e
 def test_new_report_missing_location_blocked(driver):
-    """UC-03 Ext 3a: senza una posizione selezionata la segnalazione non viene
-    creata (l'utente resta sul form oppure compare un errore di posizione mancante)."""
     photo_path = _make_temp_image()
     try:
         login_as(driver, "citizen@example.com", "Citizen123!")
@@ -303,7 +282,6 @@ def test_new_report_missing_location_blocked(driver):
             EC.presence_of_element_located((By.ID, "new-report-form"))
         )
 
-        # Compila i campi testuali validi.
         driver.find_element(By.ID, "report-title").clear()
         driver.find_element(By.ID, "report-title").send_keys(_unique_title())
         driver.find_element(By.ID, "report-description").clear()
@@ -315,8 +293,6 @@ def test_new_report_missing_location_blocked(driver):
             EC.presence_of_element_located((By.CSS_SELECTOR, "#report-category option[value]"))
         )
 
-        # Forza lat/long a vuoto tramite JS + eventi React, scavalcando un
-        # eventuale default pre-popolato dalla mappa.
         for field_id in ("report-latitude", "report-longitude"):
             driver.execute_script(
                 """
@@ -332,10 +308,6 @@ def test_new_report_missing_location_blocked(driver):
 
         driver.find_element(By.ID, "new-report-submit").click()
 
-        # Esito atteso: NON si arriva al dettaglio numerico.
-        # Accettiamo due forme valide del comportamento documentato:
-        #   (a) l'URL resta su /reports/new  (validazione HTML required o JS),
-        #   (b) compare un messaggio di errore dedicato alla posizione mancante.
         def _blocked(d):
             on_form = "/reports/new" in d.current_url
             err = d.find_elements(By.ID, "new-report-error")

@@ -1,36 +1,26 @@
 """
-Test di accettazione Selenium per il pannello di amministrazione (/admin):
-
+Test di accettazione Selenium per:
   UC-13 – Visualizza statistiche private
-  UC-14 – Gestisci configurazione (categorie e account utente)
+  UC-14 – Gestisci categorie e configurazione (categorie e account utente)
 
-Il pannello admin e' una rotta protetta riservata al ruolo Administrator:
-il controllo accessi viene esercitato prima dei flussi funzionali.
-
-Convenzione marker (coerente con il resto della suite):
-  - @pytest.mark.e2e            -> test affidabili, eseguiti con `pytest -m e2e`;
-  - @pytest.mark.implementation_bug -> test che documentano un bug noto e che
-    risultano instabili (qui: la categoria appena creata non compare in modo
-    affidabile nella tabella delle categorie senza un refresh / re-login).
+Entrambi i casi d'uso si svolgono nel pannello di amministrazione (/admin),
+una rotta protetta riservata al ruolo Administrator: il controllo accessi viene
+esercitato prima dei flussi funzionali.
 
 UC-13 copre:
-  - la sezione statistiche e' visibile;
-  - sono presenti le viste per stato, tipo/categoria, reporter e top reporter.
+  - La sezione statistiche e' visibile.
+  - Sono presenti le viste per stato, tipo/categoria, reporter e top reporter.
 
 UC-14 copre:
-  - solo l'amministratore puo' accedere alla configurazione;
-  - i form di creazione e le tabelle di utenti e categorie sono visibili;
-  - una nuova categoria puo' essere creata (messaggio di conferma);
-  - Extension 4b: un nome di categoria duplicato mostra un errore;
-  - una categoria esistente (seed) puo' essere aggiornata;
-  - un nuovo utente / operatore con categoria puo' essere creato;
-  - un utente esistente (seed) puo' essere aggiornato;
-  - un'email gia' registrata blocca la creazione di un nuovo utente.
-
-Nota su Extension 4a (cancellazione di una categoria usata da segnalazioni):
-l'interfaccia di amministrazione espone l'aggiornamento/disattivazione delle
-categorie, non la cancellazione definitiva; viene quindi verificata
-l'aggiornamento di una categoria esistente.
+  - Solo l'amministratore puo' accedere alla configurazione (rotta protetta e vietata ai cittadini).
+  - I form di creazione e le tabelle di utenti e categorie sono visibili.
+  - Una nuova categoria puo' essere creata (messaggio di conferma).
+  - Extension 4b: un nome di categoria duplicato mostra un errore.
+  - Una categoria esistente del seed puo' essere aggiornata.
+  - Un nuovo utente / operatore con categoria puo' essere creato.
+  - Un utente esistente del seed puo' essere aggiornato.
+  - Un'email gia' registrata blocca la creazione di un nuovo utente.
+  - Bug noto: la categoria appena creata non compare in modo affidabile in tabella senza refresh / re-login.
 """
 
 import time
@@ -48,21 +38,16 @@ from conftest import BASE_URL
 ADMIN_EMAIL = "admin@example.com"
 ADMIN_PASSWORD = "Admin123!"
 
-# Attesa generosa: ambiente potenzialmente lento + login completo per ogni test.
 WAIT = 15
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Helpers
-# ─────────────────────────────────────────────────────────────────────────────
-
+# UC-14: Helper che genera un suffisso univoco basato sul timestamp
 def _unique_suffix() -> str:
     return str(int(time.time() * 1000))
 
 
+# UC-14: Helper che svuota un campo in modo robusto e vi scrive il valore indicato
 def _type(driver, element, value: str) -> None:
-    """Svuota un campo in modo robusto e vi scrive `value` (mitiga il bug noto
-    del login in cui .clear() non azzera e la password risulta concatenata)."""
     element.click()
     element.send_keys(Keys.CONTROL, "a")
     element.send_keys(Keys.DELETE)
@@ -70,8 +55,8 @@ def _type(driver, element, value: str) -> None:
     element.send_keys(value)
 
 
+# UC-14: Helper di login resiliente che riprova se si resta sulla pagina di login
 def _login(driver, email: str, password: str, attempts: int = 3) -> None:
-    """Login resiliente: riprova se si resta sulla pagina di login."""
     last_error = None
     for _ in range(attempts):
         driver.get(f"{BASE_URL}/login")
@@ -89,21 +74,15 @@ def _login(driver, email: str, password: str, attempts: int = 3) -> None:
     raise last_error
 
 
+# UC-13: Helper che effettua il login come amministratore e attende il pannello admin con dati caricati
 def _open_admin(driver) -> None:
-    """Effettua il login come amministratore e attende il pannello admin."""
     _login(driver, ADMIN_EMAIL, ADMIN_PASSWORD)
     WebDriverWait(driver, WAIT).until(
         EC.presence_of_element_located((By.ID, "admin-page"))
     )
-    # Conferma che l'AuthContext abbia propagato la sessione PRIMA di considerare
-    # la pagina pronta: senza questo, le POST/PUT admin possono partire prima che
-    # il token sia disponibile e il backend risponde 401 ("Authentication required"),
-    # facendo comparire admin-error invece di admin-success. Il logout-button è
-    # renderizzato solo quando la sessione autenticata è attiva.
     WebDriverWait(driver, WAIT).until(
         EC.presence_of_element_located((By.ID, "logout-button"))
     )
-    # I dati admin sono caricati in modo asincrono: attende le tabelle popolate.
     WebDriverWait(driver, WAIT).until(
         EC.presence_of_element_located((By.ID, "admin-users-table-body"))
     )
@@ -113,9 +92,6 @@ def _open_admin(driver) -> None:
     WebDriverWait(driver, WAIT).until(
         EC.presence_of_element_located((By.ID, "admin-statistics-section"))
     )
-    # Le righe seed devono essere effettivamente popolate (la presenza del <tbody>
-    # vuoto non garantisce che i dati siano arrivati): attende almeno una riga utente,
-    # così le azioni successive operano su uno stato realmente caricato.
     WebDriverWait(driver, WAIT).until(
         EC.presence_of_element_located(
             (By.CSS_SELECTOR, "input[id^='admin-user-email-']")
@@ -123,13 +99,8 @@ def _open_admin(driver) -> None:
     )
 
 
+# UC-14: Helper che aggiorna un checkbox React-controlled in modo affidabile in headless Chrome
 def _react_set_checkbox(driver, checkbox_element, checked: bool) -> None:
-    """Aggiorna un checkbox React-controlled in modo affidabile in headless Chrome.
-
-    Selenium's .click() non garantisce che l'onChange di React venga triggerato
-    (la DOM si aggiorna ma React può resettarla prima del prossimo render).
-    Il setter nativo + dispatchEvent è l'approccio standard React-testing.
-    """
     driver.execute_script(
         "Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'checked')"
         ".set.call(arguments[0], arguments[1]);"
@@ -139,21 +110,15 @@ def _react_set_checkbox(driver, checkbox_element, checked: bool) -> None:
     )
 
 
+# UC-14: Helper che compila e invia il form di creazione categoria
 def _create_category(driver, name: str) -> None:
-    """Compila e invia il form di creazione categoria."""
     field = driver.find_element(By.ID, "admin-new-category-name")
     _type(driver, field, name)
     driver.find_element(By.ID, "admin-new-category-submit").click()
 
 
+# UC-14: Helper che attende il messaggio di successo admin, fallendo subito se compare prima un errore
 def _wait_admin_success(driver):
-    """Attende il messaggio di successo admin.
-
-    Esce immediatamente con AssertionError se compare prima `admin-error`
-    (es. 401 "Authentication required"), invece di restare in attesa fino al
-    timeout. Cattura il testo di `admin-success` nell'istante in cui diventa
-    non vuoto per non perderlo se loadAdminData() ricarica e svuota il banner.
-    """
     def _outcome(d):
         errors = d.find_elements(By.ID, "admin-error")
         if errors and errors[0].text.strip():
@@ -177,9 +142,8 @@ def _wait_admin_success(driver):
     return payload
 
 
+# UC-14: Helper che ritorna l'ID UI dell'utente con l'email indicata
 def _find_user_id_by_email(driver, email: str) -> str:
-    """Ritorna l'ID UI dell'utente con l'email indicata, cercando tra le righe
-    della tabella tramite il prefisso ID stabile `admin-user-email-`."""
     inputs = WebDriverWait(driver, WAIT).until(
         EC.presence_of_all_elements_located(
             (By.CSS_SELECTOR, "input[id^='admin-user-email-']")
@@ -191,9 +155,8 @@ def _find_user_id_by_email(driver, email: str) -> str:
     raise AssertionError(f"Nessuna riga utente trovata per l'email '{email}'")
 
 
+# UC-14: Helper che ritorna l'ID UI della categoria con il nome indicato
 def _find_category_id_by_name(driver, name: str) -> str:
-    """Ritorna l'ID UI della categoria con il nome indicato, tramite il prefisso
-    ID stabile `admin-category-name-`."""
     inputs = WebDriverWait(driver, WAIT).until(
         EC.presence_of_all_elements_located(
             (By.CSS_SELECTOR, "input[id^='admin-category-name-']")
@@ -205,8 +168,8 @@ def _find_category_id_by_name(driver, name: str) -> str:
     raise AssertionError(f"Nessuna riga categoria trovata per il nome '{name}'")
 
 
+# UC-14: Helper best-effort che riporta il flag attivo di una categoria al valore desiderato
 def _restore_category_active(driver, category_id: str, target_active: bool) -> None:
-    """Riporta il flag attivo di una categoria al valore desiderato (best-effort)."""
     try:
         checkbox = WebDriverWait(driver, WAIT).until(
             EC.element_to_be_clickable((By.ID, f"admin-category-active-{category_id}"))
@@ -221,8 +184,8 @@ def _restore_category_active(driver, category_id: str, target_active: bool) -> N
         pass
 
 
+# UC-14: Helper best-effort che riporta la preferenza notifiche email di un utente al valore desiderato
 def _restore_user_email_notifications(driver, user_id: str, target_state: bool) -> None:
-    """Riporta la preferenza notifiche email di un utente al valore desiderato (best-effort)."""
     try:
         checkbox = WebDriverWait(driver, WAIT).until(
             EC.element_to_be_clickable((By.ID, f"admin-user-email-notifications-{user_id}"))
@@ -237,21 +200,17 @@ def _restore_user_email_notifications(driver, user_id: str, target_state: bool) 
         pass
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Controllo accessi (UC-13 / UC-14 – precondizione: ruolo Administrator)
-# ─────────────────────────────────────────────────────────────────────────────
-
+# UC-14: Verifica che un visitatore non autenticato venga reindirizzato al login
 @pytest.mark.e2e
 def test_admin_requires_authentication(driver):
-    """Un visitatore non autenticato viene reindirizzato al login."""
     driver.get(f"{BASE_URL}/admin")
     WebDriverWait(driver, WAIT).until(lambda d: "/login" in d.current_url)
     assert "/login" in driver.current_url
 
 
+# UC-14: Verifica che un cittadino autenticato non possa accedere al pannello admin
 @pytest.mark.e2e
 def test_admin_forbidden_for_citizen(driver):
-    """Un cittadino autenticato non puo' accedere al pannello admin."""
     _login(driver, "citizen@example.com", "Citizen123!")
     driver.get(f"{BASE_URL}/admin")
     WebDriverWait(driver, WAIT).until(lambda d: "/admin" not in d.current_url)
@@ -261,13 +220,9 @@ def test_admin_forbidden_for_citizen(driver):
     assert not driver.find_elements(By.ID, "admin-page")
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Struttura della pagina
-# ─────────────────────────────────────────────────────────────────────────────
-
+# UC-14: Verifica che il pannello admin mostri i form di creazione e le tabelle
 @pytest.mark.e2e
 def test_admin_page_loads_for_admin(driver):
-    """Il pannello admin mostra i form di creazione e le tabelle."""
     _open_admin(driver)
     for element_id in (
         "admin-summary-section",
@@ -290,13 +245,9 @@ def test_admin_page_loads_for_admin(driver):
         )
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# UC-13 – Statistiche private
-# ─────────────────────────────────────────────────────────────────────────────
-
+# UC-13: Verifica che siano visibili le statistiche per stato, tipo, reporter e top reporter
 @pytest.mark.e2e
 def test_uc13_statistics_sections_visible(driver):
-    """UC-13: sono visibili le statistiche per stato, tipo, reporter e top reporter."""
     _open_admin(driver)
     assert driver.find_element(By.ID, "admin-statistics-title").is_displayed()
 
@@ -317,13 +268,9 @@ def test_uc13_statistics_sections_visible(driver):
         assert driver.find_element(By.ID, f"{metric_id}-title").is_displayed()
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# UC-14 – Gestisci configurazione: categorie
-# ─────────────────────────────────────────────────────────────────────────────
-
+# UC-14: Verifica che la creazione di una nuova categoria confermi con un messaggio di successo
 @pytest.mark.e2e
 def test_uc14_create_category_shows_success(driver):
-    """UC-14: la creazione di una nuova categoria conferma con un messaggio di successo."""
     _open_admin(driver)
     name = f"Selenium Category {_unique_suffix()}"
     _create_category(driver, name)
@@ -334,11 +281,10 @@ def test_uc14_create_category_shows_success(driver):
     )
 
 
+# UC-14, Extension 4b: Verifica che un nome di categoria gia' esistente mostri un errore
 @pytest.mark.e2e
 def test_uc14_create_duplicate_category_shows_error(driver):
-    """UC-14 Extension 4b: un nome di categoria gia' esistente mostra un errore."""
     _open_admin(driver)
-    # "Waste" e' una delle categorie di default nel seed.
     _create_category(driver, "Waste")
     error = WebDriverWait(driver, WAIT).until(
         EC.presence_of_element_located((By.ID, "admin-error"))
@@ -348,6 +294,7 @@ def test_uc14_create_duplicate_category_shows_error(driver):
     )
 
 
+# UC-14: Verifica che una categoria esistente del seed possa essere aggiornata e salvata
 @pytest.mark.e2e
 def test_uc14_update_existing_category_succeeds(driver):
     _open_admin(driver)
@@ -358,8 +305,6 @@ def test_uc14_update_existing_category_succeeds(driver):
         save_id = f"admin-category-save-{category_id}"
         active = driver.find_element(By.ID, active_id)
         target = not active.is_selected()
-        # Ri-localizza l'elemento subito prima di toccarlo: un re-render di
-        # loadAdminData() puo' rendere stale il riferimento catturato sopra.
         _react_set_checkbox(driver, driver.find_element(By.ID, active_id), target)
         WebDriverWait(driver, WAIT).until(
             lambda d: d.find_element(By.ID, active_id).is_selected() == target
@@ -369,8 +314,6 @@ def test_uc14_update_existing_category_succeeds(driver):
             driver.find_element(By.ID, save_id),
         )
 
-        # Cattura admin-success appena diventa non vuoto, fallendo subito se
-        # invece compare admin-error (es. 401), senza attendere il timeout pieno.
         def _category_outcome(d):
             errors = d.find_elements(By.ID, "admin-error")
             if errors and errors[0].text.strip():
@@ -390,13 +333,9 @@ def test_uc14_update_existing_category_succeeds(driver):
         _restore_category_active(driver, category_id, target_active=True)
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# UC-14 – Gestisci configurazione: utenti
-# ─────────────────────────────────────────────────────────────────────────────
-
+# UC-14: Verifica che la creazione di un nuovo account cittadino confermi con un messaggio
 @pytest.mark.e2e
 def test_uc14_create_user_shows_success(driver):
-    """UC-14: la creazione di un nuovo account cittadino conferma con un messaggio."""
     _open_admin(driver)
     suffix = _unique_suffix()
     email = f"selenium_user_{suffix}@example.com"
@@ -406,14 +345,10 @@ def test_uc14_create_user_shows_success(driver):
     driver.find_element(By.ID, "admin-new-user-last-name").send_keys("User")
     driver.find_element(By.ID, "admin-new-user-email").send_keys(email)
     driver.find_element(By.ID, "admin-new-user-password").send_keys("Test1234!")
-    # referenceData (che popola il select ruoli) può arrivare dopo admin-statistics-section:
-    # aspetta almeno un'opzione prima di tentare select_by_value.
     WebDriverWait(driver, WAIT).until(
         EC.presence_of_element_located((By.CSS_SELECTOR, "#admin-new-user-role option[value]"))
     )
-    # Ruolo cittadino: nessuna categoria richiesta, flusso piu' deterministico.
     Select(driver.find_element(By.ID, "admin-new-user-role")).select_by_value("citizen")
-    # Conferma che React abbia applicato il cambio di ruolo prima di inviare.
     WebDriverWait(driver, WAIT).until(
         lambda d: d.find_element(By.ID, "admin-new-user-role").get_attribute("value") == "citizen"
     )
@@ -425,9 +360,9 @@ def test_uc14_create_user_shows_success(driver):
     )
 
 
+# UC-14: Verifica che la creazione di un operatore con categoria assegnata confermi con un messaggio
 @pytest.mark.e2e
 def test_uc14_create_operator_with_category_shows_success(driver):
-    """UC-14: la creazione di un operatore con categoria assegnata (caso centrale UC-14)."""
     _open_admin(driver)
     suffix = _unique_suffix()
     email = f"selenium_op_{suffix}@example.com"
@@ -437,22 +372,16 @@ def test_uc14_create_operator_with_category_shows_success(driver):
     driver.find_element(By.ID, "admin-new-user-last-name").send_keys("Operator")
     driver.find_element(By.ID, "admin-new-user-email").send_keys(email)
     driver.find_element(By.ID, "admin-new-user-password").send_keys("Test1234!")
-    # Attende che le opzioni del ruolo siano popolate (referenceData asincrona)
-    # prima di selezionare: senza questo, select_by_value("operator") solleva
-    # NoSuchElementException ("Cannot locate option with value: operator").
     WebDriverWait(driver, WAIT).until(
         EC.presence_of_element_located(
             (By.CSS_SELECTOR, "#admin-new-user-role option[value='operator']")
         )
     )
     Select(driver.find_element(By.ID, "admin-new-user-role")).select_by_value("operator")
-    # Conferma che React abbia applicato il ruolo prima di toccare la select categoria.
     WebDriverWait(driver, WAIT).until(
         lambda d: d.find_element(By.ID, "admin-new-user-role").get_attribute("value") == "operator"
     )
 
-    # Per un operatore la select categoria si abilita e si popola in modo asincrono:
-    # attende che esista almeno un'opzione con valore reale prima di leggerne le options.
     WebDriverWait(driver, WAIT).until(
         EC.presence_of_element_located(
             (By.CSS_SELECTOR, "#admin-new-user-category option[value]:not([value=''])")
@@ -472,13 +401,9 @@ def test_uc14_create_operator_with_category_shows_success(driver):
     )
 
 
+# UC-14: Verifica che un account utente esistente del seed possa essere modificato e salvato
 @pytest.mark.e2e
 def test_uc14_update_existing_user_succeeds(driver):
-    """UC-14: un account utente esistente del seed puo' essere modificato e salvato.
-
-    Si agisce sull'operatore seed invertendo la preferenza notifiche email,
-    poi si ripristina lo stato. La riga del seed e' sempre presente al load.
-    """
     _open_admin(driver)
     user_id = _find_user_id_by_email(driver, "operator@example.com")
 
@@ -488,8 +413,6 @@ def test_uc14_update_existing_user_succeeds(driver):
 
     try:
         target = not original_state
-        # Ri-localizza prima di interagire: loadAdminData() puo' ri-renderizzare
-        # la tabella e invalidare il riferimento precedente (StaleElementReference).
         _react_set_checkbox(driver, driver.find_element(By.ID, flag_id), target)
         WebDriverWait(driver, WAIT).until(
             lambda d: d.find_element(By.ID, flag_id).is_selected() == target
@@ -504,20 +427,18 @@ def test_uc14_update_existing_user_succeeds(driver):
             "L'aggiornamento dell'utente deve mostrare il messaggio di conferma"
         )
     finally:
-        # Ripristino garantito dello stato seed dell'operatore.
         _restore_user_email_notifications(driver, user_id, original_state)
 
 
+# UC-14, Extension 4b: Verifica che creare un utente con un'email gia' registrata mostri un errore
 @pytest.mark.e2e
 def test_uc14_create_user_duplicate_email_shows_error(driver):
-    """UC-14: creare un utente con un'email gia' registrata mostra un errore."""
     _open_admin(driver)
     suffix = _unique_suffix()
 
     driver.find_element(By.ID, "admin-new-user-username").send_keys(f"dup_{suffix}")
     driver.find_element(By.ID, "admin-new-user-first-name").send_keys("Dup")
     driver.find_element(By.ID, "admin-new-user-last-name").send_keys("User")
-    # Email gia' presente nel seed.
     driver.find_element(By.ID, "admin-new-user-email").send_keys("citizen@example.com")
     driver.find_element(By.ID, "admin-new-user-password").send_keys("Test1234!")
     WebDriverWait(driver, WAIT).until(
@@ -536,14 +457,11 @@ def test_uc14_create_user_duplicate_email_shows_error(driver):
     )
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# UC-14 – Bug noto: la categoria appena creata non compare sempre in tabella
-# ─────────────────────────────────────────────────────────────────────────────
-
+# UC-14: Verifica che la categoria appena creata compaia in tabella dopo refresh (bug noto, non affidabile)
 @pytest.mark.implementation_bug(
-    "Newly created category is not reliably saved/displayed in the categories "
-    "table: it sometimes appears immediately, sometimes only after a page "
-    "refresh, and sometimes only after an admin logout+login."
+    "La categoria appena creata non viene salvata/visualizzata in modo affidabile nella tabella delle categorie"
+    "A volte appare immediatamente, a volte solo dopo un aggiornamento della pagina"
+    "e a volte solo dopo un logout e un login da amministratore."
 )
 def test_uc14_created_category_appears_in_table(driver):
     _open_admin(driver)
@@ -553,7 +471,6 @@ def test_uc14_created_category_appears_in_table(driver):
         EC.presence_of_element_located((By.ID, "admin-success"))
     )
 
-    # Ricarica la pagina per forzare il reload delle categorie
     driver.refresh()
     WebDriverWait(driver, WAIT).until(
         EC.presence_of_element_located((By.ID, "admin-categories-table-body"))

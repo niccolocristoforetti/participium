@@ -1,11 +1,26 @@
 """
-Test di accettazione Selenium per l'area Operatore (/operator):
-
-  UC-10 – Gestisci segnalazione (Assegnazione, aggiornamento stato e note)
+Test di accettazione Selenium per:
+  UC-10 – Gestisci segnalazione (assegnazione, aggiornamento stato e note)
   UC-11 – Invia messaggio al cittadino
+  UC-12 – Rispondi al messaggio dell'operatore (lato cittadino)
 
-Questi test verificano che un operatore possa prendere in carico una segnalazione,
-aggiornarne l'avanzamento e comunicare con l'autore.
+I casi UC-10 e UC-11 si svolgono nell'area Operatore (/operator) e sulla pagina
+di dettaglio della segnalazione; UC-12 si svolge sul dettaglio lato cittadino.
+
+UC-10 copre:
+  - Una rotta protetta richiede autenticazione e l'area operatore e' vietata ai cittadini.
+  - La dashboard operatore mostra riepilogo, titolo e tabella dei report assegnati.
+  - Assegnazione, aggiornamento stato e note di una segnalazione, con persistenza dopo refresh.
+  - Edge case: l'operatore non vede segnalazioni di categorie non sue (isolamento categorie).
+  - Il rifiuto di una segnalazione fallisce se manca la nota di motivazione.
+
+UC-11 copre:
+  - L'operatore invia un messaggio dalla pagina di dettaglio e questo compare nella conversazione.
+  - Extension 3a: un messaggio con corpo vuoto non viene inviato.
+
+UC-12 copre:
+  - Il cittadino risponde a un messaggio dell'operatore e la risposta appare nella conversazione.
+  - Extension 3a: una risposta con corpo vuoto non viene inviata.
 """
 
 import os
@@ -21,34 +36,25 @@ from selenium.webdriver.support import expected_conditions as EC
 
 from conftest import BASE_URL
 
-# Credenziali seed
 CITIZEN_EMAIL = "citizen@example.com"
 CITIZEN_PASSWORD = "Citizen123!"
 OPERATOR_EMAIL = "operator@example.com"
 OPERATOR_PASSWORD = "Operator123!"
 
-# Tempo di attesa generoso per ambienti potenzialmente lenti
 WAIT = 20
 
 
-# Vedi test_admin_page.py per la spiegazione completa: il backend usa una singola
-# Connection SQLAlchemy globale + SessionLocal.remove() nel teardown_appcontext per
-# ogni richiesta. Sotto richieste concorrenti questo produce "Authentication required"
-# non deterministici. La race e' nel layer di connessione del backend, non nei test.
 _BACKEND_AUTH_RACE_REASON = (
-    "Backend shared global SQLAlchemy connection + per-request SessionLocal.remove() "
-    "in teardown_appcontext causes non-deterministic 'Authentication required' under "
-    "concurrent requests. Race is in the connection layer, not the test."
+    "Connessione globale condivisa SQLAlchemy nel backend + SessionLocal.remove() per richiesta"
+    "in teardown_appcontext causa un errore non deterministico 'Autenticazione richiesta' in caso di "
+    "richieste simultanee. La condizione di gara si verifica nel livello di connessione, non nel test."
 )
 
 backend_auth_race = pytest.mark.xfail(reason=_BACKEND_AUTH_RACE_REASON, strict=False)
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Helpers
-# ─────────────────────────────────────────────────────────────────────────────
 
+# UC-10: Helper che crea un file immagine JPEG minimale valido su disco
 def _make_temp_image(suffix: str = ".jpg") -> str:
-    """Crea un file immagine JPEG minimale valido su disco e ne ritorna il path."""
     minimal_jpeg = (
         b"\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x00\x00\x01\x00\x01\x00\x00"
         b"\xff\xdb\x00C\x00\x08\x06\x06\x07\x06\x05\x08\x07\x07\x07\t\t"
@@ -73,16 +79,18 @@ def _make_temp_image(suffix: str = ".jpg") -> str:
         fh.write(minimal_jpeg)
     return path
 
+
+# UC-10: Helper che svuota un campo in modo robusto e vi scrive il valore indicato
 def _type(driver, element, value: str) -> None:
-    """Svuota un campo in modo robusto e vi scrive `value`."""
     element.click()
     element.send_keys(Keys.CONTROL, "a")
     element.send_keys(Keys.DELETE)
     element.clear()
     element.send_keys(value)
 
+
+# UC-10: Helper di login resiliente che riprova se si resta sulla pagina di login
 def _login(driver, email: str, password: str, attempts: int = 3) -> None:
-    """Login resiliente: riprova se si resta sulla pagina di login."""
     last_error = None
     for _ in range(attempts):
         driver.get(f"{BASE_URL}/login")
@@ -99,8 +107,9 @@ def _login(driver, email: str, password: str, attempts: int = 3) -> None:
             last_error = exc
     raise last_error
 
+
+# UC-10: Helper che effettua il login come operatore e attende la dashboard operatore
 def _open_operator(driver) -> None:
-    """Effettua il login come operatore e attende il caricamento della dashboard."""
     _login(driver, OPERATOR_EMAIL, OPERATOR_PASSWORD)
     WebDriverWait(driver, WAIT).until(
         EC.presence_of_element_located((By.ID, "operator-page"))
@@ -110,16 +119,8 @@ def _open_operator(driver) -> None:
     )
 
 
+# UC-10: Helper che effettua il login operatore e apre /operator con la sessione gia' propagata
 def _login_operator_and_open(driver) -> None:
-    """Login operatore e apertura di /operator con la sessione gia' propagata.
-
-    _login ritorna appena l'URL non e' piu' /login, ma la propagazione
-    dell'AuthContext (e quindi del token usato dalle API) puo' non essere ancora
-    completa. Navigare subito a /operator fa partire le fetch senza credenziali:
-    la tabella resta vuota e le righe pending/assigned non compaiono mai, da cui
-    i TimeoutException intermittenti. Si attende quindi il logout-button (presente
-    solo a sessione autenticata attiva) prima di navigare alla rotta protetta.
-    """
     _login(driver, OPERATOR_EMAIL, OPERATOR_PASSWORD)
     WebDriverWait(driver, WAIT).until(
         EC.presence_of_element_located((By.ID, "logout-button"))
@@ -133,8 +134,8 @@ def _login_operator_and_open(driver) -> None:
     )
 
 
+# UC-10: Helper che seleziona una categoria nel select e verifica che React abbia aggiornato lo stato
 def _select_category(driver, select_el, category_name: str) -> None:
-    """Seleziona una categoria nel select e verifica che React abbia aggiornato lo stato."""
     target_value = None
     for opt in select_el.find_elements(By.TAG_NAME, "option"):
         if opt.text.strip() == category_name:
@@ -143,22 +144,18 @@ def _select_category(driver, select_el, category_name: str) -> None:
     if target_value is None:
         pytest.skip(f"Categoria '{category_name}' non trovata")
     Select(select_el).select_by_value(target_value)
-    # Dispatch the change event explicitly so React 19 picks up the selection
     driver.execute_script(
         "arguments[0].dispatchEvent(new Event('change', {bubbles: true}));",
         select_el,
     )
-    # Wait until the DOM value matches — confirms React has committed the state update
     WebDriverWait(driver, WAIT).until(
         lambda d: d.find_element(By.ID, "report-category").get_attribute("value") == target_value
     )
 
 
+# UC-10: Helper che crea una segnalazione come cittadino e ritorna l'ID estratto dall'URL
 def _create_report_via_ui(driver, title: str) -> str:
-    """Crea una segnalazione come cittadino e ritorna l'ID estratto dall'URL."""
     _login(driver, CITIZEN_EMAIL, CITIZEN_PASSWORD)
-    # Wait for dashboard + logout-button before navigating: confirms AuthContext has propagated
-    # and prevents ProtectedRoute from redirecting /reports/new back to /login.
     WebDriverWait(driver, WAIT).until(EC.presence_of_element_located((By.ID, "dashboard-page")))
     WebDriverWait(driver, WAIT).until(EC.presence_of_element_located((By.ID, "logout-button")))
     driver.get(f"{BASE_URL}/reports/new")
@@ -169,7 +166,6 @@ def _create_report_via_ui(driver, title: str) -> str:
         driver.find_element(By.ID, "report-title").send_keys(title)
         driver.find_element(By.ID, "report-description").send_keys("Automated test description.")
 
-        # Wait for categories to load asynchronously
         WebDriverWait(driver, WAIT).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "#report-category option[value]"))
         )
@@ -183,7 +179,6 @@ def _create_report_via_ui(driver, title: str) -> str:
         url_parts = driver.current_url.rstrip('/').split('/')
         report_id = url_parts[-1].split('?')[0]
 
-        # Logout — wait for redirect to confirm session is closed
         driver.get(f"{BASE_URL}/dashboard")
         WebDriverWait(driver, WAIT).until(EC.element_to_be_clickable((By.ID, "logout-button"))).click()
         WebDriverWait(driver, WAIT).until(lambda d: "/dashboard" not in d.current_url)
@@ -192,21 +187,18 @@ def _create_report_via_ui(driver, title: str) -> str:
         if os.path.exists(img_path):
             os.unlink(img_path)
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Controllo accessi
-# ─────────────────────────────────────────────────────────────────────────────
 
+# UC-10: Verifica che un visitatore non autenticato venga reindirizzato al login
 @pytest.mark.e2e
 def test_operator_requires_authentication(driver):
-    """Un visitatore non autenticato viene reindirizzato al login."""
     driver.get(f"{BASE_URL}/operator")
     WebDriverWait(driver, WAIT).until(lambda d: "/login" in d.current_url)
     assert "/login" in driver.current_url
 
 
+# UC-10: Verifica che un cittadino autenticato non possa accedere alla dashboard operatore
 @pytest.mark.e2e
 def test_operator_forbidden_for_citizen(driver):
-    """Un cittadino autenticato non può accedere alla dashboard operatore."""
     _login(driver, CITIZEN_EMAIL, CITIZEN_PASSWORD)
     driver.get(f"{BASE_URL}/operator")
     WebDriverWait(driver, WAIT).until(lambda d: "/operator" not in d.current_url)
@@ -214,13 +206,9 @@ def test_operator_forbidden_for_citizen(driver):
     assert not driver.find_elements(By.ID, "operator-page")
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Struttura della pagina
-# ─────────────────────────────────────────────────────────────────────────────
-
+# UC-10: Verifica che la dashboard operatore mostri riepilogo, titolo e tabella dei report assegnati
 @pytest.mark.e2e
 def test_operator_page_loads_for_operator(driver):
-    """La dashboard mostra il riepilogo, il titolo e la tabella dei report assegnati."""
     _open_operator(driver)
     for element_id in (
         "operator-summary-section",
@@ -235,20 +223,14 @@ def test_operator_page_loads_for_operator(driver):
         )
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# UC-10 – Gestisci segnalazione
-# ─────────────────────────────────────────────────────────────────────────────
-
+# UC-10: Verifica il flusso completo di assegnazione, aggiornamento stato e note con persistenza
 @pytest.mark.e2e
 def test_uc10_operator_workflow(driver):
-    """Test completo UC-10: assegnazione, aggiornamento stato e note."""
     unique_title = f"UC10 Test {int(time.time())}"
     report_id = _create_report_via_ui(driver, unique_title)
 
-    # Login come operatore (sessione propagata prima di navigare alla rotta protetta)
     _login_operator_and_open(driver)
 
-    # 1. Assegnazione (Pending -> Assigned)
     pending_row_id = f"pending-report-row-{report_id}"
     assign_btn_id = f"pending-report-assign-{report_id}"
 
@@ -262,52 +244,43 @@ def test_uc10_operator_workflow(driver):
     except Exception as e:
         pytest.fail(f"Fallimento durante assegnazione: {e}")
 
-    # 2. Aggiornamento Stato e Note
     assigned_row_id = f"assigned-report-row-{report_id}"
     WebDriverWait(driver, WAIT).until(EC.presence_of_element_located((By.ID, assigned_row_id)))
 
     new_note = "In lavorazione - Selenium"
     status_select = Select(driver.find_element(By.ID, f"assigned-report-status-{report_id}"))
     status_select.select_by_visible_text("In Progress")
-    
+
     note_input = driver.find_element(By.ID, f"assigned-report-note-{report_id}")
     _type(driver, note_input, new_note)
-    
+
     driver.find_element(By.ID, f"assigned-report-update-{report_id}").click()
 
-    # Verifica persistenza dopo refresh
     driver.refresh()
     WebDriverWait(driver, WAIT).until(
         lambda d: Select(d.find_element(By.ID, f"assigned-report-status-{report_id}")).first_selected_option.text == "In Progress"
     )
-    
-    # Vai al dettaglio per verificare la nota nella cronologia (UC-10 richiede aggiornamento note)
+
     detail_link = WebDriverWait(driver, WAIT).until(
         EC.element_to_be_clickable((By.ID, f"assigned-report-row-{report_id}-open-detail"))
     )
     detail_link.click()
 
-    # Aspetta che la nota appaia nella sezione Cronologia Stati del dettaglio
     history_note_xpath = f"//li[contains(@id, 'status-history-item-') and .//p[contains(text(), '{new_note}')]]"
     WebDriverWait(driver, WAIT).until(EC.presence_of_element_located((By.XPATH, history_note_xpath)))
-    
-    # Verifica anche che lo stato nel dettaglio sia coerente
+
     val_status_detail = WebDriverWait(driver, WAIT).until(
         EC.presence_of_element_located((By.ID, "report-detail-status"))
     ).text
     assert "In Progress" in val_status_detail
     assert new_note in driver.page_source
 
-# ─────────────────────────────────────────────────────────────────────────────
-# UC-10 – Gestisci segnalazione (Estensioni ed Edge Cases)
-# ─────────────────────────────────────────────────────────────────────────────
 
+# UC-10: Verifica l'isolamento per categoria — l'operatore non vede segnalazioni di altre categorie
 @pytest.mark.e2e
 def test_uc10_operator_category_isolation(driver):
-    """Test UC-10 Edge Case: L'operatore non deve vedere segnalazioni di altre categorie."""
     unique_title = f"Isolation Test {int(time.time())}"
-    
-    # 1. Creiamo un report in una categoria DIVERSA (es. "Waste")
+
     _login(driver, CITIZEN_EMAIL, CITIZEN_PASSWORD)
     WebDriverWait(driver, WAIT).until(EC.presence_of_element_located((By.ID, "dashboard-page")))
     WebDriverWait(driver, WAIT).until(EC.presence_of_element_located((By.ID, "logout-button")))
@@ -332,28 +305,25 @@ def test_uc10_operator_category_isolation(driver):
         if os.path.exists(img_path):
             os.unlink(img_path)
 
-    # Logout cittadino — attende il redirect per garantire che la sessione sia chiusa
     driver.get(f"{BASE_URL}/dashboard")
     WebDriverWait(driver, WAIT).until(EC.element_to_be_clickable((By.ID, "logout-button"))).click()
     WebDriverWait(driver, WAIT).until(lambda d: "/dashboard" not in d.current_url)
 
-    # 2. Login come operatore (assegnato a "Roads and Urban Furniture")
     _login_operator_and_open(driver)
 
-    # 3. Verifichiamo che le segnalazioni di altre categorie NON compaiano nella tabella pendenti
     assert unique_title not in driver.page_source, (
         "Errore isolamento: l'operatore vede una segnalazione di una categoria non sua"
     )
 
+
+# UC-10, Extension 5a: Verifica che il rifiuto di una segnalazione fallisca se manca la nota
 @pytest.mark.e2e
 def test_uc10_rejection_requires_note(driver):
-    """Test UC-10 Edge Case: Il rifiuto di una segnalazione fallisce se manca la nota."""
     unique_title = f"Reject Test {int(time.time())}"
     report_id = _create_report_via_ui(driver, unique_title)
 
     _login_operator_and_open(driver)
 
-    # 1. Assegnazione
     pending_row_id = f"pending-report-row-{report_id}"
     assign_btn_id = f"pending-report-assign-{report_id}"
 
@@ -366,25 +336,21 @@ def test_uc10_rejection_requires_note(driver):
     except Exception:
         driver.execute_script("arguments[0].click();", assign_btn)
 
-    # 2. Tentativo di Rifiuto senza nota
     assigned_row_id = f"assigned-report-row-{report_id}"
     WebDriverWait(driver, WAIT).until(EC.presence_of_element_located((By.ID, assigned_row_id)))
 
-    # Seleziona 'Rejected' (attende che la select assegnata sia presente)
     status_select = Select(
         WebDriverWait(driver, WAIT).until(
             EC.presence_of_element_located((By.ID, f"assigned-report-status-{report_id}"))
         )
     )
     status_select.select_by_visible_text("Rejected")
-    
-    # Assicurati che la nota sia vuota
+
     note_input = driver.find_element(By.ID, f"assigned-report-note-{report_id}")
     _type(driver, note_input, "")
-    
+
     driver.find_element(By.ID, f"assigned-report-update-{report_id}").click()
-    
-    # Aspettiamo che appaia l'errore globale della pagina operatore
+
     try:
         error_element = WebDriverWait(driver, 5).until(
             EC.presence_of_element_located((By.ID, "operator-error"))
@@ -393,52 +359,40 @@ def test_uc10_rejection_requires_note(driver):
     except TimeoutException:
         pytest.fail("Nessun messaggio di errore mostrato quando si rifiuta senza nota.")
 
-# ─────────────────────────────────────────────────────────────────────────────
-# UC-11 – Invia messaggio al cittadino
-# ─────────────────────────────────────────────────────────────────────────────
 
+# UC-11: Verifica che l'operatore invii un messaggio dal dettaglio e questo compaia nella conversazione
 @pytest.mark.e2e
 def test_uc11_operator_sends_message(driver):
-    """Test UC-11: l'operatore invia un messaggio dalla pagina di dettaglio."""
     unique_title = f"UC11 Msg {int(time.time())}"
     report_id = _create_report_via_ui(driver, unique_title)
 
     _login_operator_and_open(driver)
 
-    # Assegna
     pending_assign_btn_id = f"pending-report-assign-{report_id}"
     assigned_row_id = f"assigned-report-row-{report_id}"
 
-    # Assegna il report (appena creato, sempre in stato Pending)
     assign_btn = WebDriverWait(driver, WAIT).until(EC.element_to_be_clickable((By.ID, pending_assign_btn_id)))
     driver.execute_script("arguments[0].click();", assign_btn)
 
-    # Aspetta che appaia nella sezione assegnati
     WebDriverWait(driver, WAIT).until(EC.presence_of_element_located((By.ID, assigned_row_id)))
 
-    # Vai al dettaglio
     detail_link = WebDriverWait(driver, WAIT).until(
         EC.element_to_be_clickable((By.ID, f"{assigned_row_id}-open-detail"))
     )
     detail_link.click()
 
-    # Invia messaggio
     msg_body = f"Messaggio operatore {int(time.time())}"
     body_input = WebDriverWait(driver, WAIT).until(EC.presence_of_element_located((By.ID, "report-message-body")))
     body_input.send_keys(msg_body)
     driver.find_element(By.ID, "report-message-submit").click()
 
-    # Verifica comparsa in lista
     msg_xpath = f"//li[contains(@id, 'message-item-') and .//p[contains(text(), '{msg_body}')]]"
     WebDriverWait(driver, WAIT).until(EC.presence_of_element_located((By.XPATH, msg_xpath)))
 
-# ─────────────────────────────────────────────────────────────────────────────
-# UC-11 Extension 3a — corpo messaggio vuoto bloccato
-# ─────────────────────────────────────────────────────────────────────────────
 
+# UC-11, Extension 3a: Verifica che l'operatore non possa inviare un messaggio con corpo vuoto
 @pytest.mark.e2e
 def test_uc11_empty_message_is_blocked(driver):
-    """UC-11 Ext 3a: l'operatore non può inviare un messaggio con corpo vuoto."""
     unique_title = f"UC11 Empty {int(time.time())}"
     report_id = _create_report_via_ui(driver, unique_title)
 
@@ -466,9 +420,6 @@ def test_uc11_empty_message_is_blocked(driver):
 
     driver.find_element(By.ID, "report-message-submit").click()
 
-    # Esito atteso: nessun nuovo messaggio. Accettiamo due forme:
-    #   (a) messaggio di errore visibile (ID report-message-error), oppure
-    #   (b) il contatore messaggi resta invariato (validazione client).
     def _no_message_sent(d):
         err = d.find_elements(By.ID, "report-message-error")
         err_shown = bool(err) and err[0].is_displayed()
@@ -484,18 +435,8 @@ def test_uc11_empty_message_is_blocked(driver):
     )
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# UC-12 — Reply to Municipal Operator message (lato cittadino)
-# ─────────────────────────────────────────────────────────────────────────────
-
+# UC-12: Helper che, come operatore assegnato, invia un messaggio sul report e poi fa logout
 def _operator_sends_message_and_logout(driver, report_id: str, body: str) -> None:
-    """Helper UC-12: come operatore assegnato, invia un messaggio sul report
-    e fa logout. Lascia il driver sulla pagina di login (o home), pronto per
-    il login del cittadino.
-
-    Nota: NON naviga a /dashboard (rotta non accessibile all'operatore). Il
-    logout è eseguito tramite il pulsante presente sulla pagina corrente.
-    """
     _login_operator_and_open(driver)
     assign_btn = WebDriverWait(driver, WAIT).until(
         EC.element_to_be_clickable((By.ID, f"pending-report-assign-{report_id}"))
@@ -521,8 +462,6 @@ def _operator_sends_message_and_logout(driver, report_id: str, body: str) -> Non
         EC.presence_of_element_located((By.XPATH, msg_xpath))
     )
 
-    # Logout dal dettaglio del report (senza navigare a /dashboard, inaccessibile
-    # all'operatore): attende il bottone sulla pagina corrente e lo clicca.
     logout_btn = WebDriverWait(driver, WAIT).until(
         EC.element_to_be_clickable((By.ID, "logout-button"))
     )
@@ -532,17 +471,15 @@ def _operator_sends_message_and_logout(driver, report_id: str, body: str) -> Non
     )
 
 
+# UC-12: Verifica che il cittadino risponda a un messaggio dell'operatore e la risposta compaia
 @pytest.mark.e2e
 def test_uc12_citizen_replies_to_operator_message(driver):
-    """UC-12: il cittadino risponde a un messaggio dell'operatore e la risposta
-    appare nella conversazione del report."""
     unique_title = f"UC12 Reply {int(time.time())}"
     report_id = _create_report_via_ui(driver, unique_title)
 
     operator_msg = f"Domanda operatore {int(time.time())}"
     _operator_sends_message_and_logout(driver, report_id, operator_msg)
 
-    # Login cittadino con sessione propagata prima di navigare al dettaglio.
     _login(driver, CITIZEN_EMAIL, CITIZEN_PASSWORD)
     WebDriverWait(driver, WAIT).until(
         EC.presence_of_element_located((By.ID, "dashboard-page"))
@@ -555,7 +492,6 @@ def test_uc12_citizen_replies_to_operator_message(driver):
         EC.presence_of_element_located((By.ID, "report-detail-page"))
     )
 
-    # Il messaggio dell'operatore deve essere visibile (precondizione UC-12).
     op_msg_xpath = (
         f"//li[contains(@id, 'message-item-') and .//p[contains(text(), '{operator_msg}')]]"
     )
@@ -563,7 +499,6 @@ def test_uc12_citizen_replies_to_operator_message(driver):
         EC.presence_of_element_located((By.XPATH, op_msg_xpath))
     )
 
-    # Compone e invia la risposta.
     reply_body = f"Risposta cittadino {int(time.time())}"
     body_input = WebDriverWait(driver, WAIT).until(
         EC.presence_of_element_located((By.ID, "report-message-body"))
@@ -582,9 +517,9 @@ def test_uc12_citizen_replies_to_operator_message(driver):
     )
 
 
+# UC-12, Extension 3a: Verifica che una risposta con corpo vuoto non venga inviata
 @pytest.mark.e2e
 def test_uc12_citizen_empty_reply_is_blocked(driver):
-    """UC-12 Ext 3a: una risposta con corpo vuoto non viene inviata."""
     unique_title = f"UC12 EmptyReply {int(time.time())}"
     report_id = _create_report_via_ui(driver, unique_title)
 

@@ -1,26 +1,22 @@
 """
-Test di accettazione Selenium per la dashboard del cittadino (/dashboard):
-
-  UC-15 – Gestisci profilo (preferenza notifiche email e immagine del profilo)
+Test di accettazione Selenium per:
+  UC-15 – Gestisci profilo cittadino (preferenza notifiche email e immagine del profilo)
   UC-16 – Logout
 
-La dashboard e' una rotta protetta: il controllo accessi viene esercitato
-prima dei flussi funzionali.
+Entrambi i casi d'uso si svolgono sulla dashboard del cittadino (/dashboard),
+una rotta protetta: il controllo accessi viene esercitato prima dei flussi funzionali.
 
 UC-15 copre:
-  - la pagina del profilo e' raggiungibile solo da un utente autenticato;
-  - il form del profilo e le liste (report personali, notifiche) sono visibili;
-  - la preferenza "notifiche email" puo' essere modificata, salvata e persiste
-    dopo un nuovo caricamento della pagina (poi viene ripristinata);
-  - una nuova immagine del profilo puo' essere caricata e salvata;
-  - i campi obbligatori del profilo bloccano il salvataggio se vuoti;
-  - il pulsante di eliminazione account apre una conferma (qui annullata per
-    mantenere ripetibile il seed).
+  - La pagina del profilo e' raggiungibile solo da un utente autenticato.
+  - Il form del profilo e le liste (report personali, notifiche) sono visibili.
+  - La preferenza notifiche email puo' essere modificata, salvata e persiste dopo il ricaricamento.
+  - Una nuova immagine del profilo puo' essere caricata e salvata.
+  - I campi obbligatori del profilo bloccano il salvataggio se vuoti.
+  - Il pulsante di eliminazione account apre una conferma (qui annullata).
 
 UC-16 copre:
-  - il logout reindirizza fuori dall'area autenticata e mostra di nuovo i link
-    di login/registrazione;
-  - dopo il logout una rotta protetta non e' piu' accessibile.
+  - Il logout reindirizza fuori dall'area autenticata e ripristina i link di login/registrazione.
+  - Dopo il logout una rotta protetta non e' piu' accessibile.
 """
 
 import os
@@ -39,17 +35,17 @@ from conftest import BASE_URL
 CITIZEN_EMAIL = "citizen@example.com"
 CITIZEN_PASSWORD = "Citizen123!"
 
-# Tempo di attesa generoso: l'ambiente di esecuzione puo' essere lento e ogni
-# test esegue un login completo seguito da chiamate asincrone al backend.
 WAIT = 20
 
+# UC-15: Helper che crea su disco un file di testo non-immagine con estensione .txt
+def _make_temp_non_image() -> str:
+    fd, path = tempfile.mkstemp(suffix=".txt")
+    with os.fdopen(fd, "wb") as fh:
+        fh.write(b"Non e' un'immagine")
+    return path
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Helpers
-# ─────────────────────────────────────────────────────────────────────────────
-
+# UC-15: Helper che crea un file immagine JPEG minimale valido su disco
 def _make_temp_image(suffix: str = ".jpg") -> str:
-    """Crea un file immagine JPEG minimale valido su disco e ne ritorna il path."""
     minimal_jpeg = (
         b"\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x00\x00\x01\x00\x01\x00\x00"
         b"\xff\xdb\x00C\x00\x08\x06\x06\x07\x06\x05\x08\x07\x07\x07\t\t"
@@ -75,12 +71,8 @@ def _make_temp_image(suffix: str = ".jpg") -> str:
     return path
 
 
+# UC-15: Helper che svuota un campo in modo robusto e vi scrive il valore indicato
 def _type(driver, element, value: str) -> None:
-    """Svuota un campo in modo robusto e vi scrive `value`.
-
-    Il semplice .clear() a volte non azzera il campo (bug noto del login, che
-    finisce per concatenare la password): qui forzo selezione totale + cancella.
-    """
     element.click()
     element.send_keys(Keys.CONTROL, "a")
     element.send_keys(Keys.DELETE)
@@ -88,8 +80,8 @@ def _type(driver, element, value: str) -> None:
     element.send_keys(value)
 
 
+# UC-15: Helper di login resiliente che riprova se si resta sulla pagina di login
 def _login(driver, email: str, password: str, attempts: int = 3) -> None:
-    """Login resiliente: riprova se si resta sulla pagina di login."""
     last_error = None
     for _ in range(attempts):
         driver.get(f"{BASE_URL}/login")
@@ -107,20 +99,16 @@ def _login(driver, email: str, password: str, attempts: int = 3) -> None:
     raise last_error
 
 
+# UC-15: Helper che effettua il login come cittadino e attende la dashboard
 def _open_dashboard_as_citizen(driver) -> None:
-    """Effettua il login come cittadino e attende il caricamento della dashboard."""
     _login(driver, CITIZEN_EMAIL, CITIZEN_PASSWORD)
     WebDriverWait(driver, WAIT).until(
         EC.presence_of_element_located((By.ID, "dashboard-page"))
     )
 
 
+# UC-15: Helper best-effort che ripristina la preferenza notifiche email al valore originale
 def _restore_email_notifications(driver, target_state: bool) -> None:
-    """Riporta la preferenza notifiche email del cittadino a `target_state`.
-
-    Best-effort: usato in un blocco finally per non lasciare il seed modificato;
-    eventuali errori di ripristino non devono mascherare il fallimento del test.
-    """
     try:
         driver.get(f"{BASE_URL}/dashboard")
         checkbox = WebDriverWait(driver, WAIT).until(
@@ -136,13 +124,9 @@ def _restore_email_notifications(driver, target_state: bool) -> None:
         pass
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Controllo accessi (UC-15 / UC-16 – precondizione: utente autenticato)
-# ─────────────────────────────────────────────────────────────────────────────
-
+# UC-15: Verifica che un visitatore non autenticato venga reindirizzato al login
 @pytest.mark.e2e
 def test_dashboard_requires_authentication(driver):
-    """Un visitatore non autenticato viene reindirizzato al login."""
     driver.get(f"{BASE_URL}/dashboard")
     WebDriverWait(driver, WAIT).until(lambda d: "/login" in d.current_url)
     assert "/login" in driver.current_url, (
@@ -150,16 +134,11 @@ def test_dashboard_requires_authentication(driver):
     )
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Struttura della pagina
-# ─────────────────────────────────────────────────────────────────────────────
-
+# UC-15: Verifica che la dashboard mostri form del profilo, report personali e notifiche
 @pytest.mark.e2e
 def test_dashboard_page_loads_for_citizen(driver):
-    """La dashboard mostra form del profilo, report personali e notifiche."""
     _open_dashboard_as_citizen(driver)
 
-    # Elementi sempre visibili (hanno contenuto/dimensione non nulla).
     for element_id in (
         "profile-section",
         "profile-form",
@@ -180,26 +159,18 @@ def test_dashboard_page_loads_for_citizen(driver):
             f"L'elemento '{element_id}' deve essere visibile nella dashboard"
         )
 
-    # La lista notifiche e' un contenitore che resta vuoto se non ci sono
-    # notifiche (un <ul> vuoto ha altezza zero): qui basta che esista nel DOM.
     assert driver.find_element(By.ID, "notifications-list"), (
         "La lista notifiche deve essere presente nella dashboard"
     )
 
-    # Il campo email e' di sola lettura (gestito dal sistema, non modificabile).
     assert driver.find_element(By.ID, "profile-email").get_attribute("readonly"), (
         "Il campo email del profilo deve essere di sola lettura"
     )
 
 
+# UC-15: Verifica che la tabella 'My reports' elenchi le segnalazioni seed del cittadino
 @pytest.mark.e2e
 def test_dashboard_lists_seeded_citizen_reports(driver):
-    """La tabella 'My reports' elenca le segnalazioni del cittadino (dati seed).
-
-    Richiede che il backend sia stato avviato con i dati demo (seed). Le
-    segnalazioni vengono caricate in modo asincrono dopo il render della pagina,
-    quindi si attende esplicitamente la comparsa delle righe.
-    """
     _open_dashboard_as_citizen(driver)
     WebDriverWait(driver, WAIT).until(
         EC.presence_of_element_located((By.ID, "my-reports-table-body"))
@@ -215,23 +186,14 @@ def test_dashboard_lists_seeded_citizen_reports(driver):
     )
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# UC-15 – Gestisci profilo
-# ─────────────────────────────────────────────────────────────────────────────
-
+# UC-15: Verifica che la preferenza notifiche email possa essere salvata e persista dopo il ricaricamento
 @pytest.mark.e2e
 def test_uc15_email_notifications_preference_can_be_saved(driver):
-    """UC-15: la preferenza notifiche email puo' essere salvata e persiste.
-
-    Lo stato iniziale viene ripristinato al termine per mantenere il test
-    ripetibile sull'account seed.
-    """
     _open_dashboard_as_citizen(driver)
     checkbox = driver.find_element(By.ID, "profile-email-notifications")
     original_state = checkbox.is_selected()
 
     try:
-        # Inverte la preferenza e salva.
         checkbox.click()
         new_state = checkbox.is_selected()
         assert new_state != original_state, "Il click deve invertire la preferenza"
@@ -243,7 +205,6 @@ def test_uc15_email_notifications_preference_can_be_saved(driver):
             "Il salvataggio del profilo deve confermare con un messaggio di successo"
         )
 
-        # Ricarica la pagina: la preferenza salvata deve persistere.
         driver.get(f"{BASE_URL}/dashboard")
         WebDriverWait(driver, WAIT).until(
             EC.presence_of_element_located((By.ID, "dashboard-page"))
@@ -258,13 +219,12 @@ def test_uc15_email_notifications_preference_can_be_saved(driver):
             "La preferenza notifiche email salvata deve persistere dopo il ricaricamento"
         )
     finally:
-        # Ripristino garantito dello stato seed originale, anche in caso di errore.
         _restore_email_notifications(driver, original_state)
 
 
+# UC-15: Verifica che il caricamento di una nuova immagine del profilo vada a buon fine
 @pytest.mark.e2e
 def test_uc15_profile_picture_upload_succeeds(driver):
-    """UC-15: il caricamento di una nuova immagine del profilo va a buon fine."""
     photo_path = _make_temp_image()
     try:
         _open_dashboard_as_citizen(driver)
@@ -280,27 +240,23 @@ def test_uc15_profile_picture_upload_succeeds(driver):
         os.unlink(photo_path)
 
 
+# UC-15: Verifica che svuotare un campo obbligatorio del profilo blocchi il salvataggio
 @pytest.mark.e2e
 def test_uc15_required_profile_field_blocks_save(driver):
-    """UC-15: svuotare un campo obbligatorio del profilo blocca il salvataggio."""
     _open_dashboard_as_citizen(driver)
     username = driver.find_element(By.ID, "profile-username")
     username.clear()
     driver.find_element(By.ID, "profile-save").click()
 
-    # L'attributo HTML `required` impedisce l'invio: nessun messaggio di successo.
     assert "/dashboard" in driver.current_url
     assert not driver.find_elements(By.ID, "profile-success"), (
         "Con lo username vuoto il profilo non deve essere salvato"
     )
 
 
+# UC-15: Verifica che il pulsante elimina account apra una conferma annullabile
 @pytest.mark.e2e
 def test_uc15_delete_account_confirmation_can_be_dismissed(driver):
-    """UC-15: il pulsante elimina account apre una conferma; qui viene annullata.
-
-    Annullare evita di distruggere l'account seed e mantiene la suite ripetibile.
-    """
     _open_dashboard_as_citizen(driver)
     driver.find_element(By.ID, "delete-account-button").click()
 
@@ -308,7 +264,6 @@ def test_uc15_delete_account_confirmation_can_be_dismissed(driver):
     assert alert.text, "L'eliminazione dell'account deve richiedere una conferma esplicita"
     alert.dismiss()
 
-    # Annullata la conferma, l'utente resta sulla dashboard con la sessione attiva.
     try:
         WebDriverWait(driver, 3).until(EC.alert_is_present())
         pytest.fail("La conferma non doveva ripresentarsi dopo l'annullamento")
@@ -317,17 +272,13 @@ def test_uc15_delete_account_confirmation_can_be_dismissed(driver):
     assert driver.find_element(By.ID, "dashboard-page").is_displayed()
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# UC-16 – Logout
-# ─────────────────────────────────────────────────────────────────────────────
-
+    
+# UC-16: Verifica che il logout termini la sessione e ripristini i link di login/registrazione
 @pytest.mark.e2e
 def test_uc16_logout_redirects_out_of_authenticated_area(driver):
-    """UC-16: il logout termina la sessione e riporta i link di login/registrazione."""
     _open_dashboard_as_citizen(driver)
     driver.find_element(By.ID, "logout-button").click()
 
-    # La dashboard e' protetta: senza sessione si viene reindirizzati al login.
     WebDriverWait(driver, WAIT).until(lambda d: "/dashboard" not in d.current_url)
     WebDriverWait(driver, WAIT).until(
         EC.presence_of_element_located((By.ID, "nav-login"))
@@ -339,9 +290,9 @@ def test_uc16_logout_redirects_out_of_authenticated_area(driver):
     )
 
 
+# UC-16: Verifica che dopo il logout una rotta protetta non sia piu' accessibile
 @pytest.mark.e2e
 def test_uc16_logout_blocks_protected_route(driver):
-    """UC-16: dopo il logout una rotta protetta non e' piu' accessibile."""
     _open_dashboard_as_citizen(driver)
     driver.find_element(By.ID, "logout-button").click()
     WebDriverWait(driver, WAIT).until(

@@ -12,4 +12,4 @@ def _local_url(host: str, port: int, path: str) -> str:
 if __name__ == "__main__":
     settings = app.config["SETTINGS"]
     print(f"Swagger UI: {_local_url(settings.host, settings.port, '/apidocs/')}", flush=True)
-    app.run(host=settings.host, port=settings.port, debug=settings.debug, use_reloader=False, threaded=False)
+    app.run(host=settings.host, port=settings.port, debug=settings.debug, use_reloader=False, threaded=False) # SQLAlchemy condivide un'unica Connection SQLite tra tutti i thread: richieste parallele leggono dati obsoleti; la serializzazione risolve il problema

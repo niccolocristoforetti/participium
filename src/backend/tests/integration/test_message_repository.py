@@ -20,9 +20,9 @@ import pytest
 from participium.models.message import Message
 
 
-# ---------------------------------------------------------------------------
+
 # add()
-# ---------------------------------------------------------------------------
+
 
 @pytest.mark.integration
 def test_add_assigns_primary_key(message_repository, db_session):
@@ -74,9 +74,9 @@ def test_add_returns_the_same_object(message_repository, db_session):
     assert result is msg
 
 
-# ---------------------------------------------------------------------------
+
 # list_for_report()
-# ---------------------------------------------------------------------------
+
 
 @pytest.mark.integration
 def test_list_for_report_returns_only_messages_of_that_report(message_repository, db_session):

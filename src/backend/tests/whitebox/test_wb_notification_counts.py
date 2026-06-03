@@ -13,9 +13,6 @@ pytestmark = pytest.mark.whitebox
 
 #  Helpers 
 
-
-# Helper 
-
 # crea istanze di notifica con parametri personalizzati.
 def _notification(*, notification_id: int, user_id: int, report_id: int | None, is_read: bool = False) -> Notification:
     return Notification(

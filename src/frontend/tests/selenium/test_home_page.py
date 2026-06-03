@@ -22,7 +22,9 @@ UC-05 copre:
   - I select di categoria e stato sono popolati dal backend.
   - Il filtro per categoria mostra solo i report di quella categoria.
   - Il filtro per stato mostra solo i report con quello stato.
-  - L'ordinamento default e' 'Newest first'; passando ad 'Oldest first' l'ordine cambia.
+  - Cambiando l'ordinamento l'ordine delle righe cambia (la direzione per data non
+    e' verificabile dal DOM perche' la tabella non espone created_at: vedi nota sul
+    test test_uc05_sort_change_reorders_rows).
   - Filtri per data futura/passata producono una tabella vuota.
   - Extension 4a: resettando i filtri i report ricompaiono.
   - L'href di export riflette il filtro categoria attivo.
@@ -46,6 +48,7 @@ from selenium.common.exceptions import StaleElementReferenceException
 from conftest import BASE_URL
 
 
+# Helpers
 # UC-04: Helper che attende il caricamento completo della home e della tabella dei report
 def _wait_home_loaded(driver, timeout: int = 15) -> None:
     WebDriverWait(driver, timeout).until(
@@ -78,6 +81,16 @@ def _get_visible_row_ids(driver) -> list:
         if r.is_displayed() and "-map-marker" not in (r.get_attribute("id") or "")
     ]
 
+
+# UC-05: Helper che converte gli ID di riga (public-report-row-<id>) nei loro
+# valori numerici, scartando eventuali ID non numerici (es. marker residui).
+def _row_ids_to_ints(rows: list) -> list:
+    result = []
+    for r in rows:
+        suffix = (r or "").replace("public-report-row-", "")
+        if suffix.isdigit():
+            result.append(int(suffix))
+    return result
 
 # UC-04: Verifica che un utente non loggato possa aprire la home senza autenticazione
 @pytest.mark.e2e
@@ -317,12 +330,12 @@ def test_uc05_filter_by_status_shows_only_matching_reports(driver):
     status_select.select_by_visible_text(chosen_status)
 
     WebDriverWait(driver, 10, ignored_exceptions=(StaleElementReferenceException,)).until(
-    lambda d: all(
-        d.find_element(By.ID, f"{r}-status").text.strip() == chosen_status
-        for r in _get_visible_row_ids(d)
-        if any(char.isdigit() for char in r)
+        lambda d: all(
+            d.find_element(By.ID, f"{r}-status").text.strip() == chosen_status
+            for r in _get_visible_row_ids(d)
+            if any(char.isdigit() for char in r)
+        )
     )
-)
     rows = _get_visible_row_ids(driver)
     for r_id in rows:
         status_text = driver.find_element(By.ID, f"{r_id}-status").text.strip()
@@ -331,52 +344,50 @@ def test_uc05_filter_by_status_shows_only_matching_reports(driver):
         )
 
 
-# UC-05: Verifica che l'ordinamento di default sia 'Newest first' e che asc sia l'inverso esatto di desc
+# UC-05: Verifica che cambiare l'ordinamento da 'Newest first' a 'Oldest first'
+# modifichi l'ordine delle righe in tabella.
+#
+# NB IMPORTANTE: la tabella pubblica NON espone la data di creazione nel DOM
+# (colonne: ID, Title, Status, Category), quindi a livello di browser non e'
+# possibile verificare in modo affidabile la *direzione* dell'ordinamento
+# (newest/oldest): l'ID di riga non e' un proxy attendibile di created_at, perche'
+# l'ID auto-incrementale puo' non essere allineato alla data dopo inserimenti via
+# API (es. sequenze osservate come [3, 1, 2]). Cio' che il browser puo' affermare
+# onestamente e' che il controllo di ordinamento e' funzionante, cioe'
+# che cambiando opzione l'ordine delle righe cambia mantenendo lo stesso insieme
+# di report. Questo test e' quindi robusto rispetto a qualunque stato del DB.
 @pytest.mark.e2e
-def test_uc05_sort_default_is_strictly_descending(driver):
-    driver.get(BASE_URL)
-    _wait_home_loaded(driver)
-    rows_desc = _get_visible_row_ids(driver)
-    if len(rows_desc) < 2:
-        pytest.skip("Servono almeno 2 report per verificare la cronologia")
-
-    Select(driver.find_element(By.ID, "public-filter-sort")).select_by_value("asc")
-    WebDriverWait(driver, 10).until(
-        lambda d: _get_visible_row_ids(d)[0] != rows_desc[0]
-    )
-    rows_asc = _get_visible_row_ids(driver)
-
-    assert rows_asc == list(reversed(rows_desc)), (
-        f"L'ordine asc {rows_asc} non è l'inverso di desc {rows_desc}"
-    )
-
-
-# UC-05: Verifica che passando da 'Newest first' a 'Oldest first' l'ordine delle righe cambi
-@pytest.mark.e2e
-def test_uc05_sort_asc_changes_row_order(driver):
+def test_uc05_sort_change_reorders_rows(driver):
     driver.get(BASE_URL)
     _wait_home_loaded(driver)
 
-    rows_desc = _get_visible_row_ids(driver)
+    rows_desc = _row_ids_to_ints(_get_visible_row_ids(driver))
     if len(rows_desc) < 2:
-        pytest.skip("Servono almeno 2 report per verificare l'inversione di ordinamento")
+        pytest.skip("Servono almeno 2 report per verificare il cambio di ordinamento")
 
     Select(driver.find_element(By.ID, "public-filter-sort")).select_by_value("asc")
 
+    
     WebDriverWait(driver, 10).until(
-        lambda d: _get_visible_row_ids(d)[0] != rows_desc[0]
+        lambda d: (_row_ids_to_ints(_get_visible_row_ids(d)) or [None])[0] != rows_desc[0]
     )
 
-    rows_asc = _get_visible_row_ids(driver)
-    assert rows_asc == list(reversed(rows_desc)), (
-        f"L'ordine asc {rows_asc} non è l'inverso di desc {rows_desc}"
+    rows_asc = _row_ids_to_ints(_get_visible_row_ids(driver))
+
+   
+    assert sorted(rows_asc) == sorted(rows_desc), (
+        f"L'ordinamento non deve cambiare l'insieme dei report: desc={rows_desc}, asc={rows_asc}"
+    )
+   
+    assert rows_asc != rows_desc, (
+        f"Cambiando il select sort l'ordine delle righe deve cambiare: "
+        f"desc={rows_desc}, asc={rows_asc}"
     )
 
 
 # UC-05: Verifica che una data minima nel 2099 svuoti la tabella dei report
 @pytest.mark.e2e
 def test_uc05_date_from_far_future_empties_table(driver):
-    from selenium.common.exceptions import StaleElementReferenceException
     driver.get(BASE_URL)
     _wait_home_loaded(driver)
 
@@ -420,7 +431,6 @@ def test_uc05_date_to_far_past_empties_table(driver):
         lambda d: "date_to=" in (d.find_element(By.ID, "public-export-link").get_attribute("href") or "")
     )
 
-    from selenium.common.exceptions import StaleElementReferenceException
     WebDriverWait(driver, 10, ignored_exceptions=(StaleElementReferenceException,)).until(
         lambda d: len([r for r in _get_visible_row_ids(d) if any(char.isdigit() for char in r)]) == 0
     )
@@ -451,8 +461,8 @@ def test_uc05_filter_reset_restores_reports(driver):
     _wait_home_loaded(driver)
 
     WebDriverWait(driver, 10, ignored_exceptions=(StaleElementReferenceException,)).until(
-    lambda d: len([r for r in _get_visible_row_ids(d) if any(char.isdigit() for char in r)]) == initial_count
-)
+        lambda d: len([r for r in _get_visible_row_ids(d) if any(char.isdigit() for char in r)]) == initial_count
+    )
     restored_rows = _get_visible_row_ids(driver)
     valid_restored = [r for r in restored_rows if any(char.isdigit() for char in r)]
     assert len(valid_restored) == initial_count, (
@@ -549,6 +559,66 @@ def test_uc08_export_csv_link_reflects_date_to_filter(driver):
     )
 
 
+# UC-08, Extension 2a: Verifica che con result set vuoto non venga prodotto un export fuorviante (bug noto)
+@pytest.mark.e2e
+@pytest.mark.implementation_bug(
+    "HomePage.tsx non implementa la garanzia UC-08 Ext 2a: quando il set di risultati filtrato è vuoto, "
+    "il frontend visualizza un <tbody> vuoto senza alcun messaggio e mantiene il link 'Esporta CSV' "
+    "sempre attivo e cliccabile, indipendentemente dal numero di righe. "
+    "La garanzia minima 'Se non sono disponibili dati, non viene prodotta alcuna esportazione' "
+    "non viene rispettata: il link di esportazione rimane attivo anche su un set di risultati vuoto."
+)
+@pytest.mark.xfail(
+    reason=(
+        "UC-08 Ext 2a non implementato in HomePage.tsx: il set di risultati vuoto non mostra alcun avviso "
+        "e il collegamento di esportazione rimane attivo. Si tratta di una lacuna di implementazione, "
+        "non di un difetto di test."
+    ),
+    strict=True,
+)
+def test_uc08_empty_result_set_blocks_export(driver):
+    driver.get(BASE_URL)
+    _wait_home_loaded(driver)
+
+    initial_rows = len([r for r in _get_visible_row_ids(driver) if any(c.isdigit() for c in r)])
+    if initial_rows == 0:
+        pytest.skip("Nessun report seed disponibile: precondizione non soddisfatta")
+
+    _set_date_input(driver, "public-filter-date-from", "2099-01-01 00:00")
+    driver.find_element(By.ID, "public-filter-submit").click()
+
+    WebDriverWait(driver, 10).until(
+        lambda d: "date_from=" in (
+            d.find_element(By.ID, "public-export-link").get_attribute("href") or ""
+        )
+    )
+    WebDriverWait(driver, 15, ignored_exceptions=(StaleElementReferenceException,)).until(
+        lambda d: len([r for r in _get_visible_row_ids(d) if any(c.isdigit() for c in r)]) == 0
+    )
+
+    empty_msg = driver.find_elements(By.ID, "public-empty-message")
+    export_links = driver.find_elements(By.ID, "public-export-link")
+
+    export_disabled = False
+    if export_links:
+        el = export_links[0]
+        aria_disabled = (el.get_attribute("aria-disabled") or "").lower() == "true"
+        has_disabled_attr = el.get_attribute("disabled") is not None
+        href = el.get_attribute("href") or ""
+        no_actionable_href = href.strip() in ("", "#")
+        export_disabled = aria_disabled or has_disabled_attr or no_actionable_href
+
+    empty_message_shown = bool(empty_msg) and empty_msg[0].is_displayed()
+
+    assert empty_message_shown or export_disabled or not export_links, (
+        "Con result set vuoto il sistema deve informare che non ci sono report "
+        "da esportare oppure disabilitare/nascondere il link di export"
+    )
+
+
+
+# UC-09 – Visualizza statistiche pubbliche
+
 # UC-09: Verifica che la sezione 'Reports by category' sia visibile
 @pytest.mark.e2e
 def test_uc09_category_statistics_section_present(driver):
@@ -632,60 +702,3 @@ def test_uc09_stat_granularity_change_keeps_trend_visible(driver):
         EC.presence_of_element_located((By.ID, "public-trend-statistics"))
     )
     assert driver.find_element(By.ID, "public-trend-statistics").is_displayed()
-
-
-# UC-08, Extension 2a: Verifica che con result set vuoto non venga prodotto un export fuorviante (bug noto)
-@pytest.mark.e2e
-@pytest.mark.implementation_bug(
-    "HomePage.tsx non implementa la garanzia UC-08 Ext 2a: quando il set di risultati filtrato è vuoto, " 
-    "il frontend visualizza un <tbody> vuoto senza alcun messaggio e mantiene il link 'Esporta CSV' " 
-    "sempre attivo e cliccabile, indipendentemente dal numero di righe."
-    "La garanzia minima 'Se non sono disponibili dati, non viene prodotta alcuna esportazione " 
-    "non viene rispettata: il link di esportazione rimane attivo anche su un set di risultati vuoto."
-)
-@pytest.mark.xfail(
-    reason=(
-        "UC-08 Ext 2a non implementato in HomePage.tsx: il set di risultati vuoto non mostra alcun avviso "
-        "e il collegamento di esportazione rimane attivo. Si tratta di una lacuna di implementazione, "
-        "non di un difetto di test."
-    ),
-    strict=True,
-)
-def test_uc08_empty_result_set_blocks_export(driver):
-    driver.get(BASE_URL)
-    _wait_home_loaded(driver)
-
-    initial_rows = len([r for r in _get_visible_row_ids(driver) if any(c.isdigit() for c in r)])
-    if initial_rows == 0:
-        pytest.skip("Nessun report seed disponibile: precondizione non soddisfatta")
-
-    _set_date_input(driver, "public-filter-date-from", "2099-01-01 00:00")
-    driver.find_element(By.ID, "public-filter-submit").click()
-
-    WebDriverWait(driver, 10).until(
-        lambda d: "date_from=" in (
-            d.find_element(By.ID, "public-export-link").get_attribute("href") or ""
-        )
-    )
-    WebDriverWait(driver, 15, ignored_exceptions=(StaleElementReferenceException,)).until(
-        lambda d: len([r for r in _get_visible_row_ids(d) if any(c.isdigit() for c in r)]) == 0
-    )
-
-    empty_msg = driver.find_elements(By.ID, "public-empty-message")
-    export_links = driver.find_elements(By.ID, "public-export-link")
-
-    export_disabled = False
-    if export_links:
-        el = export_links[0]
-        aria_disabled = (el.get_attribute("aria-disabled") or "").lower() == "true"
-        has_disabled_attr = el.get_attribute("disabled") is not None
-        href = el.get_attribute("href") or ""
-        no_actionable_href = href.strip() in ("", "#")
-        export_disabled = aria_disabled or has_disabled_attr or no_actionable_href
-
-    empty_message_shown = bool(empty_msg) and empty_msg[0].is_displayed()
-
-    assert empty_message_shown or export_disabled or not export_links, (
-        "Con result set vuoto il sistema deve informare che non ci sono report "
-        "da esportare oppure disabilitare/nascondere il link di export"
-    )

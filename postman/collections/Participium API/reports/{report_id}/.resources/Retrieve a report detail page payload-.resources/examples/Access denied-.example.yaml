@@ -1,0 +1,21 @@
+$kind: http-example
+name: Access denied.
+request:
+  url: "{{baseUrl}}/reports/:report_id"
+  method: GET
+  headers:
+    Accept: application/json
+  pathVariables:
+    report_id: "6011"
+response:
+  statusCode: 403
+  statusText: Forbidden
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "error": "string"
+      }
+order: 2000

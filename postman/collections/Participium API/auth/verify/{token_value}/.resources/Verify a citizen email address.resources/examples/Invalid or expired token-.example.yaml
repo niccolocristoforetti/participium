@@ -1,0 +1,21 @@
+$kind: http-example
+name: Invalid or expired token.
+request:
+  url: "{{baseUrl}}/auth/verify/:token_value"
+  method: GET
+  headers:
+    Accept: application/json
+  pathVariables:
+    token_value: string
+response:
+  statusCode: 400
+  statusText: Bad Request
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "error": "string"
+      }
+order: 2000

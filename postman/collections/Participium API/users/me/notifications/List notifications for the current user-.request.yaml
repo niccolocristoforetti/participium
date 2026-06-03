@@ -1,0 +1,8 @@
+$kind: http-request
+name: List notifications for the current user.
+url: "{{baseUrl}}/users/me/notifications"
+method: GET
+headers:
+  Accept: application/json
+examples: ./.resources/List notifications for the current user-.resources/examples
+order: 2000

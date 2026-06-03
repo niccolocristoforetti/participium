@@ -1,0 +1,32 @@
+$kind: http-example
+name: Category updated.
+request:
+  url: "{{baseUrl}}/admin/categories/:category_id"
+  method: PUT
+  headers:
+    Content-Type: application/json
+    Accept: application/json
+  pathVariables:
+    category_id: "6011"
+  body:
+    type: json
+    content: |-
+      {
+        "name": "string",
+        "is_active": true
+      }
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "id": 1,
+        "name": "Roads and Urban Furniture",
+        "is_active": true,
+        "created_at": "2000-07-05T20:52:15.130Z"
+      }
+order: 1000

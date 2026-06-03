@@ -1,0 +1,8 @@
+$kind: http-request
+name: List operator-visible reports.
+url: "{{baseUrl}}/operator/reports/assigned"
+method: GET
+headers:
+  Accept: application/json
+examples: ./.resources/List operator-visible reports-.resources/examples
+order: 1000

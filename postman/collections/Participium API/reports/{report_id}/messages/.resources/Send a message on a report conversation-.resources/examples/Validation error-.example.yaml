@@ -1,0 +1,28 @@
+$kind: http-example
+name: Validation error.
+request:
+  url: "{{baseUrl}}/reports/:report_id/messages"
+  method: POST
+  headers:
+    Content-Type: application/json
+    Accept: application/json
+  pathVariables:
+    report_id: "6011"
+  body:
+    type: json
+    content: |-
+      {
+        "body": "string"
+      }
+response:
+  statusCode: 400
+  statusText: Bad Request
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "error": "string"
+      }
+order: 2000

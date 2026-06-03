@@ -1,0 +1,52 @@
+$kind: http-example
+name: Message thread.
+request:
+  url: "{{baseUrl}}/reports/:report_id/messages"
+  method: GET
+  headers:
+    Accept: application/json
+  pathVariables:
+    report_id: "6011"
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      [
+        {
+          "id": 9464,
+          "report_id": 6933,
+          "body": "string",
+          "sender": {
+            "id": 7058,
+            "display_name": "Marco Citizen",
+            "role": "admin"
+          },
+          "recipient": {
+            "id": 139,
+            "display_name": "Marco Citizen",
+            "role": "operator"
+          },
+          "created_at": "1956-01-05T21:48:11.121Z"
+        },
+        {
+          "id": 7435,
+          "report_id": 7091,
+          "body": "string",
+          "sender": {
+            "id": 3777,
+            "display_name": "Marco Citizen",
+            "role": "admin"
+          },
+          "recipient": {
+            "id": 1203,
+            "display_name": "Marco Citizen",
+            "role": "operator"
+          },
+          "created_at": "1957-08-03T12:16:27.550Z"
+        }
+      ]
+order: 1000

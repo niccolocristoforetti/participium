@@ -1,0 +1,54 @@
+$kind: http-example
+name: User updated.
+request:
+  url: "{{baseUrl}}/admin/users/:user_id"
+  method: PUT
+  headers:
+    Content-Type: application/json
+    Accept: application/json
+  pathVariables:
+    user_id: "6011"
+  body:
+    type: json
+    content: |-
+      {
+        "category_id": 7367,
+        "email": "gbPkZiXtxZ@eIcNjyLNGWIqUIu.gw",
+        "email_notifications_enabled": true,
+        "first_name": "string",
+        "is_active": false,
+        "last_name": "string",
+        "password": "string",
+        "role": "admin",
+        "username": "string"
+      }
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "id": 1,
+        "username": "citizen",
+        "first_name": "Marco",
+        "last_name": "Citizen",
+        "email": "citizen@example.com",
+        "role": "operator",
+        "is_active": true,
+        "is_email_verified": true,
+        "email_notifications_enabled": false,
+        "category": {
+          "id": 1,
+          "name": "Roads and Urban Furniture",
+          "is_active": false,
+          "created_at": "2013-03-28T10:51:18.103Z"
+        },
+        "category_id": 8369,
+        "created_at": "1968-02-01T06:05:10.470Z",
+        "profile_picture_path": "string",
+        "profile_picture_url": "string"
+      }
+order: 1000

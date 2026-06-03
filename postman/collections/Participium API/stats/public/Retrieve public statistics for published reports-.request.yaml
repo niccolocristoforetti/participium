@@ -1,0 +1,10 @@
+$kind: http-request
+name: Retrieve public statistics for published reports.
+url: "{{baseUrl}}/stats/public?granularity=month"
+method: GET
+headers:
+  Accept: application/json
+queryParams:
+  granularity: month
+examples: ./.resources/Retrieve public statistics for published reports-.resources/examples
+order: 1000

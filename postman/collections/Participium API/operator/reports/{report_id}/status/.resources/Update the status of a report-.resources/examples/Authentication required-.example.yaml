@@ -1,0 +1,29 @@
+$kind: http-example
+name: Authentication required.
+request:
+  url: "{{baseUrl}}/operator/reports/:report_id/status"
+  method: POST
+  headers:
+    Content-Type: application/json
+    Accept: application/json
+  pathVariables:
+    report_id: "6011"
+  body:
+    type: json
+    content: |-
+      {
+        "status": "in_progress",
+        "note": "string"
+      }
+response:
+  statusCode: 401
+  statusText: Unauthorized
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "error": "string"
+      }
+order: 3000

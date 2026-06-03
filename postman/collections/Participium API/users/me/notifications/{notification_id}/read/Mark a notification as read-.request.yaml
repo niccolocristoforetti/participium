@@ -1,0 +1,10 @@
+$kind: http-request
+name: Mark a notification as read.
+url: "{{baseUrl}}/users/me/notifications/:notification_id/read"
+method: POST
+headers:
+  Accept: application/json
+pathVariables:
+  notification_id: "6011"
+examples: ./.resources/Mark a notification as read-.resources/examples
+order: 1000

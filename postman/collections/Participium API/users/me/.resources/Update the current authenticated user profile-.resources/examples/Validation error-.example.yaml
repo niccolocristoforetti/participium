@@ -1,0 +1,19 @@
+$kind: http-example
+name: Validation error.
+request:
+  url: "{{baseUrl}}/users/me"
+  method: PUT
+  headers:
+    Accept: application/json
+response:
+  statusCode: 400
+  statusText: Bad Request
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "error": "string"
+      }
+order: 2000

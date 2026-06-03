@@ -1,0 +1,29 @@
+$kind: http-example
+name: Authentication required.
+request:
+  url: "{{baseUrl}}/admin/categories/:category_id"
+  method: PUT
+  headers:
+    Content-Type: application/json
+    Accept: application/json
+  pathVariables:
+    category_id: "6011"
+  body:
+    type: json
+    content: |-
+      {
+        "name": "string",
+        "is_active": true
+      }
+response:
+  statusCode: 401
+  statusText: Unauthorized
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "error": "string"
+      }
+order: 3000

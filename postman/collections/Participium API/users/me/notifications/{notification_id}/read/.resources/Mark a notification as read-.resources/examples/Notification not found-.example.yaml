@@ -1,0 +1,21 @@
+$kind: http-example
+name: Notification not found.
+request:
+  url: "{{baseUrl}}/users/me/notifications/:notification_id/read"
+  method: POST
+  headers:
+    Accept: application/json
+  pathVariables:
+    notification_id: "6011"
+response:
+  statusCode: 404
+  statusText: Not Found
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "error": "string"
+      }
+order: 3000

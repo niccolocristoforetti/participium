@@ -1,0 +1,10 @@
+$kind: http-request
+name: Accept a pending report for handling in its category.
+url: "{{baseUrl}}/operator/reports/:report_id/assign"
+method: POST
+headers:
+  Accept: application/json
+pathVariables:
+  report_id: "6011"
+examples: ./.resources/Accept a pending report for handling in its category-.resources/examples
+order: 1000

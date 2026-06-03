@@ -1,0 +1,31 @@
+$kind: http-request
+name: Log in with username or email and create a session cookie.
+url: "{{baseUrl}}/auth/login"
+method: POST
+headers:
+  Content-Type: application/json
+  Accept: application/json
+body:
+  type: json
+  content: |+
+    {
+      "identifier": "{{citizen_email}}",
+      "password": "{{citizen_password}}"
+    }
+
+
+scripts:
+  - type: afterResponse
+    code: |+
+      pm.test("Status 200", () => pm.response.to.have.status(200));
+      pm.test("Logged in", () => {
+          const b = pm.response.json();
+          pm.expect(b.message).to.eql("Logged in.");
+          pm.expect(b.user.role).to.eql("citizen");
+      });
+
+
+
+    language: text/javascript
+examples: ./.resources/Log in with username or email and create a session cookie-.resources/examples
+order: 1000

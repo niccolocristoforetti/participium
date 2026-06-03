@@ -1,0 +1,18 @@
+$kind: http-request
+name: Update the status of a report.
+url: "{{baseUrl}}/operator/reports/:report_id/status"
+method: POST
+headers:
+  Content-Type: application/json
+  Accept: application/json
+pathVariables:
+  report_id: "6011"
+body:
+  type: json
+  content: |-
+    {
+      "status": "in_progress",
+      "note": "string"
+    }
+examples: ./.resources/Update the status of a report-.resources/examples
+order: 1000

@@ -1,0 +1,12 @@
+$kind: http-request
+url: "{{baseUrl}}/auth/verify/invalid-token-abc123"
+method: GET
+headers:
+  Accept: application/json
+scripts:
+  - type: afterResponse
+    code: |
+      pm.test("Status 400", () => pm.response.to.have.status(400));
+      pm.test("Has error", () => { pm.expect(pm.response.json()).to.have.property("error"); });
+    language: text/javascript
+order: 2000

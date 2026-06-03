@@ -1,0 +1,41 @@
+$kind: http-example
+name: Message created.
+request:
+  url: "{{baseUrl}}/reports/:report_id/messages"
+  method: POST
+  headers:
+    Content-Type: application/json
+    Accept: application/json
+  pathVariables:
+    report_id: "6011"
+  body:
+    type: json
+    content: |-
+      {
+        "body": "string"
+      }
+response:
+  statusCode: 201
+  statusText: Created
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "id": 4206,
+        "report_id": 8284,
+        "body": "string",
+        "sender": {
+          "id": 2512,
+          "display_name": "Marco Citizen",
+          "role": "citizen"
+        },
+        "recipient": {
+          "id": 6146,
+          "display_name": "Marco Citizen",
+          "role": "operator"
+        },
+        "created_at": "1947-09-12T11:53:06.400Z"
+      }
+order: 1000

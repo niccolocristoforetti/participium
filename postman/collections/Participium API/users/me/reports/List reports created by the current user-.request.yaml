@@ -1,0 +1,8 @@
+$kind: http-request
+name: List reports created by the current user.
+url: "{{baseUrl}}/users/me/reports"
+method: GET
+headers:
+  Accept: application/json
+examples: ./.resources/List reports created by the current user-.resources/examples
+order: 1000

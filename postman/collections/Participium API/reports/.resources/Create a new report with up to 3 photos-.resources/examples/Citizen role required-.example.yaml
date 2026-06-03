@@ -1,0 +1,44 @@
+$kind: http-example
+name: Citizen role required.
+request:
+  url: "{{baseUrl}}/reports"
+  method: POST
+  headers:
+    Content-Type: multipart/form-data
+    Accept: application/json
+  body:
+    type: formdata
+    content:
+      - type: text
+        key: title
+        value: string
+      - type: text
+        key: description
+        value: string
+      - type: text
+        key: category_id
+        value: "1236"
+      - type: text
+        key: latitude
+        value: "211.46117424509004"
+      - type: text
+        key: longitude
+        value: "2352.843199876353"
+      - type: file
+        key: photos
+        src: []
+      - type: text
+        key: is_anonymous
+        value: "false"
+response:
+  statusCode: 403
+  statusText: Forbidden
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "error": "string"
+      }
+order: 4000

@@ -1,0 +1,10 @@
+$kind: http-request
+name: Follow a published report.
+url: "{{baseUrl}}/reports/:report_id/follow"
+method: POST
+headers:
+  Accept: application/json
+pathVariables:
+  report_id: "6011"
+examples: ./.resources/Follow a published report-.resources/examples
+order: 2000

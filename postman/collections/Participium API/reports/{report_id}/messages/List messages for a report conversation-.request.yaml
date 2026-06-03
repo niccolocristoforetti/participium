@@ -1,0 +1,10 @@
+$kind: http-request
+name: List messages for a report conversation.
+url: "{{baseUrl}}/reports/:report_id/messages"
+method: GET
+headers:
+  Accept: application/json
+pathVariables:
+  report_id: "6011"
+examples: ./.resources/List messages for a report conversation-.resources/examples
+order: 1000

@@ -1,0 +1,8 @@
+$kind: http-request
+name: List reports waiting for approval.
+url: "{{baseUrl}}/operator/reports/pending"
+method: GET
+headers:
+  Accept: application/json
+examples: ./.resources/List reports waiting for approval-.resources/examples
+order: 1000

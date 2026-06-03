@@ -1,0 +1,17 @@
+$kind: http-request
+name: Send a message on a report conversation.
+url: "{{baseUrl}}/reports/:report_id/messages"
+method: POST
+headers:
+  Content-Type: application/json
+  Accept: application/json
+pathVariables:
+  report_id: "6011"
+body:
+  type: json
+  content: |-
+    {
+      "body": "string"
+    }
+examples: ./.resources/Send a message on a report conversation-.resources/examples
+order: 2000

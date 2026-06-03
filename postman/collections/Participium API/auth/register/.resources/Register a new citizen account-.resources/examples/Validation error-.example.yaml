@@ -1,0 +1,30 @@
+$kind: http-example
+name: Validation error.
+request:
+  url: "{{baseUrl}}/auth/register"
+  method: POST
+  headers:
+    Content-Type: application/json
+    Accept: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "username": "string",
+        "first_name": "string",
+        "last_name": "string",
+        "email": "lbhgc4E0zU8Tfl@YxwRakaCxrlVUVDbOle.hvbf",
+        "password": "string"
+      }
+response:
+  statusCode: 400
+  statusText: Bad Request
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "error": "string"
+      }
+order: 2000

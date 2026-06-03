@@ -1,0 +1,14 @@
+$kind: http-request
+name: List published reports with filters.
+url: "{{baseUrl}}/reports?category_id=6011&status=string&date_from=1976-01-21T02:53:51.859Z&date_to=1976-01-21T02:53:51.859Z&sort=asc"
+method: GET
+headers:
+  Accept: application/json
+queryParams:
+  category_id: "6011"
+  status: string
+  date_from: 1976-01-21T02:53:51.859Z
+  date_to: 1976-01-21T02:53:51.859Z
+  sort: asc
+examples: ./.resources/List published reports with filters-.resources/examples
+order: 3000

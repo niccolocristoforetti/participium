@@ -1,0 +1,8 @@
+$kind: http-request
+name: Delete the current authenticated account and personal data.
+url: "{{baseUrl}}/users/me"
+method: DELETE
+headers:
+  Accept: application/json
+examples: ./.resources/Delete the current authenticated account and personal data-.resources/examples
+order: 3000

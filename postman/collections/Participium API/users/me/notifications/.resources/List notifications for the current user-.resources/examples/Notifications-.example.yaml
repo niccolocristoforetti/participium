@@ -1,0 +1,36 @@
+$kind: http-example
+name: Notifications.
+request:
+  url: "{{baseUrl}}/users/me/notifications"
+  method: GET
+  headers:
+    Accept: application/json
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      [
+        {
+          "id": 4983,
+          "type": "string",
+          "title": "string",
+          "body": "string",
+          "is_read": false,
+          "created_at": "1996-02-01T14:55:37.605Z",
+          "report_id": 8598
+        },
+        {
+          "id": 1382,
+          "type": "string",
+          "title": "string",
+          "body": "string",
+          "is_read": false,
+          "created_at": "1964-09-26T19:39:12.459Z",
+          "report_id": 8794
+        }
+      ]
+order: 1000

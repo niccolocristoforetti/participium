@@ -1,0 +1,35 @@
+$kind: http-request
+name: Register a new citizen account.
+url: "{{baseUrl}}/auth/register"
+method: POST
+headers:
+  Content-Type: application/json
+  Accept: application/json
+body:
+  type: json
+  content: |
+    {
+      "username": "{{new_citizen_username}}",
+      "first_name": "Test",
+      "last_name": "User",
+      "email": "{{new_citizen_email}}",
+      "password": "Test1234!"
+    }
+scripts:
+  - type: beforeRequest
+    code: |
+      const ts = Date.now();
+      pm.environment.set("new_citizen_username", "testuser_" + ts);
+      pm.environment.set("new_citizen_email", "testuser_" + ts + "@example.com");
+    language: text/javascript
+  - type: afterResponse
+    code: |
+      pm.test("Status 201", () => pm.response.to.have.status(201));
+      pm.test("Verification URL saved", () => {
+          const b = pm.response.json();
+          pm.expect(b).to.have.property("verification_url");
+          pm.environment.set("verify_token", b.verification_url.split("/").pop());
+      });
+    language: text/javascript
+examples: ./.resources/Register a new citizen account-.resources/examples
+order: 1000

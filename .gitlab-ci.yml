@@ -1,0 +1,178 @@
+stages:
+  - test
+
+backend_coverage:
+  image: python:3.11-slim
+  tags:
+    - participium
+  stage: test
+  before_script:
+    - cd src/backend
+    - export PYTHONPATH="$CI_PROJECT_DIR:$CI_PROJECT_DIR/src/backend:${PYTHONPATH:-}"
+    - python -m pip install --upgrade pip
+    - python -m pip install -r requirements.txt
+  script:
+    - mkdir -p reports/coverage/backend
+    - python -m pytest --cov=participium --cov-config=.coveragerc --cov-report=term-missing --cov-report=xml:reports/coverage/backend/coverage.xml --cov-report=html:reports/coverage/backend/html --junitxml=reports/coverage/backend/junit.xml -ra -p participium_bug_report_plugin
+  coverage: '/TOTAL\s+\d+\s+\d+\s+\d+\s+\d+\s+([\d.]+)%/'
+  artifacts:
+    when: always
+    paths:
+      - src/backend/reports/coverage/backend/
+    reports:
+      junit: src/backend/reports/coverage/backend/junit.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: src/backend/reports/coverage/backend/coverage.xml
+
+postman_newman_report:
+  image: python:3.11-slim
+  tags:
+    - participium
+  stage: test
+  variables:
+    HOST: "127.0.0.1"
+    PORT: "5050"
+    FRONTEND_ORIGIN: "http://127.0.0.1:5173"
+    AUTO_INIT_DB: "true"
+    BOOTSTRAP_REFERENCE_DATA: "true"
+    BOOTSTRAP_DEMO_DATA: "true"
+    MAIL_BACKEND: "console"
+    EXPOSE_VERIFICATION_LINKS: "true"
+    PYTHONUNBUFFERED: "1"
+  before_script:
+    - apt-get update
+    - apt-get install -y --no-install-recommends curl nodejs npm
+    - rm -rf /var/lib/apt/lists/*
+    - export PYTHONPATH="$CI_PROJECT_DIR:$CI_PROJECT_DIR/src/backend:${PYTHONPATH:-}"
+    - python -m pip install --upgrade pip
+    - python -m pip install -r src/backend/requirements.txt
+    - npm install -g newman
+  script:
+    - mkdir -p src/backend/reports/postman
+    - (cd src/backend && python -m flask --app wsgi:app run --host 127.0.0.1 --port 5050 --without-threads --no-reload --no-debugger) > src/backend/reports/postman/backend.log 2>&1 &
+    - BACKEND_PID=$!
+    - trap 'kill "$BACKEND_PID" 2>/dev/null || true' EXIT
+    - |
+      for attempt in $(seq 1 60); do
+        if curl -fsS http://127.0.0.1:5050/api/v1/health >/dev/null; then
+          echo "Backend is ready."
+          break
+        fi
+        if [ "$attempt" -eq 60 ]; then
+          echo "Backend did not become ready."
+          cat src/backend/reports/postman/backend.log
+          exit 1
+        fi
+        sleep 1
+      done
+    - |
+      set +e
+      newman run src/backend/postman/Participium.postman_collection.json -e src/backend/postman/Participium.postman_environment.json --reporters cli,json,junit --reporter-json-export src/backend/reports/postman/newman-report.json --reporter-junit-export src/backend/reports/postman/newman-junit.xml > src/backend/reports/postman/newman-output.txt 2>&1
+      status=$?
+      cat src/backend/reports/postman/newman-output.txt
+      exit "$status"
+  artifacts:
+    when: always
+    paths:
+      - src/backend/reports/postman/
+    reports:
+      junit: src/backend/reports/postman/newman-junit.xml
+
+frontend_selenium_report:
+  image: python:3.11-slim
+  tags:
+    - participium
+  stage: test
+  variables:
+    HOST: "127.0.0.1"
+    PORT: "5050"
+    FRONTEND_ORIGIN: "http://127.0.0.1:5173"
+    VITE_API_BASE_URL: "http://127.0.0.1:5050/api/v1"
+    VITE_BACKEND_BASE_URL: "http://127.0.0.1:5050"
+    AUTO_INIT_DB: "true"
+    BOOTSTRAP_REFERENCE_DATA: "true"
+    BOOTSTRAP_DEMO_DATA: "true"
+    MAIL_BACKEND: "console"
+    EXPOSE_VERIFICATION_LINKS: "true"
+    CHROME_BIN: "/usr/bin/chromium"
+    PYTHONUNBUFFERED: "1"
+    SELENIUM_TEST_TIMEOUT: "90"
+  before_script:
+    - apt-get update
+    - apt-get install -y --no-install-recommends curl nodejs npm chromium chromium-driver xvfb xauth
+    - rm -rf /var/lib/apt/lists/*
+    - export PYTHONPATH="$CI_PROJECT_DIR:$CI_PROJECT_DIR/src/backend:$CI_PROJECT_DIR/src/frontend:${PYTHONPATH:-}"
+    - mkdir -p src/frontend/reports/selenium
+    - |
+      export CHROME_BIN="$(command -v chromium || command -v chromium-browser || command -v google-chrome || true)"
+      export CHROMEDRIVER_BIN="$(command -v chromedriver || true)"
+      if [ -z "$CHROME_BIN" ]; then
+        echo "Chrome/Chromium binary not found."
+        exit 1
+      fi
+      if [ -z "$CHROMEDRIVER_BIN" ]; then
+        echo "ChromeDriver binary not found."
+        exit 1
+      fi
+      ln -sf "$CHROME_BIN" /usr/local/bin/google-chrome
+      ln -sf "$CHROME_BIN" /usr/local/bin/chrome
+      ln -sf "$CHROMEDRIVER_BIN" /usr/local/bin/chromedriver
+      export SE_BROWSER_PATH="$CHROME_BIN"
+      echo "Using browser: $CHROME_BIN"
+      "$CHROME_BIN" --version
+      echo "Using driver: $CHROMEDRIVER_BIN"
+      "$CHROMEDRIVER_BIN" --version
+    - python -m pip install --upgrade pip
+    - python -m pip install -r src/backend/requirements.txt
+    - python -m pip install -r src/frontend/tests/selenium/requirements.txt
+    - npm --prefix src/frontend ci
+  script:
+    - (cd src/backend && python -m flask --app wsgi:app run --host 127.0.0.1 --port 5050 --without-threads --no-reload --no-debugger) > src/frontend/reports/selenium/backend.log 2>&1 &
+    - BACKEND_PID=$!
+    - npm --prefix src/frontend run dev -- --host 127.0.0.1 --port 5173 > src/frontend/reports/selenium/frontend.log 2>&1 &
+    - FRONTEND_PID=$!
+    - trap 'kill "$BACKEND_PID" "$FRONTEND_PID" 2>/dev/null || true' EXIT
+    - |
+      for attempt in $(seq 1 60); do
+        if curl -fsS http://127.0.0.1:5050/api/v1/health >/dev/null; then
+          echo "Backend is ready."
+          break
+        fi
+        if [ "$attempt" -eq 60 ]; then
+          echo "Backend did not become ready."
+          cat src/frontend/reports/selenium/backend.log
+          exit 1
+        fi
+        sleep 1
+      done
+    - |
+      for attempt in $(seq 1 60); do
+        if curl -fsS http://127.0.0.1:5173 >/dev/null; then
+          echo "Frontend is ready."
+          break
+        fi
+        if [ "$attempt" -eq 60 ]; then
+          echo "Frontend did not become ready."
+          cat src/frontend/reports/selenium/frontend.log
+          exit 1
+        fi
+        sleep 1
+      done
+    - |
+      set +e
+      cd src/frontend
+      xvfb-run -a python -m pytest -c tests/selenium/pytest.ini tests/selenium --timeout="$SELENIUM_TEST_TIMEOUT" --junitxml=reports/selenium/junit.xml -ra -p participium_bug_report_plugin > reports/selenium/pytest-output.txt 2>&1
+      status=$?
+      cat reports/selenium/pytest-output.txt
+      if [ "$status" -eq 5 ]; then
+        echo "No Selenium tests collected."
+        exit 0
+      fi
+      exit "$status"
+  artifacts:
+    when: always
+    paths:
+      - src/frontend/reports/selenium/
+    reports:
+      junit: src/frontend/reports/selenium/junit.xml

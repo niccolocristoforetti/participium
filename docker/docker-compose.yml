@@ -1,0 +1,45 @@
+
+x-db-credentials: &db-credentials
+  MYSQL_DATABASE: participium
+  MYSQL_USER: participium
+  MYSQL_PASSWORD: participium_password
+
+services:
+  database:
+    image: mysql:8
+    container_name: participium-database        # richiesto dal docker exec di verifica
+    environment:
+      <<: *db-credentials
+      MYSQL_ROOT_PASSWORD: root_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql               
+    healthcheck:
+      # check applicativo: l'utente partecipium si autentica E usa il suo db
+      test: ["CMD-SHELL", "mysql -h 127.0.0.1 -uparticipium -pparticipium_password participium -e 'SELECT 1' || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 30s                          # margine al primo avvio su volume pulito
+
+
+  #  BACKEND — SOLO environment + depends_on
+
+  backend:
+  #qua c'è una parte prima della mia
+    environment:
+      DATABASE_URL: "mysql+pymysql://participium:participium_password@database:3306/participium?autocommit=true"
+      SECRET_KEY: dev-secret-change-me
+      FRONTEND_ORIGIN: http://localhost:5173
+      HOST: 0.0.0.0
+      PORT: 5050
+      AUTO_INIT_DB: "true"
+      BOOTSTRAP_REFERENCE_DATA: "true"
+      BOOTSTRAP_DEMO_DATA: "true"
+    depends_on:
+      database:
+        condition: service_healthy               # aspetta il DB *pronto*, non solo *avviato*
+
+volumes:
+  mysql-data:
